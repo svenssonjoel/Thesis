@@ -1,0 +1,103 @@
+
+
+TODO Before defence
+
+*  Approval from the candidate's follow-up group and examiner
+
+   * Before the registration of the defense can happen, the supervisor tells whether:
+    + the candidate's follow-up group agrees to publication, and
+    + the examiner agrees to publication of the thesis
+     
+
+   * Approval for publication should be based on a review of the final version of the thesis or, if time is short, a preliminary draft provided that the draft admits proper evaluation of the quality of form and content of the final version.
+
+   * If possible, the follow-up group shall meet and discuss whether the thesis is ready for publication. If this is not possible, the members of the follow-up group can give the result of the review to the supervisor individually.
+
+   * If either the follow-up group or the examiner deems the thesis as unfit for publication, then the candidate and the supervisor must be informed about the reasons in written form.
+
+
+*  Registration of the candidate's intention to defend the PhD thesis
+   
+   * As soon as possible, and no later than four months prior to the planned date of the seminar, the supervisor should register via e-mail) with Koen Claessen and the director of graduate studies that the candidate intends to defend the PhD thesis. At the same time, a preliminary time for the defense is booked via Eva Axelsson.
+     The date of the defense steers the other deadlines. It must be checked whether other PhD defenses or licentiate presentations at the CSE department are booked on the same day. In this case, a special permit is required from the vice head of department for graduate education. The planned date must also be suitable for the other actors involved – the opponent, the grading committee and the deputy.
+     The room for the seminar is booked by the candidate: salsbokningen@chalmers.se
+
+* Suggestion for, and approval of, faculty opponent and grading committee
+  * In conjunction with the registration, and no later than three months prior to the planned date of the seminar, a suggestion for opponent and members in the grading committee should be made by the supervisor. The suggestion is sent (via e-mail) to Koen Claessen, the director of graduate studies and to Eva Axelsson. The proposal should contain:
+    Name, address, email, url of webpage and telephone number of each person proposed
+    Short CV and brief explanation of the standing of each person in the research topic of the thesis
+    Title of the thesis, and name of examiner
+
+  * With respect to the composition of the members of the grading committee, the central regulations must be observed. It is necessary to determine also a deputy who must be a competent person, connected with Chalmers, in the subject of the thesis. The vice head of department for graduate education determines a chairperson for the defense.
+
+  * For external PhD students the supervisor should in conjunction with this also submit a supervisor declaration (see Step 4. below for contents).
+ 
+  * A review of the proposal is made by the steering group of the research school. The outcome of the review is typically announced within three working days.
+
+* Advance review of the PhD thesis
+  * As soon as the faculty opponent has been approved, the thesis should be sent to him/her for review. The document subject to the review shall be the final version of the thesis. If this is not possible, a preliminary draft can be reviewed provided that the draft admits proper evaluation of the quality of form and content of the final version. Regardless of which version the following aspects must be clearly addressed:
+    + the scope of the thesis within its scientific area
+    + the problems that are discussed and solved in the thesis
+    + the choice of method used for attacking the problems
+    + the main result(s)
+
+
+  * In case the thesis is a collection of papers there must also be an outline of the introduction. For a monograph the larger part of the material shall be included. A list of all publications and technical reports that are relevant for the thesis must be included. For a collection of papers copies of the publications should be included.
+  * A thorough review of the thesis should only be done in those cases when it is based on very few, or no, publications. Otherwise, the review only needs to be an overall quality control.
+  * The faculty opponent should be asked to respond with the result of the review within at most four weeks. The outcome of the review should be forwarded to Koen Claessen and the director of graduate studies.
+  * In conjunction with sending the thesis for review, the main supervisor should also submit the so-called supervisor declaration where the contents of the thesis is described and, in the case of multi-author publications, the contributions of the candidate. The supervisor declaration should be written in English so that it can be distributed to the faculty opponent and grading committee. The supervisor declaration is submitted (via email as a pdf attachment) to Koen Claessen and the director of graduate studies, with a copy to Eva Axelsson who will forward it to the faculty opponent and grading committee.
+
+* Printing of the PhD thesis
+  * Reserving a time for printing the thesis must be chosen such that the thesis is available in printed form at the department at least three weeks prior to the defense. Make an appointment in due time – at least three weeks before printing day! Dissemination of information about the thesis is described in detail below. The thesis is printed at Reproservice. Usually, 125 copies of the thesis are printed, but a larger number of copies may be printed if special reasons require so.
+    (Please note that Reproservice close for summer holidays). 
+
+  * For the layout of the thesis and the printing, see the central regulations. A local rule at CSE is that each PhD thesis must have a report number (obtained from Eva Axelsson) in addition to the ISBN and ISSN numbers obtained from Chalmers library.
+
+  * Text on the backside of the title page:
+    Technical report ... D  (report number obtained from Eva Axelsson)
+    Department of Computer Science and Engineering
+    Research group: .....
+
+    Department of Computer Science and Engineering
+    Chalmers University of Technology and Göteborg University
+    SE-412 96 Göteborg
+    Sweden
+    Telephone + 46 (0)31-772 1000
+
+* Public announcement of the defense
+  The candidate shall publicly announce the defense by filling in a web form in Chalmers Publication Library (CPL) at least four weeks prior to the date of the defense.
+  In order to fill in the form the candidate must log in using his/her CID and password. Then the form is filled with information about the candidate's name, institution, the title of the thesis, time and place for the defense, opponent and abstract.
+  The post created in CPL will generete a notice on the CSE-web and chalmers.se.
+
+
+* Dissemination of the PhD thesis and defense
+  * The procedure for dissemination of a CSE PhD thesis is somewhat different from the one described in the study handbook. Please follow the instructions and regulations below.
+    At least three weeks before the defense the thesis should be distributed according to the following list:
+      + Five copies to the departmental secretariat (Eva Axelsson).
+      + One copy is given to the vice head of department for graduate education (Koen Claessen) for signing. This copy is forwarded to the Office of Degrees (Examensenheten). Book a time for the signing well in advance.
+      + One copy each to the faculty opponent, the members of the grading committee, the deputy, and the chairperson of the defense.
+      + 11 copies ("pliktexemplar") to Chalmers central library, loan office. All copies must contain the dissertation title sheet (so-called "spikblad"). (N.B. Request a certificate of the delivery!)
+      + One copy each to departments at other universities that work in similar areas to the topic of the thesis. Eva Axelsson has pre-printed address labels of the most relevant universities.
+      + Other interested persons (discuss with supervisor).
+      + The candidate shall also personally give one copy to the head (prefekt) of the department.
+
+    In addition, the title sheet of your dissertation with the abstract shall be sent by email to all members of the Department Council (Institutionsrådet), e-mail addresses can be obtained from Eva Axelsson.
+
+    The PhD candidate must send the following information to Chalmers Office of Degrees (Examensenheten) at least three weeks before the defense:
+      + One copy of the dissertation, signed by the vice head of department for graduate studies
+      + One extra dissertation title sheet
+      + A certificate from Chalmers Library indicating that the compulsory copies have been delivered.
+      + A list of all institutions at universities and colleges that have been sent a copy of the dissertation.
+
+* Before the defense
+  * At least three weeks before the defense the main supervisor or the examiner should contact the chairman of the defense and convey the intended schedule for the defense. There is a Chalmers policy for defenses, but it is possible to deviate from that. The chairman must have access to a short CV of the opponent and the members of the grading committee so they can be presented during the defense.
+    The minutes of the grading committee (“Betygsnämndsprotokoll”) are given as quickly as possible to Eva Axelsson so they can be transferred to the examination unit.
+
+* Doctoral degree
+  * After the candidate has finished all course work the PhD degree certificate (“examensbevis”) must be made. The following items should be sent to the Office of Degrees (Examensenheten):
+      + birth certificate (personbevis)
+      + the original of the ‘All courses completed' archive list (‘Alla kurser klara') – sent by Eva Axelsson.
+      + a fully completed form "All parts of the PhD course programme passed" ("Samtliga studiedokument för doktorsexamen godkända") – sent by Eva Axelsson
+      + the form "Application for Licentiate-/PhD degree". Found here.
+
+ 
