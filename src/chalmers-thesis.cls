@@ -580,7 +580,8 @@
 
  \newpage\thispagestyle{empty}
  \begin{center}
-  {\MakeUppercase{\thesisname\ \inname\ \@thesisin}\par}
+  %{\MakeUppercase{\thesisname\ \inname\ \@thesisin}\par}
+  {\MakeUppercase{\thesisname}\par}
   \vspace*{\stretch{1}}
   {\Large \@title\par}
   \vskip 1em
