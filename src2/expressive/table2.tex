@@ -1,0 +1,43 @@
+% table 
+
+
+\begin{table}
+\begin{center}
+  \begin{tabular}{| l | r | r |   }
+
+    \hline
+                              & time & percent \\ \hline
+    bitonic(CUDA)             & 30203 & 32.07\\
+    tsort1                    & 15823 & 19.72  \\
+    vsort1                       & 14955 & 18.76 \\ 
+    tsort2                      & 11562 & 15.37    \\ 
+    vsort                       & 9228 &  12.67 \\ 
+    bitonic (NVIDIA SDK)        & 23815 & 6.55 \\
+    \hline
+  \end{tabular}
+\end{center}
+\label{tab:table2}
+\caption{time: GPU time (in $\mu$s) spent in calls to small sorter kernels 
+in the initial phase of the sorter for $2^{24}$ inputs. percent: percentage 
+of total GPU time spent in the small sort kernel.
+The final line shows the numbers for the bitonic code (for large sorts) that 
+is distributed with the the NVIDIA SDK. Its structure also starts with a phase 
+of small sorting kernels. It takes 274 ms to sort $2^{24}$ key-value pairs on 
+an NVIDIA GTX480 GPU. It could be sped up by using our {\tt vsort} kernel, 
+and also by (hand) fusing single ``column'' kernels as we did with {\tt iSwap}, 
+although the need to calculate directions of comparators in the bitonic network 
+would complicate this. Our CUDA code is simpler because all comparators
+point in the same direction in the sorter construction.
+} 
+\end{table}
+
+
+
+
+
+
+%% bitonic 30203
+%% tsort1 15823
+%% tsort2 11562
+%% vsort1 14955
+%% vsort 9228

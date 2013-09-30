@@ -1,0 +1,170 @@
+%-----------------------------------------------------------------------------
+%
+%               Template for sigplanconf LaTeX Class
+%
+% Name:         sigplanconf-template.tex
+%
+% Purpose:      A template for sigplanconf.cls, which is a LaTeX 2e class
+%               file for SIGPLAN conference proceedings.
+%
+% Author:       Paul C. Anagnostopoulos
+%               Windfall Software
+%               978 371-2316
+%               paul@windfall.com
+%
+% Created:      15 February 2005
+%
+%-----------------------------------------------------------------------------
+
+
+%\documentclass[]{sigplanconf}
+
+% The following \documentclass options may be useful:
+%
+% 10pt          To set in 10-point type instead of 9-point.
+% 11pt          To set in 11-point type instead of 9-point.
+% authoryear    To obtain author/year citation style instead of numeric.
+
+%\usepackage{amsmath}
+%\usepackage{graphicx}
+%\usepackage{url} 
+
+
+\newcommand{\codesize}{\fontsize{7}{8}\selectfont}
+
+%\begin{document}
+%\conferenceinfo{DAMP'12,} {January 28, 2012, Philadelphia, PA, USA.}
+%\CopyrightYear{2012}
+%\copyrightdata{978-1-4503-1117-5/12/01} 
+
+%\conferenceinfo{WXYZ '05}{date, City.} 
+%\copyrightyear{2005} 
+%\copyrightdata{[to be supplied]} 
+
+%\titlebanner{}        % These are ignored unless
+%\preprintfooter{}   % 'preprint' option specified.
+
+%\title{Towards an Implementation of Push Arrays in Obsidian}
+%\title{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
+%\subtitle{Subtitle Text, if any}
+
+%\authorinfo{Name1}
+%           {Affiliation1}
+%           {Email1}
+%\authorinfo{Koen Claessen \and Mary Sheeran \and Bo Joel Svensson}
+%           {Chalmers University of Technology, 
+%             Department of Computer Science and Engineering,
+%             Gothenburg, Sweden}
+%           {koen@chalmers.se/ms@chalmers.se/joels@chalmers.se}
+
+%\maketitle
+
+% ABSTRACT !!! -----------------------------------------------------------------
+\input{./expressive/abstract}
+
+
+%\category{CR-number}{subcategory}{third-level}
+%\category{D.3.2}{Programming Languages}{Language Classifications}[Applicative (functional) languages; Concurrent, distributed, and parallel languages]
+%\category{D.3.4}{Programming Languages}{Processors}[Code generation]
+
+
+
+%\terms
+%Languages, Algorithms, Performance
+
+%\keywords
+%Arrays, Data parallelism, Embedded Domain Specific Language, General Purpose GPU programming, Haskell
+
+\input{./expressive/intro}
+
+\input{./expressive/push} 
+
+\input{./expressive/applications}
+
+\input{./expressive/discussion}
+
+%\appendix
+\section{Appendix}
+\begin{codesize}
+\begin{verbatim}
+__device__ inline void swap(int & a, int & b)
+{
+   int tmp = a;
+   a = b;
+   b = tmp;
+}
+
+__global__ static void bitonicSort(int * values, int *results)
+{
+   extern __shared__ int shared[];
+
+   const unsigned int tid = threadIdx.x;
+   const unsigned int bid = blockIdx.x;
+
+   // Copy input to shared mem.
+   shared[tid] = values[(bid*NUM) + tid];
+
+   __syncthreads();
+
+   // Parallel bitonic sort.
+   for (unsigned int k = 2; k <= NUM; k *= 2)
+   { 
+     // bitonic merge
+     for (unsigned int j = k / 2; j>0; j /= 2)
+       {
+           unsigned int ixj = tid ^ j;
+
+           if (ixj > tid)
+           {
+               if ((tid & k) == 0)
+               {
+                   if (shared[tid] > shared[ixj])
+                   {
+                       swap(shared[tid], shared[ixj]);
+                   }
+               }
+               else
+               {
+                   if (shared[tid] < shared[ixj])
+                   {
+                       swap(shared[tid], shared[ixj]);
+                   }
+               }
+           }
+           __syncthreads();
+       }
+   }
+
+   // Write result.
+   results[(bid*NUM) + tid] = shared[tid];
+}
+\end{verbatim}
+\end{codesize}
+
+
+
+
+
+\section*{Acknowledgments} 
+This research has been funded by the Swedish Foundation for Strategic Research (which funds
+the RAW FP Project) and
+by the Swedish Research Council.
+
+
+% We recommend abbrvnat bibliography style.
+
+%\bibliographystyle{abbrvnat}
+%\bibliography{paper}
+
+% The bibliography should be embedded for final submission.
+
+%\begin{thebibliography}{}
+%\softraggedright
+
+%\bibitem[Smith et~al.(2009)Smith, Jones]{smith02}
+%P. Q. Smith, and X. Y. Jones. ...reference text...
+
+%\end{thebibliography}
+
+%\end{document}
+

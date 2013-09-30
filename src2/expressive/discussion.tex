@@ -1,0 +1,81 @@
+
+\section {Discussion}
+
+%% ** TODO. Mention CSE. warp-related opt.
+
+Push arrays form a new approach to array representation in DSELs.
+We do not know of similar approaches in the literature, despite
+the fact that the notions of demand and data flow
+may feel familiar to the reader who considers Pull and Push arrays.
+The addition of Push arrays to Obsidian seems highly beneficial. With 
+this new feature, the user gains finer grained control over the code generated
+and the resulting CUDA kernels perform considerably better than before.
+This 
+was illustrated in the series of sorters explored in section~\ref{sec:MARY}.
+The performance of {\tt vsort} is sufficiently good that it
+can be used as a first phase in a larger sorter (written in CUDA) that
+can sort 16M elements in 96 ms, while an i7-920 CPU takes
+around 2740 ms. Further speed improvements look possible, both in the coordination code
+and in the kernels. An obvious next step would be to investigate the generation of the {\tt iSwap} and
+{\tt vSwap} kernels from Obsidian. (This is not currently possible because of assumptions that we made about the interfaces to kernels and about how {\em thread ids} are used. We will look into ways to relax
+our assumptions.)
+
+The series of kernels also illustrates how the use of combinators brings a form of reuse, and makes design exploration easier. Our experience of using similar combinators in the Lava hardware
+description language~\cite{LavaSorter} was that a relatively small set of combinators went a long way. So, although we introduced three
+combinators here, {\tt ilv}, {\tt vee} and {\tt ilvVee}, which
+includes the other two, we do not believe that every new kernel development exercise would demand a completely new set of combinators.
+We expect to provide the user with a well-documented set of combinators,
+so that users can get access to this style of programming without having
+to develop their own combinators, and without having to think too much
+about bit-hacking.
+The bit-manipulation approach chosen to define our combinators automatically
+created functions that apply to sub-sequences of the input that
+are of an appropriate length.
+
+In this paper, we made combinators for the special case of two input, two
+output operations (built from two two-input funtions that we typically called
+{\tt f} and {\tt g}). 
+This approach should be generalised to deal with blocks that have $2^k$ inputs
+and outputs.
+Also, we made a compound combinator from {\tt ilv} and {\tt vee},
+but generalising to more than two input components would allow
+for composing combinators, and indeed for recursive descriptions
+that could be unrolled. Then, ignoring {\tt syncs}, a recursive description of
+{\tt vsort} could be something like 
+\begin{codesize}
+\begin{verbatim}
+vsortR 0 = id
+vsortR n = bpmergeR n . ilv2 1 (vsortR (n-1))
+\end{verbatim}
+\end{codesize}
+\noindent
+It would then be necessary to optimise the code generated from
+multiple applications of {\tt ilv2 1}, for example, whereas here
+we have forced the user to figure out both the unrolling and the combinations.
+Moving to more general combinators would also give the opportunity to
+provide predefined combinators that capture more of the commonly used threading patterns (for instance $k$ indices per thread rather than the $1$ and $2$ shown here).
+
+The integration of Push arrays into Obsidian raises some new questions.
+Previously, there was a direct correspondence between the length 
+of an array and the number of threads used to compute it, which
+allowed the user to write an initial program without worrying about
+threads at all, and then to tweak the Obsidian program if he was not satisfied
+with the threading behaviour of the resulting kernel. 
+Now, as can be seen in the {\tt catArrayPs} example and in the sorters, this correspondence
+can be broken using Push arrays. The {\tt catArrayPs} example and two
+of the sorters use half as many threads as the 
+number of elements. For users who are very concerned about the speed of
+the generated kernels, getting this control through using Push arrays in
+a particular pattern is clearly a good thing. But adding a second, different
+way to control thread use in the generated code certainly complicates matters, and further case studies are needed to confirm that the complication pays off.
+
+The addition of Push arrays also adds the possibility to include potentially 
+unsafe operations in Obsidian, for example by writing multiple array elements to the same index, or by discarding elements.
+This new expressiveness will have to be carefully controlled. On the positive side, it offers the possibility to encode functions like {\tt filter} from Haskell
+that
+are simply not expressible using only Pull arrays. Being able to implement {\tt filter} would make programming kernels in obsidian feel much more like programming in Haskell -- a welcome loosening of the strait-jacket.
+Once that is done, it will be time to develop a very simple coordination language to allow programming of entire GPU applications that make use of
+the kind of small kernel building blocks developed here.
+
+
+

@@ -1,0 +1,68 @@
+\section{Introduction}
+
+Suppose you have just bought yourself a little programmable toy robot
+and you want to design a small DSL in Haskell to program it. The robot
+can turn, move forward and has a sensor to detect whether it is facing
+an obstacle or not. Inspired by the robot language in \cite{} you come
+up with a set of primitives shown in figure
+\ref{fig:interface}. In particular, you would like to use the
+do-notation to sequence programs.
+
+\begin{figure} 
+\begin{itemize} 
+  \item \verb!move      :: Program ()! 
+  \item \verb!turnLeft  :: Program ()!
+  \item \verb!turnRight :: Program ()!
+  \item \verb!sensor    :: Program Bool!
+  \item \verb!cond      :: Program Bool -> Program () -> Program () -> Program ()!
+  \item \verb!while     :: Program Bool -> Program () -> Program ()!
+  \item \verb!instance Monad Program!
+\end{itemize} 
+\label{fig:interface} 
+\caption{Proposed set of basic robot operations} 
+\end{figure}
+
+\emph{Example programs}
+
+
+The next task is to implement this language. Compiling EDSLs like this
+to something which the physical robot can execute is well know and
+there are off-the-shelf techniques to use. But there is one quirk; how
+does one generate an abstract syntax tree from a type which implements
+the Monad interface?
+
+Since you want to compile the language there must be an abstract
+syntax tree representation of some sort of the language. The natural
+thing is just to create a new type where each language construct has
+its own constructor. But should you deal with the monadic constructs?
+Well, the simplest solution would be to just add them to the type as well. The resulting type 
+
+\begin{figure}
+\begin{verbatim}
+data BoolE = Lit Bool
+         | Var String
+         | (:||:) BoolE BoolE
+         | (:&&:)  BoolE BoolE
+         | Not BoolE  
+
+data Program a where
+  Move      :: Program ()
+  TurnRight :: Program ()
+  TurnLeft  :: Program ()
+
+  Sensor    :: Program BoolE
+  Cond      :: BoolE -> Program () -> Program () -> Program ()
+  While     :: Program BoolE -> Program () -> Program ()
+   
+  Return    :: a -> Program a 
+  Bind      :: Program a -> (a -> Program b) -> Program b
+\end{verbatim}
+\label{fig:program}
+\caption{A data type for programs}
+\end{figure}
+
+\emph{More text}
+
+In the rest of this paper we will see that this na\"ive method
+actually can be made to work and that it's a practical, compositional
+technique for reifying monads.

@@ -1,0 +1,125 @@
+\documentclass[a4paper]{book}
+
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage{pdfpages}
+\usepackage[british]{babel}
+\usepackage{placeins}
+\usepackage{dialogue}
+\usepackage{fancyvrb}
+
+\usepackage{t1enc}         
+\usepackage{times}
+\usepackage{url}
+\usepackage{enumerate}
+
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{lingmacros}
+\usepackage{subfig}
+
+
+\pagestyle{plain}
+%\pagenumbering{arabic}
+
+
+%stuff
+\usepackage{latexsym}
+\usepackage{tikz,pgflibraryshapes}
+\usepackage{booktabs}
+%%
+
+\newcommand{\bequ}{\begin{quote}}
+\newcommand{\enqu}{\end{quote}}
+\newcommand{\eop}[1]{\mbox{\sl #1}}
+\newcommand{\sube}[2]{#1_{#2}}
+\newcommand{\id}[1]{{\it #1}}
+\newcommand{\kwd}[1]    {\mbox{\textbf{#1}}}
+\newcommand{\str}[1]{{\id "#1"}}
+\newcommand{\lemon}{\emph{lemon}}
+\newcommand{\textt}[1]{\texttt{#1}}
+\newcommand{\txttt}[1]{\texttt{#1}}
+
+\renewcommand*{\thesection}{\arabic{section}}
+
+
+\begin{document}
+
+%\input{titlepage}
+
+\clearpage
+
+\section*{Abstract}
+Abstract abstract 
+
+\vspace{5mm}
+
+\noindent
+
+\textbf{Keywords:} Keyword1, Keyword2  
+
+\clearpage
+
+\section*{Acknowledgements}
+ACK ACK ACK 
+
+\vspace{5mm}
+
+FUNDING FUNDING 
+
+
+\tableofcontents
+
+
+\newpage
+
+
+\chapter{Introduction}
+
+
+\clearpage{}
+\section*{Additional Publications}
+
+Papers not included in thesis
+
+\bibliographystyle{splncs}
+\bibliography{intro}
+
+
+
+
+\chapter{Papers}
+
+\cleardoublepage 
+
+\section*{\centering Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
+
+\begin{center} 
+Koen Claessen, Mary Sheeran, Bo Joel Svensson
+\end{center}
+
+\input{./expressive/paperThesis}
+
+\cleardoublepage 
+
+\section*{\centering Simple and Compositional Reification of Monadic Embedded Languages}
+
+\begin{center} 
+Josef Svenningsson, Bo Joel Svensson
+\end{center}
+
+
+\input{./bb/paperThesis}
+
+\cleardoublepage 
+
+\section{Paper2}
+
+%\input{}
+
+\cleardoublepage
+
+\end{document}

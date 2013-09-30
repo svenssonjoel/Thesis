@@ -1,0 +1,21 @@
+% table 
+
+
+\begin{figure}
+\begin{center}
+  \begin{tabular}{  l | r | r}
+    %\hline
+    Kernel               & Threads   & ms / grid   \\ \hline
+    bitonic\_sort(CUDA)  & 512       & 30.28       \\      
+    tsort1               & 512       & 15.82       \\
+    tsort2               & 256       & 11.64       \\ 
+    vsort1               & 512       & 14.96       \\ 
+    vsort                & 256       &  9.33       \\ 
+    %\hline
+  \end{tabular}
+\end{center}
+\label{fig:table}
+\caption{Table is showing the time it takes for a grid of 32678 blocks of 
+threads to execute.Each grid was launched 1000 times, the total execution time 
+was then divided by 1000 to get the listed figures. The GPU used is a NVIDIA GTX480} 
+\end{figure}

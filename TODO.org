@@ -2,7 +2,7 @@
 
 TODO Before defence
 
-*  Approval from the candidate's follow-up group and examiner
+* DONE  Approval from the candidate's follow-up group and examiner
 
    * Before the registration of the defense can happen, the supervisor tells whether:
     + the candidate's follow-up group agrees to publication, and
@@ -16,13 +16,13 @@ TODO Before defence
    * If either the follow-up group or the examiner deems the thesis as unfit for publication, then the candidate and the supervisor must be informed about the reasons in written form.
 
 
-*  Registration of the candidate's intention to defend the PhD thesis
+* DONE Registration of the candidate's intention to defend the PhD thesis
    
    * As soon as possible, and no later than four months prior to the planned date of the seminar, the supervisor should register via e-mail) with Koen Claessen and the director of graduate studies that the candidate intends to defend the PhD thesis. At the same time, a preliminary time for the defense is booked via Eva Axelsson.
      The date of the defense steers the other deadlines. It must be checked whether other PhD defenses or licentiate presentations at the CSE department are booked on the same day. In this case, a special permit is required from the vice head of department for graduate education. The planned date must also be suitable for the other actors involved – the opponent, the grading committee and the deputy.
      The room for the seminar is booked by the candidate: salsbokningen@chalmers.se
 
-* Suggestion for, and approval of, faculty opponent and grading committee
+* DONE Suggestion for, and approval of, faculty opponent and grading committee
   * In conjunction with the registration, and no later than three months prior to the planned date of the seminar, a suggestion for opponent and members in the grading committee should be made by the supervisor. The suggestion is sent (via e-mail) to Koen Claessen, the director of graduate studies and to Eva Axelsson. The proposal should contain:
     Name, address, email, url of webpage and telephone number of each person proposed
     Short CV and brief explanation of the standing of each person in the research topic of the thesis

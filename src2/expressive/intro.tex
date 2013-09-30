@@ -1,0 +1,598 @@
+
+
+\section{Introduction} 
+
+%\input{table}
+
+%----------------------------------------------------------------------------
+
+Graphics Processing Units (GPUs) are parallel computers with hundreds 
+to thousands of processing elements. The CUDA and OpenCL languages  
+make available the power of the GPU to programmers interested in general 
+purpose computations. In CUDA and OpenCL, the programmer writes {\em kernels}, 
+Single Program Multiple Data (SPMD) programs that are executed by groups 
+of threads on the available processing elements of the GPU.  
+
+CUDA and OpenCL are general purpose programming languages, mirroring the 
+increased capabilities of a modern GPU to target that domain. However, these 
+languages lack compositionality. 
+Also, being based in C/C++ means that the core idea in a program may
+not be easily visible.  
+
+\subsection{Embedded DSLs for GPGPU programming} 
+We are aiming for a GPU programming language that is more
+concise than mainstream
+languages such as CUDA and OpenCL. 
+Obsidian is a
+domain specific embedded language (DSEL) implemented in Haskell.
+When an Obsidian program is run, a representation of the program is created 
+as a syntax tree. For more information on EDSL implementation see~\cite{COMPILEEDSL}.
+The program representation generated when running an Obsidian program 
+is compiled into CUDA code. We are also working on an OpenCL backend.
+
+Our approach is different from that of other Haskell DSELs targetting
+GPUs~\cite{ACCELERATE,NIKOLA,BARRACUDA}. 
+We do not try to abstract away from 
+all the peculiarities of GPU programming, but rather provide a higher 
+level language in which to experiment with them.
+For instance,
+Accelerate provides a standard set of basic operations such as 
+{\tt map}, {\tt reduce} and {\tt zipWith} as built in skeletons, implemented
+with the help of small, predefined, hand-tuned CUDA kernels~\cite{ACCELERATE}. 
+Obsidian, on the other hand, allows the user to experiment with the
+{\em generation} of small kernels for fixed size array inputs
+from higher level descriptions.
+It is intended to allow the user to play with the kinds of tradeoffs that are important
+when writing such high performance building blocks; in this paper, the main consideration
+is the number of array elements of the input and output that are manipulated
+by a single thread in the generated CUDA code.
+An important aspect of Obsidian is the symbolic array representation used, along
+with its associated {\tt sync} operation. As we shall see, the {\tt sync} operation
+allows the programmer to guide code generation and control parallelism and thread
+use~\cite{JSLIC}.
+
+
+
+
+%Today there are number of EDSLs written in Haskell targeting 
+%GPUs~\cite{ACCELERATE,NIKOLA,BARRACUDA}. We justify our work on yet 
+%another by having a slightly different approach. We do not try to abstract away from 
+%all the peculiarities of GPU programming but rather giving a higher 
+%level language in which to experiment with them.
+%trying to appeal to a slightly different target audience. 
+%We try to cater not for the advanced functional programmer who wants to 
+%run his programs on GPUs, but rather to offer a higher level 
+%language to the CUDA/OpenCL hacker. 
+%In this language we want the user to be 
+%able to quickly experiment with the kind of tradeoffs that are important 
+%when writing a high performance GPU kernel.
+
+%Unlike the other approaches that are complementary to our Haskell GPU EDSL, 
+%Obsidian does not provide the usual set of basic operations such as 
+%{\tt Map}, {\tt Reduce} and {\tt ZipWith} as built in skeletons. We 
+%want a language where the programmer can experiment with implementing 
+%his or her own versions of these basic operations. So far, we make
+%this possible in Obsidian through a {\tt Sync} operation and the Array 
+%representation we use. The {\tt Sync} operation, using target domain 
+%nomenclature, is the programmers tool to guide code generation and 
+%obtain parallelism. The presentation of Obsidian here will be somewhat 
+%cursory, for a more complete view of the various versions and approaches 
+%we have tried, see~\cite{JSLIC}.
+%More details on this later.
+
+In Obsidian, a kernel that sums an array can be expressed as: 
+\begin{codesize}
+\begin{verbatim}
+sum :: Array IntE -> Kernel (Array IntE) 
+sum arr | len arr == 1 = return arr
+        | otherwise    = (pure (fmap (uncurry (+)) . pair) 
+                          ->- sync 
+                          ->- sum) arr                       
+\end{verbatim}
+\end{codesize}
+The result of running this kernel on an eight element input array, 
+{\tt runKernel sum (namedArray ``input'' 8)}, is an intermediate representation 
+of the computation (shown in slightly pretty-printed form): 
+\begin{codesize}
+\begin{verbatim}
+arr0 = malloc(16)
+par i 4 {
+arr0[i] = ( +  input[( *  i 2 )] input[( +  ( *  i 2 ) 1 )] );
+}Sync
+arr1 = malloc(8)
+par i 2 {
+arr1[i] = ( +  arr0[( *  i 2 )] arr0[( +  ( *  i 2 ) 1 )] );
+}Sync
+arr2 = malloc(4)
+par i 1 {
+arr2[i] = ( +  arr1[( *  i 2 )] arr1[( +  ( *  i 2 ) 1 )] );
+}Sync
+\end{verbatim}
+\end{codesize}
+The named intermediate arrays in this representation are then laid 
+out in GPU shared memory and CUDA code can be generated (here for arrays of length eight)\footnote{An alignment qualifier for shared memory 
+has been omitted to save space in the listings showing generated code}: 
+%\pagebreak
+\begin{codesize}
+\begin{verbatim}
+__global__ void sum(int *input0,int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  extern __shared__ unsigned char sbase[];
+  (( int *)sbase)[tid] = 
+    (input0[((bid*8)+(tid*2))]+
+     input0[((bid*8)+((tid*2)+1))]);
+  __syncthreads();
+  if (tid<2){
+    (( int *)(sbase + 16))[tid] = 
+      ((( int *)sbase)[(tid*2)]+
+       (( int *)sbase)[((tid*2)+1)]);
+  }
+  __syncthreads();
+  if (tid<1){
+    (( int *)sbase)[tid] = 
+      ((( int *)(sbase+16))[(tid*2)]+
+       (( int *)(sbase+16))[((tid*2)+1)]);
+  }
+  __syncthreads();
+  if (tid<1){
+    result0[(bid+tid)] = (( int *)sbase)[tid];
+  }
+}
+\end{verbatim}
+\end{codesize}
+%The CUDA code above is generated by issuing the command:
+%\begin{codesize}
+%\begin{verbatim}
+%genKernel ``sum'' sum (namedArray undefined 8 :: Array IntE)
+%\end{verbatim}
+%\end{codesize}
+%\noindent
+%and the kernel code is generated for arrays of length eight.  
+
+
+
+%----------------------------------------------------------------------------
+\subsection{Arrays in Obsidian}
+
+An array is represented by an indexing function and a length:
+\begin{codesize} 
+\begin{verbatim}
+data Array a = Array (UWordE -> a) Word32 
+\end{verbatim}
+\end{codesize}
+This array representation has served us well. It has these properties:
+\begin{itemize} 
+\item Fusion of operations is automatic.
+\item It naturally describes a data-parallel computation suitable for CUDA/OpenCL generation.
+\item Many basic operations can be implemented: {\tt map}, {\tt zipWith} etc.
+\end{itemize}
+Using this array representation in a DSEL is not new; the first occurence that we know of is in
+Pan~\cite{PAN}. Similar array representations have also later been 
+used in Feldspar~\cite{FELDSPAR}, and more recently also in the Repa library~\cite{REPA}.
+Functions for indexing and getting the length of arrays are as follows:
+\begin{codesize} 
+\begin{verbatim}
+(!) :: Array a -> UWordE -> a 
+(Array ixf _) ! ix = ixf ix 
+
+len :: Array a -> Word32
+len (Array _ n) = n 
+\end{verbatim}
+\end{codesize}
+%Implementing a {\em Functor} instance for the {\tt Array} datatype is possible:
+A {\em Functor} instance for the {\tt Array} datatype is
+\begin{codesize} 
+\begin{verbatim}
+instance Functor Array where 
+  fmap f arr = Array (\ix -> f (arr ! ix)) (len arr) 
+\end{verbatim}
+\end{codesize}
+Now, composed applications of {\tt fmap} will be automatically fused. This is 
+illustrated in the example program below and the CUDA generated
+from it.  
+\begin{codesize} 
+\begin{verbatim}
+mapFusion :: Array IntE -> Kernel (Array IntE) 
+mapFusion = pure (fmap (+1) . fmap (*2)) 
+\end{verbatim}
+\end{codesize}
+
+\begin{codesize} 
+\begin{verbatim}
+__global__ void mapFusion(int *input0,int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  
+  result0[((bid*32)+tid)] = ((input0[((bid*32)+tid)]*2)+1);
+}
+\end{verbatim}
+\end{codesize}
+Both of these code listings need explanation. In the Haskell 
+code, {\tt mapFusion} has type {\tt Array IntE -> Kernel (Array IntE)};
+{\tt Kernel} is a state monad that accumulates CUDA code as well as provides 
+new names for intermediate arrays. Neither of these features of the monad 
+is activated by this example though. The {\tt pure} function is defined 
+using the monad's {\tt return} as {\tt pure f a = return (f a)}. In this case, 
+it lifts a function of type {\tt Array IntE -> Array IntE} into 
+a kernel. 
+
+The generated CUDA code computes the result array using a number of threads 
+equal to the length of that array. In this case, the kernel was generated
+to deal with arrays of length $32$. The important detail to notice in the 
+CUDA code is that there is no intermediate array created between the 
+{\tt (*2)} and the {\tt (+1)} operations. 
+
+The {\tt mapFusion} example could just as well have been implemented using 
+the kernel sequential composition combinator, {\tt ->-}. 
+\begin{codesize} 
+\begin{verbatim}
+mapFusion :: Array IntE -> Kernel (Array IntE) 
+mapFusion = pure (fmap (*2)) ->- pure (fmap (+1)) 
+\end{verbatim}
+\end{codesize}
+Exactly the same CUDA code is then generated.
+
+In some cases, it is necessary to force computation of 
+intermediate arrays. This can be used to share partial computations between 
+threads and to expose parallelism. In Obsidian, the tool for this
+is called {\tt sync}, a built-in kernel. Using {\tt sync} as follows prevents fusion of the
+two operations:
+\begin{codesize} 
+\begin{verbatim}
+mapUnFused :: Array IntE -> Kernel (Array IntE) 
+mapUnFused = pure (fmap (*2)) ->- sync ->- pure (fmap (+1))
+\end{verbatim}
+\end{codesize}
+The generated CUDA code now stores an intermediate result in local shared
+memory before moving on. 
+\begin{codesize} 
+\begin{verbatim}
+__global__ void mapUnFused(int *input0,int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  extern __shared__ unsigned char sbase[];
+  (( int *)sbase)[tid] = (input0[((bid*32)+tid)]*2);
+  __syncthreads();
+  result0[((bid*32)+tid)] = ((( int *)sbase)[tid]+1);
+}
+\end{verbatim}
+\end{codesize}
+Intermediate arrays are laid out in the {\tt sbase} array in shared memory. 
+Since we may store arrays of many different types in the same locations 
+of the shared memory at different times during the execution, the type casts
+used in the code above are necessary. 
+
+%----------------------------------------------------------------------------
+\subsection{Sync and parallelism}
+
+The {\tt sync} operation also enables the writing of parallel reduction 
+kernels. A reduction operation is an operation that takes an array as input
+and
+produces a singleton array as output. 
+
+First, we define {\tt zipWith} and {\tt halve} on Obsidian arrays.
+\begin{codesize} 
+\begin{verbatim}
+zipWith :: (a -> b -> c) -> Array a -> Array b -> Array c
+zipWith op a1 a2 = Array (\ix -> (a1 ! ix) `op` (a2 ! ix)) 
+                   (min (len a1) (len a2))
+
+splitAt :: Word32 -> Array a -> (Array a, Array a) 
+splitAt n arr = 
+  (Array (\ix -> arr ! ix) n , 
+   Array (\ix -> arr ! (ix + fromIntegral n)) (len arr - n))
+
+halve arr = splitAt ((len arr) `div` 2) arr
+\end{verbatim}
+\end{codesize}
+A reduction kernel that takes an array whose length is a power of two 
+and gives an array of length one can be defined recursively. 
+Defining kernels recursively results in completely unrolled CUDA kernels,
+and kernel input size must be known at compile time.
+The approach to reduction taken here is to split the input array 
+into two halves and then apply {\tt zipWith} of the combining function to the 
+two halves, repeating the process until the length is one. 
+\begin{codesize} 
+\begin{verbatim}
+reduceS :: (a -> a -> a) -> Array a -> Kernel (Array a) 
+reduceS op arr | len arr == 1 = return arr
+               | otherwise    = 
+                 (pure ((uncurry (zipWith op)) . halve)
+                  ->- reduceS op) arr
+\end{verbatim}
+\end{codesize}
+%This Obsidian Kernel takes an array of length $2n$ as input and the output 
+Since the output of this kernel is of length one, and the number 
+of elements in the output array specifies the number of threads used to compute it, 
+this function, {\tt reduceS}, defines a sequential reduction. 
+The generated code for arrays of length eight is 
+\pagebreak
+%The code is generated with the 
+%command {\tt genKernel ``reduceSAdd'' (reduce (+)) (namedArray undefined 8 :: Array IntE)}, 
+%meaning that a CUDA reduce-with-addition kernel for arrays of length eight is generated. 
+\begin{codesize} 
+\begin{verbatim}
+__global__ void reduceSAdd(int *input0,int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  
+  result0[(bid+tid)] = 
+    (((input0[((bid*8)+tid)]+
+       input0[((bid*8)+(tid+4))])+
+      (input0[((bid*8)+(tid+2))]+
+       input0[((bid*8)+((tid+2)+4))]))+
+     ((input0[((bid*8)+(tid+1))]+
+       input0[((bid*8)+((tid+1)+4))])+
+      (input0[((bid*8)+((tid+1)+2))]+
+       input0[((bid*8)+(((tid+1)+2)+4))])));
+}
+\end{verbatim}
+\end{codesize}
+Sequential reduction is not very interesting for GPU execution, but 
+the fix is simple. A well placed use of {\tt sync} indicates that 
+we want to compute, after each {\tt zipWith} phase, the intermediate 
+arrays using as many threads as that intermediate array is long. 
+The effect is shown in the code below. 
+\begin{codesize} 
+\begin{verbatim}
+reduce :: Syncable Array a 
+          => (a -> a -> a) -> Array a -> Kernel (Array a)
+reduce op arr | len arr == 1 = return arr
+              | otherwise    = 
+                (pure ((uncurry (zipWith op)) . halve)
+                 ->- sync 
+                 ->- reduce op) arr
+\end{verbatim}
+\end{codesize}
+The CUDA code for reduction with addition on eight
+elements is
+\begin{codesize} 
+\begin{verbatim}
+__global__ void reduceAdd(int *input0,int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  extern __shared__ unsigned char sbase[];
+  (( int *)sbase)[tid] = 
+    (input0[((bid*8)+tid)]+
+     input0[((bid*8)+(tid+4))]);
+  __syncthreads();
+  if (tid<2){
+    (( int *)(sbase + 16))[tid] = 
+      ((( int *)sbase)[tid]+
+       (( int *)sbase)[(tid+2)]);   
+  }
+  __syncthreads();
+  if (tid<1){
+    (( int *)sbase)[tid] = 
+      ((( int *)(sbase+16))[tid]+
+       (( int *)(sbase+16))[(tid+1)]);    
+  }
+  __syncthreads();
+  if (tid<1){
+    result0[(bid+tid)] = (( int *)sbase)[tid];  
+  }
+}
+\end{verbatim}
+\end{codesize}           
+In this generated CUDA, three phases can be identified. 
+The first uses four threads to compute a four element intermediate array;
+the second uses two threads, and so on. At the very end, a single thread
+copies the result from local shared memory to global memory. 
+
+\subsection{Drawbacks of Obsidian Arrays}
+\label{sec:Drawbacks}
+
+%*** THE STUFF BELOW IS IN CONFLICT WITH WHAT I ADDED ABOVE!
+%When using Obsidian we have available to us a toolbox of higher order
+%functions that are familiar to functional programmers. One example of such a 
+%function is {\tt zipWith}. 
+
+%\begin{codesize} 
+%\begin{verbatim}
+%example1 :: (Array IntE, Array IntE) 
+%            -> Kernel (Array IntE)
+%example1 (arr1,arr2) = return$ zipWith (+) arr1 arr2
+%\end{verbatim}
+%\end{codesize}
+
+%The body of this function looks very familiar to Haskell programmers. The 
+%type of the function however is a little bit different than what we are 
+%used to from everyday Haskell usage. In Obsidian we have a concept called 
+%a Kernel. Computations of types {\tt a -> Kernel b} can be turned into 
+%runnable GPU code by providing an input. 
+%*** VERY VAGUE AND ODD 
+%*** TODO: Explain kernel ? 
+
+%The following code listing shows the CUDA code we can generate from 
+%the Obsidian program given above: 
+
+% *** TODO: Needs a code size between tiny and small. 
+ 
+%\begin{codesize}
+%\begin{verbatim}
+%__global__ void example1(int *input0,int *input1,int *result0){
+%  unsigned int tid = threadIdx.x;
+%  unsigned int bid = blockIdx.x;
+  
+%  result0[tid] = (input0[((bid*32)+tid)]+
+%                  input1[((bid*32)+tid)]);
+  
+%}
+%\end{verbatim}
+%\end{codesize}
+
+%The CUDA code above writes into a result array the pairwise sums from 
+%its two input arrays, as expected. 
+%*** There are many details here. tid, bid, 32. explain now or push to later?
+
+% \subsection{Obsidian arrays} 
+
+%In Obsidian an array is represented by an indexing function and a length. 
+%\begin{codesize}
+%\begin{verbatim}
+%data Array a = Array (IxExp -> a) Word32
+%\end{verbatim}
+%\end{codesize}
+
+%And {\tt IxExp} is defined as {\tt UWordE}, that is an expression 
+%representing a unsigned 32bit value. The length of an array is represented
+%with a unsigned 32bit value as well but here it has been beneficial 
+%to use a built in Haskell type in order to be able to use this 
+%information at program generation time rather than program run time. 
+
+
+%This array representation specifies how to compute each index of an Arrays. 
+%If we are interested in the value at location 5 in an array all we need 
+%to do is apply the indexing function to the literal expression 5 and 
+%we get a description of how to compute that value. 
+
+%This array representation have been working fairly well in many situations. 
+%In {\tt example1} where we used {\tt zipWith} we got just about the resulting
+%CUDA code that a CUDA programmer would write himself. For some other examples 
+%the situation is much worse. 
+
+
+The previous subsection described positive aspects of the array 
+representation that we have used so far. There are, however, 
+circumstances in which this Array representation is too restricted. 
+
+Take the problem of concatenating two arrays. Using the array representation 
+described above, the only way to concatenate two arrays is to introduce 
+a conditional into the indexing function. If {\tt f} and {\tt g} are the 
+indexing functions of two arrays that are to be concatenated, and {\tt n1}
+is the length of the first array, the indexing 
+function of the result must be
+\begin{codesize}
+\begin{verbatim}
+new ix = if (ix < n1) 
+         then f ix 
+         else g (ix - n1)
+\end{verbatim}
+\end{codesize}
+The following program
+concatenates two arrays: 
+\begin{codesize}
+\begin{verbatim}
+catArrays :: (Array IntE, Array IntE) -> Kernel (Array IntE)
+catArrays = pure conc
+\end{verbatim}
+\end{codesize}
+%(arr1,arr2) = return$ conc (arr1,arr2)
+When it is used to generate a CUDA kernel that concatenates
+two arrays of length $16$, the following code is the result: 
+\begin{codesize}
+\begin{verbatim}
+__global__ void catArrays(int *input0,int *input1,int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  
+  result0[((bid*32)+tid)] = 
+    (tid<16) ? input0[((bid*16)+tid)] : 
+               input1[((bid*16)+(tid-16))];
+}
+\end{verbatim}
+\end{codesize}
+%__global__ void catArrays(int *input0,
+%                          int *input1,
+%                          int *result0){
+%  unsigned int tid = threadIdx.x;
+%  unsigned int bid = blockIdx.x;
+%  
+%  result0[((bid*64)+tid)] = 
+%    (tid<32) ? input0[((bid*32)+tid)] : 
+%               input1[((bid*32)+(tid-32))];
+%  
+%}
+Now, conditionals like these are {\em bad} in code 
+to execute on a GPU, with its wide-SIMD data-parallel model. Separating
+the operation into two assignments and using half as many threads gives
+much higher performance.
+\begin{codesize}
+\begin{verbatim}
+__global__ void catArraysByHand(int *input0,
+                                int *input1,
+                                int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  
+  result0[((bid*32)+tid)] = input0[((bid*16)+tid)];
+  result0[((bid*32)+tid+16)] = input1[((bid*16)+tid)];  
+}
+\end{verbatim}
+\end{codesize}
+There are cases where code with conditionals is not that bad. 
+An expert on NVIDIA GPUs in particular may say that code with 
+the condition {\tt (tid < 32)} is fine, since 32 is the SIMD width 
+of those GPUs. However, any number that is not a multiple of 32 would 
+lead to poor performance, so in general this is a problem. 
+ Worse still, {\em zipping} two arrays together and then 
+{\em unpairing} (to get an array of elements)
+leads to code that takes two different paths depending 
+on odd or even {\em thread id}. When a GPU executes such code, it 
+shuts down half of the threads and computes the two paths in sequence. 
+\begin{codesize}
+\begin{verbatim}
+zippUnpair :: (Array IntE, Array IntE) -> Kernel (Array IntE) 
+zippUnpair = pure (unpair . zipp)
+\end{verbatim}
+\end{codesize}
+The {\tt zipp} and {\tt unpair} operations are defined as follows: 
+\begin{codesize}
+\begin{verbatim}
+zipp :: (Array a, Array b) -> Array (a, b)             
+zipp (arr1,arr2) = 
+     Array (\ix -> (arr1 ! ix, arr2 ! ix)) 
+           (min (len arr1) (len arr2))
+
+unpair :: Choice a => Array (a,a) -> Array a
+unpair arr = 
+    let n = len arr
+    in  Array (\ix -> ifThenElse ((mod ix 2) ==* 0) 
+                      (fst (arr ! (ix `shiftR` 1)))
+                      (snd (arr ! (ix `shiftR` 1)))) (2*n)
+\end{verbatim}
+\end{codesize}
+Code generated from the {\tt zippUnpair} program exhibits really 
+poor performance; at any time half of the threads are shut down. 
+\begin{codesize}
+\begin{verbatim}
+__global__ void zippUnpair(int *input0,
+                           int *input1,
+                           int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  
+  result0[((bid*64)+tid)] = 
+    ((tid%2)==0) ? input0[((bid*32)+(tid>>1))] : 
+                   input1[((bid*32)+(tid>>1))];
+}
+\end{verbatim}
+\end{codesize}
+If we wrote this CUDA program by hand, we would, again, split it up into 
+two phases so that all threads can progress in parallel.  
+
+%Even though this is a pretty artificial example, it illustrates the 
+%problem well. The situation is just as bad when using the function
+%{\tt unpair}. This function takes an array of pairs and returns an 
+%array of elements such that position 0 and 1 in the result array holds 
+%the values of the pair at index 0 in the input array. Using this operation 
+%results in a conditional statement that takes different execution paths 
+%on odd and even numbered threads. 
+  
+The arrays described so far, with an indexing function and a length, have 
+been nicknamed {\em Pull arrays} for how they describe how to 
+compute an element by {\em pulling} data from a number 
+of places. Using just Pull arrays, we have been unable to solve the 
+problems described so far in this section. The solution is to add a complementary array type to Obsidian. 
+
+%For a more in depth view of the parts of Obsidian that has been showed 
+%in this section see~\cite{JSLIC}.
+
+
+
+
+
+
+
+

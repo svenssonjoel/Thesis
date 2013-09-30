@@ -1,0 +1,230 @@
+%-----------------------------------------------------------------------------
+%
+%               Template for sigplanconf LaTeX Class
+%
+% Name:         sigplanconf-template.tex
+%
+% Purpose:      A template for sigplanconf.cls, which is a LaTeX 2e class
+%               file for SIGPLAN conference proceedings.
+%
+% Guide:        Refer to "Author's Guide to the ACM SIGPLAN Class,"
+%               sigplanconf-guide.pdf
+%
+% Author:       Paul C. Anagnostopoulos
+%               Windfall Software
+%               978 371-2316
+%               paul@windfall.com
+%
+% Created:      15 February 2005
+%
+%-----------------------------------------------------------------------------
+
+
+%\documentclass{sigplanconf}
+
+% The following \documentclass options may be useful:
+%
+% 10pt          To set in 10-point type instead of 9-point.
+% 11pt          To set in 11-point type instead of 9-point.
+% authoryear    To obtain author/year citation style instead of numeric.
+
+%\usepackage{amsmath}
+
+%added JS
+%\usepackage{graphicx}
+%\usepackage{placeins}
+%\usepackage{url}
+%\usepackage{xcolor}
+%\usepackage{dialogue}
+%\usepackage{fancyvrb}
+%\usepackage[T1]{fontenc} 
+
+\definecolor{light-gray}{gray}{0.85}
+\newcommand{\docname}{Bj\"{o}rn}
+\newcommand{\studname}{Benny} 
+
+%\begin{document}
+
+%\exclusivelicense
+%\conferenceinfo{ICFP~'13}{September 25--27,2013, Boston, MA, USA} 
+%\copyrightyear{2013} 
+%\copyrightdata{978-1-4503-2326-0/13/09} 
+%\doi{2500365.2500611}
+
+%\titlebanner{banner above paper title}        % These are ignored unless
+%\preprintfooter{short description of paper}   % 'preprint' option specified.
+
+%\title{Reifiable and Compositional Monadic Embedded Languages}
+%\title{Simple and Compositional Reification of Monadic Embedded Languages}
+%\subtitle{Functional Pearl}
+
+%\authorinfo{Josef Svenningsson \and Bo Joel Svensson}
+%           {Chalmers University of Technology}
+%           {\{josefs,joels\}@chalmers.se}
+
+%\maketitle
+
+\section*{Abstract}
+When writing embedded domain specific languages in Haskell, it is
+often convenient to be able to make an instance of the {\tt
+Monad} class to take advantage of the do-notation and the extensive
+monad libraries. Commonly it is desirable to compile such languages 
+rather than just interpret them.
+This introduces the problem of monad {\em reification}, i.e. observing 
+the structure of the monadic computation.
+We present a solution to the monad reification problem and
+illustrate it with a small robot control language.
+Monad reification is not new but the novelty
+of our approach is in its directness, simplicity and compositionality.
+%\end{abstract}
+
+%\category{CR-number}{subcategory}{third-level}
+%\category{D.3.2}{Programming Languages}{Language Classifications}[Applicative (functional) languages]
+%\category{D.3.4}{Programming Languages}{Processors}[Code generation]
+
+%\keywords
+%Compiling, embedded language, reification, monads
+
+%\section{Plan}
+%
+%\begin{itemize} 
+%\item The language: Robots
+%\item Problem statement 
+%  \begin{itemize}
+%  \item Want to use DO-notation
+%  \item Examples
+%        Spirals 
+
+%  \item Want to be able to reify a syntax tree
+%  \item why ? (Compile and transfer code to actual physical robot) 
+%  \end{itemize} 
+
+%\item What is the most Naive way to approach this? 
+%  \begin{itemize}
+%  \item Add return and bind constructors + monad instance. 
+%  \end{itemize}
+%\item How can this Possibly work? 
+%  \begin{itemize} 
+%  \item Evaluation 
+%  \item Compilations
+%  \end{itemize}
+%\item Compositional! 
+%  \begin{itemize} 
+%  \item Data types a'la carte! : NO 
+%  \item Will Use the CompData approach. (which is based on a'la carte though) 
+%  \end{itemize}
+%\item Monad Laws 
+%  \begin{itemize} 
+%  \item eval (return a \verb!>>=! f) = eval (f a) 
+%  \end{itemize}
+%\item Related (if at all) 
+%
+%\end{itemize} 
+
+\input{./bb/body}
+%\input{partII}
+%\input{partIII}
+
+%\appendix
+%\section{Appendix Title}
+
+%This is the text of the appendix, if you need one.
+
+\section*{Acknowledgements} 
+We would like to thank Emil Axelsson for very valuable help 
+during the implementation of the methods used in this pearl. We 
+thank Mary Sheeran for suggesting the names \docname~ \& \studname. 
+The ICFP reviewers provided many helpful suggestion which has improved the 
+paper.
+
+This research has been funded by the Swedish Foundation for
+Strategic Research (which funds the Resource Aware Functional 
+Programming (RAW FP) Project) and by the Swedish Research Council.
+
+%Acknowledgments, if needed.
+
+% We recommend abbrvnat bibliography style.
+
+%\bibliographystyle{abbrvnat}
+
+% The bibliography should be embedded for final submission.
+%% \begin{thebibliography}{9}
+%% \providecommand{\natexlab}[1]{#1}
+%% \providecommand{\url}[1]{\texttt{#1}}
+%% \expandafter\ifx\csname urlstyle\endcsname\relax
+%%   \providecommand{\doi}[1]{doi: #1}\else
+%%   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+%% \bibitem[Axelsson()]{syntactic}
+%% E.~Axelsson.
+%% \newblock Syntactic.
+%% \newblock http://hackage.haskell.org/package/syntactic.
+
+%% \bibitem[Axelsson(2012)]{axelsson2012generic}
+%% E.~Axelsson.
+%% \newblock A generic abstract syntax model for embedded languages.
+%% \newblock In \emph{Proceedings of the 17th ACM SIGPLAN international conference
+%%   on Functional programming}, pages 323--334. ACM, 2012.
+
+%% \bibitem[Bahr and Hvitved(2012)]{CompData}
+%% P.~Bahr and T.~Hvitved.
+%% \newblock Parametric compositional data types.
+%% \newblock In \emph{MSFP}, pages 3--24, 2012.
+
+%% \bibitem[Claessen et~al.(2012)Claessen, Sheeran, and Svensson]{Obsidian}
+%% K.~Claessen, M.~Sheeran, and B.~J. Svensson.
+%% \newblock Expressive {A}rray {C}onstructs in an {E}mbedded {GPU} {K}ernel
+%%   {P}rogramming {L}anguage.
+%% \newblock In \emph{Proceedings of the 7th workshop on Declarative aspects and
+%%   applications of multicore programming}, DAMP '12, pages 21--30, New York, NY,
+%%   USA, 2012. ACM.
+%% \newblock ISBN 978-1-4503-1117-5.
+
+%% \bibitem[Farmer and Gill(2012)]{Farmer}
+%% A.~Farmer and A.~Gill.
+%% \newblock {Haskell} {DSL}s for interactive web services.
+%% \newblock In \emph{1st International Workshop on Cross-model Language Design
+%%   and Implementation}, Sep 2012.
+%% \newblock (published on workshop website,
+%%   http://workshops.inf.ed.ac.uk/xldi2012/).
+
+%% \bibitem[Hudak(1999)]{HUDAK}
+%% P.~Hudak.
+%% \newblock \emph{The Haskell School of Expression: Learning Functional
+%%   Programming through Multimedia}.
+%% \newblock Cambridge University Press, New York, NY, USA, 1999.
+%% \newblock ISBN 0521643384.
+
+%% \bibitem[Persson et~al.(2012)Persson, Axelsson, and Svenningsson]{Generic}
+%% A.~Persson, E.~Axelsson, and J.~Svenningsson.
+%% \newblock Generic monadic constructs for embedded languages.
+%% \newblock In \emph{Proceedings of the 23rd international conference on
+%%   Implementation and Application of Functional Languages}, IFL'11, pages
+%%   85--99, Berlin, Heidelberg, 2012. Springer-Verlag.
+
+%% \bibitem[Sculthorpe et~al.(2013)Sculthorpe, Bracker, Giorgidze, and
+%%   Gill]{sculthorpe2013constrained}
+%% N.~Sculthorpe, J.~Bracker, G.~Giorgidze, and A.~Gill.
+%% \newblock The constrained-monad problem.
+%% \newblock In \emph{Proceedings of the 18th ACM SIGPLAN international conference
+%%   on Functional programming}. ACM, 2013.
+
+%% \bibitem[Swierstra(2008)]{Wouter}
+%% W.~Swierstra.
+%% \newblock Data types \`{a} la carte.
+%% \newblock \emph{Journal of Functional Programming}, 18\penalty0 (4):\penalty0
+%%   423, 2008.
+
+%% \end{thebibliography}
+
+%\bibliography{paper} 
+
+%\begin{thebibliography}{}
+%\softraggedright
+
+%\bibitem[Smith et~al.(2009)Smith, Jones]{smith02}
+%P. Q. Smith, and X. Y. Jones. ...reference text...
+
+%\end{thebibliography}
+
+%\end{document}

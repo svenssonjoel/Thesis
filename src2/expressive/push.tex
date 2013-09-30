@@ -1,0 +1,402 @@
+\section{Push Arrays}
+
+In order to improve low level control for the programmer, {\em Push
+arrays} are added to Obsidian. The old Pull arrays are still available,
+along with the new array type. 
+
+Some operations, typically involving taking arrays apart,
+are easily described using Pull arrays, giving
+efficient code. In those cases, using a Push array would add complexity in the 
+implementation for no performance benefit.
+Other operations cannot be implemented efficiently
+with Pull arrays, but Push arrays then provide the solution.
+This duality is apparent when looking at operations on Pull arrays such as
+{\tt halve} and {\tt conc} (for concatenate). 
+The {\tt halve} function is efficient since it introduces no diverging 
+conditionals. The {\tt conc} function, on the other hand, introduces conditionals.
+Concatening two arrays using the {\tt concP} combinator, implemented on Push arrays, 
+allows us to generate the desired code:
+
+\begin{codesize}
+\begin{verbatim}
+catArrayPs :: (Array IntE, Array IntE) -> Kernel (ArrayP Int)
+catArrayPs = pure concP
+\end{verbatim}
+\end{codesize} 
+
+\begin{codesize}
+\begin{verbatim}
+__global__ void catArrayPs(int *input0,int *input1,int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  
+  result0[((bid*32)+tid)] = input0[((bid*16)+tid)];
+  result0[((bid*32)+(16+tid))] = input1[((bid*16)+tid)];
+  
+}
+\end{verbatim}
+\end{codesize}
+
+\noindent
+Compared to the CUDA code for {\tt catArrays}, this kernel 
+uses only $16$ threads instead of $32$. At each step of the computation, all 
+the threads are fully busy doing exactly the same thing, which is the preferred 
+mode of execution on the target platform. 
+ 
+%The performance effects of these unwanted conditionals, compared to code generated 
+%using the new Push arrays, will be illustrated in section~\ref{sec:MARY}. 
+
+
+%The {\tt halve} operation has appeared previously and the {\tt pair} 
+%operation is its inverse. Implementing the {\tt pair} operation using 
+%Pull arrays is very easy and also efficient: 
+
+
+%\begin{codesize}
+%\begin{verbatim}
+%pair :: Array a -> Array (a,a)
+%pair (Array ixf n) = Array (\ix -> (ixf (ix*2),ixf (ix*2+1))) n'
+%  where 
+%    n' = n `div` 2 
+%\end{verbatim}
+%\end{codesize}
+
+
+%It is efficient because it introduces no diverging conditionals. There is
+%just a tiny bit of extra arithmetic in the indexing function. On the 
+%other hand {\tt unpair}, as we saw, introduced an unnecessary and 
+%inefficient conditional. It turns out that {\tt unpair} can be 
+%efficiently implemented on a Push array. 
+
+\subsection {What are Push Arrays?} 
+
+The idea behind Push arrays is to have a way to describe where 
+elements are supposed to end up. In some sense, a Push array produces 
+a collection of Index/Value pairs. %This makes a Push array a lot more 
+%powerful than a Pull array. 
+This makes Push arrays complementary to Pull arrays. For example, it 
+is possible for a Push array to output several elements at the same index 
+(which we probably need to control carefully). Push arrays should permit 
+us to provide more expressive operations on arrays to the user, including 
+an operation similar to Haskell's {\tt filter} on lists. Here, we consider 
+a different advantage of adding push arrays: finer control over patterns of 
+thread use in generated code.
+
+
+%% Will it really give nondeterminism or will the last one written win, or some such?
+
+A Push array consists of three parts: a function in continuation passing style, 
+a {\tt Program} datatype and an array datatype. 
+
+\begin{codesize}
+\begin{verbatim}
+type P a = (a -> Program) -> Program 
+\end{verbatim}
+\end{codesize}
+
+\noindent
+For another example of using continuations and a more complete
+description of their meaning and application, see~\cite{POORKOEN}. 
+
+The {\tt Program} datatype has now been adopted as Obsidian's internal 
+representation of CUDA programs.
+
+\begin{codesize}
+\begin{verbatim}
+data Program
+  = Skip
+  | forall a. Scalar a => Assign Name UWordE (Exp a) 
+  | Par (UWordE -> Program) Word32   
+  | Allocate Name Word32 Type 
+  | Synchronize 
+  | ProgramSeq Program 
+               Program 
+\end{verbatim}
+\end{codesize}
+
+\noindent
+Even Obsidian programs 
+that never explicitly uses a Push array will also be represented by this 
+datatype. 
+
+Note that the {\tt Par} constructor, 
+the {\em parallel for loop}, could potentially introduce nesting, which would lead 
+to {\em nested data-parallelism}. We do not compile nested data parallelism 
+into CUDA, and right now this is guaranteed by taking care not to introduce 
+any nesting in the library functions provided. Some of the 
+simpler cases of nestedness should be possible to take care of quite easily. 
+For example, one extra level of nesting could be done by sequential execution 
+in each thread of the GPU; using sequential computations per thread has 
+been shown to be beneficial~\cite{OLAMARCUS}. But for the general case 
+of arbitrary nesting, some method of flattening is needed. 
+We also assume that both {\tt Allocate} and {\tt Synchronize} occur only at the top level in objects of type {\tt Program}. 
+
+Now, a Push array is a function in continuation passing style
+coupled with a length. 
+
+\begin{codesize}
+\begin{verbatim}
+data ArrayP a = ArrayP (P (UWordE, a)) Word32
+\end{verbatim}
+\end{codesize}
+
+
+There is a function that takes an array and turns it into a Push array, 
+called {\tt push}. This function is defined for both Pull and Push arrays: 
+
+\begin{codesize}
+\begin{verbatim} 
+class Pushable a where 
+  push :: a e -> ArrayP e 
+
+instance Pushable ArrayP where 
+  push = id 
+  
+instance Pushable Array where   
+  push (Array ixf n) =
+     ArrayP (\func -> Par (\i -> func (i,(ixf i))) n) n 
+\end{verbatim}
+\end{codesize}
+
+Going in the other direction, from a Push array to a Pull array, is a 
+costly operation; it involves writing all the elements to GPU memory 
+followed by creating a Pull array that represents reading them. 
+The task of writing intermediate values to memory 
+has traditionally been up to the {\tt sync} operation in Obsidian.
+Therefore, in this version, {\tt sync} is overloaded to operate on both Pull and 
+Push arrays.  This means that the 
+{\tt sync} operation can be used both on arrays of type {\tt Array} 
+and of type {\tt ArrayP}. The result type, however, is always {\tt Array}. 
+
+When a Push array is synced, it is applied to a continuation that writes the
+elements into a named array in memory. The name to use is obtained through the 
+{\tt Kernel} monad.  
+
+\begin{codesize}
+\begin{verbatim}
+targetArray :: Scalar a => Name -> (UWordE,Exp a) -> Program
+targetArray n (i,a) = Assign n i a 
+\end{verbatim}
+\end{codesize}
+
+After applying the Push array to {\tt targetArray <name>}, the {\tt sync}
+operation proceeds by storing away a representation of the program that 
+computes the array called {\tt <name>}; it returns a Pull array 
+that reads elements from that same array. 
+
+Now we have seen enough of the implementation of Push arrays to be able 
+to look at some operations. Earlier, we saw that the
+array concatenation function
+{\tt conc} on Pull arrays leads to inefficient code. The Push 
+version of this operation, called {\tt concP} can be implemented 
+as follows: 
+
+\begin{codesize}
+\begin{verbatim}
+concP :: (Pushable arr1,
+          Pushable arr2) => (arr1 a, arr2 a) -> ArrayP a     
+concP (arr1,arr2) = 
+  ArrayP (\func -> f func
+                   *>* 
+                   g (\(i,a) -> func (fromIntegral n1 + i,a)))
+         (n1+n2)
+  where 
+     ArrayP f n1 = push arr1
+     ArrayP g n2 = push arr2
+\end{verbatim}
+\end{codesize}
+
+\noindent
+The function {\tt concP} takes two arrays, that can be Push or Pull arrays, 
+and concatenates them into a single Push array. It does so by creating a 
+sequential program, using the {\tt *>*} operator for {\tt Program} sequential
+composition. An example use of this combinator has already been displayed in 
+the {\tt catArrayPs} example. 
+
+%If the {\tt catArrays} kernel is reimplemented using {\tt concP}, CUDA code 
+%without conditionals is generated. The new version of {\tt catArrays}, 
+%called {\tt catArrayPs} is:
+
+%\begin{codesize}
+%\begin{verbatim}
+%catArrayPs :: (Array IntE, Array IntE) -> Kernel (ArrayP Int)
+%catArrayPs = pure concP
+%\end{verbatim}
+%\end{codesize}
+
+%And the CUDA code it generates is: 
+
+%\begin{codesize}
+%\begin{verbatim}
+%__global__ void catArrayPs(int *input0,int *input1,int *result0){
+%  unsigned int tid = threadIdx.x;
+%  unsigned int bid = blockIdx.x;
+%  
+%  result0[((bid*32)+tid)] = input0[((bid*16)+tid)];
+%  result0[((bid*32)+(16+tid))] = input1[((bid*16)+tid)];
+%  
+%}
+%\end{verbatim}
+%\end{codesize}
+%__global__ void catArrayPs(int *input0,
+%                           int *input1,
+%                           int *result0){
+%  unsigned int tid = threadIdx.x;
+%  unsigned int bid = blockIdx.x;
+%  
+%  result0[((bid*64)+tid)] = input0[((bid*32)+tid)];
+%  result0[((bid*64)+(32+tid))] = input1[((bid*32)+tid)];
+%}
+
+
+The {\tt zippUnpair} example shows a drawback similar to that of {\tt catArrays} using Pull arrays. 
+In this case, the problem is that the {\tt unpair} function introduces 
+a conditional that takes different paths depending on odd or even {\em thread id}. 
+A Push array implementation of the {\tt unpair} operation called {\tt unpairP}
+can be given as follows: 
+
+\begin{codesize}
+\begin{verbatim}
+unpairP :: Pushable arr => arr (a,a) -> ArrayP a 
+unpairP arr =  ArrayP (\k -> f (everyOther k)) (2 * n)
+  where 
+    ArrayP f n = push arr 
+    
+everyOther :: ((UWordE, a) -> Program ()) 
+              -> (UWordE, (a,a)) -> Program ()
+everyOther f  = \(ix,(a,b)) -> f (ix * 2,a) *>* f (ix * 2 + 1,b)  
+\end{verbatim}
+\end{codesize}
+
+\noindent
+Just like {\tt concP}, this function takes either a Push or Pull array 
+as input, and produces a Push array as result. 
+
+Rewriting the example from earlier using {\tt unpairP} gives:
+
+\begin{codesize}
+\begin{verbatim}
+zippUnpairP :: (Array IntE, Array IntE) -> Kernel (ArrayP IntE) 
+zippUnpairP = pure (unpairP . zipp)
+\end{verbatim}
+\end{codesize}
+
+\noindent
+In this case, the generated code looks as follows: 
+
+\begin{codesize}
+\begin{verbatim}
+__global__ void zippUnpairP(int *input0,int *input1,int *result0){
+  unsigned int tid = threadIdx.x;
+  unsigned int bid = blockIdx.x;
+  
+  result0[((bid*64)+(tid*2))] = input0[((bid*32)+tid)];
+  result0[((bid*64)+((tid*2)+1))] = input1[((bid*32)+tid)];
+}
+\end{verbatim}
+\end{codesize}
+
+\noindent
+Again, we get CUDA code that uses half as many threads as the inefficient 
+version, but all threads are occupied at all times. This uses
+the resources more efficiently. 
+
+%\subsection{Push arrays and Obsidian}
+
+Being able to generate the kind of code that we have just seen is something we have desired for a long time. We believe that 
+Push arrays are an important tool for obtaining high performance kernels. The results 
+in section~\ref{sec:MARY} bear this out. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%Section~\ref{sec:BENEFITS} showed some examples where Push arrays 
+%was helpful. Lets look at how the operations on Push arrays used there 
+%are implemented. First there was {\tt concP}:
+
+
+
+%The function {\tt concP} can be used to concatenate any arrays that we can 
+%perform the {\tt push} function on. For example both input arrays could be 
+%normal Pull arrays. Concatenating the two arrays uses sequential composition 
+%of programs, {\tt *>*}, which is implemented using the {\tt ProgramSeq} 
+%constructor.
+
+%The next function used in the examples was {\tt unpairP} 
+
+
+
+
+
+%\subsection {Benefits of Push Arrays}
+%\label{sec:BENEFITS}  
+
+%in section~\ref{sec:Drawbacks} some drawbacks of Pull arrays where 
+%highlighted. If we use Push arrays we can improve the generated code 
+%in those examples. Push arrays here have type {\tt ArrayP} and operations 
+%that operate on Push arrays or give Push arrays as result end their names
+%with a capital p. 
+
+%In the case of array concatenation using Push arrays we get: 
+
+
+%\begin{codesize}
+%\begin{verbatim}
+%catArrayPs :: (Array (Exp Int), Array (Exp Int)) 
+%           -> Kernel (ArrayP (Exp Int))
+%catArrayPs = pure concP
+%\end{verbatim}
+%\end{codesize}
+%(arr1,arr2) = 
+%   return$ concP (arr1, arr2)
+
+
+%The function {\tt push} is used to turn a Pull array into a Push array. 
+%Now, precisely the code we desired can be generated: 
+
+
+%\pagebreak
+
+%\begin{codesize}
+%\begin{verbatim}
+%__global__ void catArrayPs(int *input0,
+%                           int *input1,
+%                           int *result0){
+%  unsigned int tid = threadIdx.x;
+%  unsigned int bid = blockIdx.x;
+  
+%  result0[((bid*64)+tid)] = input0[((bid*32)+tid)];
+%  result0[((bid*64)+(32+tid))] = input1[((bid*32)+tid)];
+ 
+%}
+%\end{verbatim}
+%\end{codesize}
+
+
+%The next example uses {\tt unpair}: 
+
+
+
+
+
+
+%\subsection { Thoughts about Push arrays in Obsidian }
+
+  

@@ -1,0 +1,33 @@
+% table 
+
+
+\begin{table}
+\begin{center}
+  \begin{tabular}{| l | r | r | r | r | r | r | }
+    \hline
+        k                             &  $20$ &  $21$ & $22$& $23$ & $24$ & $24$(CPU)  \\ \hline
+    bitonic(CUDA)(512)                &  5 & 12 & 25 & 54 & 117 & 2741   \\      
+    tsort1(512)                       &  4 & 10 & 22 & 47 & 102 & 2742    \\
+    tsort2(256)                       &  4 & 9 & 23 & 45 & 98 & 2741     \\ 
+    vsort1(512)                       &  4 & 10 & 21 & 47 & 102 & 2747    \\ 
+    vsort(256)                        &  4 & 9 & 20 & 44 & 96 & 2783    \\ 
+    \hline
+  \end{tabular}
+\end{center}
+\label{fig:table}
+\caption{Sorting time (ms) for $2^k$ inputs, $20 \leq k \leq 24$.  The GPU used is an NVIDIA GTX480.
+Each line shows the result using a particular small $512$ input sort kernel with the
+indicated number of threads as {\tt sortSmall} in the CUDA code above. The small merge kernel used
+is our generated {\tt bmerge2}, with two indices per thread and $512$ inputs. Memory transfer time (GPU-CPU)
+is not shown. In the $2^{24}$ input case using {\tt vsort}, the total sorting time, including
+memory transfers was 141 ms.
+The rightmost column shows the time taken for the C quicksort function {\tt qsort}, compiled with
+{\tt gcc -O3}, to sort the same inputs as those sorted on the GPU on an i7-920 2.8GHz CPU.
+} 
+\end{table}
+
+
+
+
+%% bitonic 30203
+%% 

@@ -1,0 +1,29 @@
+\section{Compositional} 
+
+One of the advantages of the monad reification technique we have
+presented is that it is compositional. The monadic constructs can be
+dealt with separately from all the primitives of the embedded
+langauges.
+
+A consequence of the compositionality is that we can use techniques
+such as compdata \cite{} to decompose the definition of DSLs into
+smaller reusable building blocks. Figure \ref{fig:compdata} shows a
+compositional implementation of the monadic constructs, separately
+from any other constructs. Firstly, our type \verb!MonadT! define
+
+The type \verb!Cxt! is defined in the
+package compdata and ties the recursive knot.
+
+\begin{figure}
+\begin{verbatim}
+data MonadT r a where
+  Return :: a -> MonadT r a
+  Bind   :: r a -> (a -> r b) -> MonadT r b
+
+instance (MonadT :<: f) => Monad (Cxt h f a) where
+  return a = iReturn a
+  m >>= f  = iBind m f
+\end{verbatim}
+\label{fig:compdata}
+\caption{Compositional definition monads}
+\end{figure}

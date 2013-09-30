@@ -1,0 +1,85 @@
+\section{Limitations} 
+
+%\begin{minipage}[]{\linewidth}
+\begin{dialogue}
+\speak{\docname{}} There is still one problem with your method though.
+
+\speak{\studname{}} What's that?
+
+\speak{\docname{}} When we make instances of the Monad class we expect
+certain laws to hold. \direct{\docname{} writes the laws on his whiteboard}
+
+\end{dialogue}
+%\end{minipage}
+
+\begin{small}
+\begin{verbatim}
+m >>= return    = m
+return a >>= f  = f a
+(m >>= f) >>= g = m >>= \a -> f a >>= g
+\end{verbatim}
+\end{small}
+
+%\begin{minipage}[]{\linewidth}
+\begin{dialogue}
+\speak{\docname{}} These laws clearly don't hold for your instance. Take the
+first law for instance. The left hand side will have extra \texttt{Bind} and
+\texttt{Return} constructors compared to the right hand side.
+
+\speak{\studname{}} Hmmm. I hadn't really thought about that. But adding an
+extra return at the end of a computation shouldn't make a difference
+in my implementation.
+
+\speak{\docname{}} So, you're saying that your implementation actually obeys
+the first monad law?
+
+\speak{\studname{}} Well, at least when I run my programs I will never see
+any difference between the left hand side and the right hand side.
+
+\speak{\docname{}} Aha, so what you're saying is that if we compare the
+semantics of programs rather than comparing the programs themselves
+then we get some useful laws. \direct{\docname{} scribbles some new laws
+  on the whiteboard}
+
+\end{dialogue}
+%\end{minipage}
+
+\begin{small}
+\begin{verbatim}
+eval (m >>= return)    = eval m
+eval (return a >>= f)  = eval (f a)
+eval ((m >>= f) >>= g) = eval (m >>= \a -> f a >>= g)
+\end{verbatim}
+\end{small}
+
+%\begin{minipage}[]{\linewidth}
+\begin{dialogue}
+
+\speak{\docname{}} These laws a morally the same as the monad
+laws, especially if we don't let the user of the robot language ever
+compare terms in the language.
+
+\speak{\studname{}} Yes, that captures my intuition very well.
+
+\speak{\docname{}} Ok, good. Can you prove these equations?
+\end{dialogue}
+%\end{minipage}
+
+\emph{Prove the monad laws}\newline \newline 
+
+% \docname{} calls upon \studname{} to tally up the limitations of his approach 
+
+% Monad Laws (Do the hold ?) 
+% Infinite programs 
+% Only certains ``kinds'' of reification!
+
+\section{Benefits} 
+
+\section{Epilogue}
+
+The trick which we've shown in this paper scales up nicely to larger
+embedded languages. The language Obsidian already use it.
+
+% we should always point of the positives as well!
+
+% we should always point of the positives as well!
