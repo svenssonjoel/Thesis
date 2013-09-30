@@ -1,6 +1,6 @@
 
 
-\section{Introduction} 
+\subsection{Introduction} 
 
 %\input{table}
 
@@ -19,7 +19,7 @@ languages lack compositionality.
 Also, being based in C/C++ means that the core idea in a program may
 not be easily visible.  
 
-\subsection{Embedded DSLs for GPGPU programming} 
+\subsubsection{Embedded DSLs for GPGPU programming} 
 We are aiming for a GPU programming language that is more
 concise than mainstream
 languages such as CUDA and OpenCL. 
@@ -153,7 +153,7 @@ __global__ void sum(int *input0,int *result0){
 
 
 %----------------------------------------------------------------------------
-\subsection{Arrays in Obsidian}
+\subsubsection{Arrays in Obsidian}
 
 An array is represented by an indexing function and a length:
 \begin{codesize} 
@@ -264,7 +264,7 @@ of the shared memory at different times during the execution, the type casts
 used in the code above are necessary. 
 
 %----------------------------------------------------------------------------
-\subsection{Sync and parallelism}
+\subsubsection{Sync and parallelism}
 
 The {\tt sync} operation also enables the writing of parallel reduction 
 kernels. A reduction operation is an operation that takes an array as input
@@ -380,7 +380,7 @@ The first uses four threads to compute a four element intermediate array;
 the second uses two threads, and so on. At the very end, a single thread
 copies the result from local shared memory to global memory. 
 
-\subsection{Drawbacks of Obsidian Arrays}
+\subsubsection{Drawbacks of Obsidian Arrays}
 \label{sec:Drawbacks}
 
 %*** THE STUFF BELOW IS IN CONFLICT WITH WHAT I ADDED ABOVE!

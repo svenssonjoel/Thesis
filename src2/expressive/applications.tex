@@ -1,7 +1,7 @@
-\section{Application}
+\subsection{Application}
 \label{sec:MARY}
 
-\subsection{Sorting on a GPU}
+\subsubsection{Sorting on a GPU}
 In this section, we introduce combinators that express patterns
 of computation on whole arrays, and show their application to the
 development of fast sorting kernels.
@@ -30,7 +30,7 @@ small kernels as a sorting network. However, large
 sorters that are not themselves sorting networks (with typical examples being radix sort and quicksort) often call small sorting networks when they need to sort small arrays during their execution.
 Thus, small, fast sorting kernels have a variety of uses.
 
-\subsection{Describing Batcher's bitonic merger}
+\subsubsection{Describing Batcher's bitonic merger}
 
 The bitonic merger is typically presented as a recursive
 construction and we have earlier explored ways to describe
@@ -155,7 +155,7 @@ __global__ void bitonicMerge(int *input0,int *result0){
 %% ** TODO Note that bmerge k not only works on inputs of length $2^{k+j}$,
 %% for $j > 0$, applying the merger to sub-sequences of length $2^k$.
 
-\subsection{Modifying the bitonic merger}
+\subsubsection{Modifying the bitonic merger}
 
 
 The bitonic merger for which we have just generated a kernel is known
@@ -262,7 +262,7 @@ kernel shown above did). The next step is to move to using Push as
 well as Pull arays, so as to be able to generate more efficient code
 from essentially the same sorter construction.
 
-\subsection{New combinator implementations using Push arrays}
+\subsubsection{New combinator implementations using Push arrays}
 
 %% ** TODO make code for ilv2 more comprehensible :)
 
@@ -342,7 +342,7 @@ exactly the same size as the bitonic sorter, but based instead on the balanced p
 This involves the introduction of one new combinator that can be seen as a mixture
 of the {\tt ilv} and {\tt vee} combinators already introduced.
 
-\subsection{A sorter built from the balanced periodic merger}
+\subsubsection{A sorter built from the balanced periodic merger}
 First, we note that the balanced periodic merger contains multiple
 uses of the now familiar vee-shaped pattern, see Figure~\ref{fig:periodicMerger}.
 \begin{figure}
@@ -466,7 +466,7 @@ vsort n = composeS . map pure $ [istage (n-i) (i-j)
 The resulting generated code uses one thread per
 $2$ indices.
 
-\subsection{Measuring performance of the generated kernels}\label{sec:benchmarks}
+\subsubsection{Measuring performance of the generated kernels}\label{sec:benchmarks}
 \begin{figure}
 \begin{codesize}
 \begin{verbatim}

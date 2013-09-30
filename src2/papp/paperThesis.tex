@@ -87,7 +87,7 @@
 %\address{CSE Dept., Chalmers University of Technology, Gothenburg, Sweden} 
 
 
-\section*{Abstract}
+\subsection*{Abstract}
 Obsidian is a domain specific language for data-parallel programming 
 on graphics processors (GPUs). It is embedded in the functional 
 programming language Haskell. The user writes code using constructs 
@@ -140,7 +140,7 @@ Haskell are briefly discussed.
 
 
 %-------------------------------------------------------------------------------
-\section{Introduction} 
+\subsection{Introduction} 
 
 Multicore and manycore processors are becoming increasingly common. Modern 
 graphics processing units (GPUs) are examples of manycore processors. Today 
@@ -154,7 +154,7 @@ In~\cite{JSMSKC_IFL08} we describe a version of Obsidian that uses a monadic
 interface. In the current version of Obsidian the monad has been replaced 
 by another data structure, closely related to Arrows~\cite{Arrows}, representing GPU programs. Although the details are 
 left out because of space limitations, the use of this GPU program representation 
-can be seen in section~\ref{sec:GPUPrograms}. For a description of the implementation 
+can be seen in subsection~\ref{sec:GPUPrograms}. For a description of the implementation 
 see~\cite{JSTECH} and for more general information on embedded language 
 implementation see~\cite{Elliott03:CompileDSEL-JFP}.
 
@@ -169,7 +169,7 @@ category \cite{GEMS2}.
 
 
 %-------------------------------------------------------------------------------
-\subsection{NVIDIA GPUs and CUDA}
+\subsubsection{NVIDIA GPUs and CUDA}
 
 
 Starting with the 8000 series of GPUs (the G80 architecture), NVIDIA's 
@@ -235,7 +235,7 @@ In current GPUs, accesses to this memory are uncached.
 \FloatBarrier
 
 % ------------------------------------------------------------------------------
-\subsection{Aims of Obsidian}
+\subsubsection{Aims of Obsidian}
 
 The initial goal of Obsidian is to simplify the development of GPU kernels, 
 the building blocks of larger GPU programs. In the future, ways to combine 
@@ -266,7 +266,7 @@ and change without major rewrites of the code.
 
 
 %-------------------------------------------------------------------------------
-\section{Programming in Obsidian} 
+\subsection{Programming in Obsidian} 
 
 Obsidian is a language for GPGPU programming embedded in Haskell. Many of 
 the language features resemble those of Lava, a hardware description and 
@@ -291,7 +291,7 @@ arrays and operations on arrays, and second, a language that enables mapping of 
 array language programs onto the GPU. 
  
 %-------------------------------------------------------------------------------
-\subsection{Array Language}
+\subsubsection{Array Language}
 \label{sec:ArrayLanguage}
 \FloatBarrier
 Arrays in Obsidian do not, like in C, name an area of memory. Instead, an 
@@ -385,13 +385,13 @@ does on lists. However, the input to {\tt zipp} is a pair of arrays.
 
 %Array programs like those described here make up the building blocks used
 %to form larger GPU programs. How to create a GPU program from these is 
-%shown in the following section. 
+%shown in the following subsection. 
 
 
 %-------------------------------------------------------------------------------
 
 %\FloatBarrier
-\subsection{GPU Programs}
+\subsubsection{GPU Programs}
 \label{sec:GPUPrograms}
 
 The second layer of Obsidian offers a data type that represents a GPU program
@@ -403,14 +403,14 @@ data a :-> b = ...
 \end{verbatim}
 \end{small} 
 \noindent
-%The details of {\tt a :-> b} are shown in section~\ref{sec:Implementation}. 
+%The details of {\tt a :-> b} are shown in subsection~\ref{sec:Implementation}. 
 \noindent
 Informally we can think of {\tt a\nolinebreak~:->\nolinebreak~b} as representing programs that operate 
 as illustrated in figure~\ref{fig:program}. This figure 
 shows a program that performs some computation using a number of threads 
 followed by a barrier synchronisation, and so on. The contents of the 
 boxes marked with {\em Pure} can be thought of as containing an array 
-program.% such as those in section~\ref{sec:ArrayLanguage}.
+program.% such as those in subsection~\ref{sec:ArrayLanguage}.
 The type constructor {\tt :->} is a variant of an arrow, which in turn is a generalisation of a monad~\cite{JSTECH}.
 %
 \begin{figure}
@@ -448,7 +448,7 @@ execute :: (Flatten a, Flatten b) => (Arr a :-> Arr b) -> [a] -> IO [b]
 \end{small}
 \noindent
 %The class {\tt Flatten} will be explained in detail in 
-%section~\ref{sec:Implementation}, but 
+%subsection~\ref{sec:Implementation}, but 
 Instances of {\tt Flatten} are all the types that can be stored in the 
 GPU memory. Examples of types that are in {\tt Flatten} are {\tt IntE}, 
 {\tt FloatE}, {\tt BoolE}. Arrays and pairs of things that are in Flatten 
@@ -567,11 +567,11 @@ __global__ void generated(word* input,word* result){
 \end{small}
 
 
-\section{Outline of Code Generation}
+\subsection{Outline of Code Generation}
 \label{sec:CodeGen}
 \FloatBarrier
 
-This section briefly reviews the code generation process using 
+This subsection briefly reviews the code generation process using 
 a hyphothetical program as example. The program under consideration 
 is this: 
 
@@ -658,17 +658,17 @@ created and used as input to the second stage of the computation.
 
 %-------------------------------------------------------------------------------
 
-\section{Case Studies}
+\subsection{Case Studies}
 \label{sec:CaseStudies}
 
 \FloatBarrier
-This section describes a few slightly larger Obsidian programs. The main purpose of this section is to show 
+This subsection describes a few slightly larger Obsidian programs. The main purpose of this subsection is to show 
 how we want to write GPGPU programs using Obsidian. 
 %How the performance 
-%of the generated code can be improved is discussed in section~\ref{sec:FutureWork}  
+%of the generated code can be improved is discussed in subsection~\ref{sec:FutureWork}  
 %%% Move this later.  XXX
 
-\subsection{Sorting}
+\subsubsection{Sorting}
 
 Sorting is a popular function to place on the GPU, see~\cite{SORT1,SORT3}.
 {\em Odd-Even merge sort}, due to Batcher, uses a merger component called the Odd-Even merger. This 
@@ -726,7 +726,7 @@ to particular nestings of these combinators will bring significant performance i
 
 
 %-------------------------------------------------------------------------------
-\subsection{Parallel Prefix}
+\subsubsection{Parallel Prefix}
 \FloatBarrier
 
 This subsection shows the implementation of a parallel prefix (also called scan) 
@@ -791,7 +791,7 @@ which means that there is no risk for divergence within a warp.
 This perfect division of labour is not obtainable with the current 
 implementation of the {\tt How} argument to {\tt sync}. However, one 
 division of the work that has experimentally been shown to perform well, see 
-table in next section,  
+table in next subsection,  
 is to let each thread $tid$ perform the work of $tid$ and $tid + 256$. This 
 program is shown below: 
 
@@ -875,14 +875,14 @@ so the code is considerably more complicated than that of any of the Obsidian pa
 
 %-------------------------------------------------------------------------------
 \FloatBarrier
-\section{Future work}
+\subsection{Future work}
 \label{sec:FutureWork}
 
 Obsidian is work in progress and as such it changes a lot. Future work will both
 explore improvements to code generation for kernels and ways to coordinate kernels.
 
 In order to get to the quite efficient version of the {\tt sklansky} kernel 
-in section~\ref{sec:CaseStudies}, the experimental {\tt How} argument to {\tt sync} was needed. 
+in subsection~\ref{sec:CaseStudies}, the experimental {\tt How} argument to {\tt sync} was needed. 
 This needs to be 
 explored further. {\tt How} as it is today, any function of type
 {\tt IndexE -> [IndexE]}, offers too much freedom and with that the risk of
@@ -890,7 +890,7 @@ introducing errors. We are searching for an elegant model for expressing how and
 to compute, and for ways to integrate this with
 the language. This is our biggest research challenge.
 
-Section~\ref{sec:CaseStudies}, on case studies, showed that it is possible to
+Subsection~\ref{sec:CaseStudies}, on case studies, showed that it is possible to
 generate quite efficient code from Obsidian programs. The current version 
 generates efficient code for very specific uses of the {\tt two} combinator, 
 for example the kind used in the {\tt sklansky} parallel prefix network. More 
@@ -941,7 +941,7 @@ to add that enables expressing such algorithms.
 
 
 %-------------------------------------------------------------------------------
-\section{Related work}
+\subsection{Related work}
 
 GPUs are becoming more and more interesting to use in non-graphical applications.
 A modern GPU is a manycore machine with, today, hundreds of processing elements. 
@@ -1005,10 +1005,10 @@ Of particular interest to us is Microsoft's Accelerator project~\cite{Accelerato
 %\item X10 \cite{X10}
 %\end{itemize}
 
-\section{Discussion and conclusion}
+\subsection{Discussion and conclusion}
 
 Obsidian is work in progress and there are many loose ends to tie up and 
-paths left to explore. In section~\ref{sec:CaseStudies}, the 
+paths left to explore. In subsection~\ref{sec:CaseStudies}, the 
 strengths of Obsidian show; it is possible to express quite complex algorithms
 using short and elegant programs. The case studies also show that it is possible
 to generate quite efficient code from these high level descriptions. However, 
@@ -1017,7 +1017,7 @@ to broaden the available set of combinators for combining GPU programs.
 
 %Another benefit of a higher level language such as Obsidian compared to 
 %CUDA is the ability to reuse code. There is an example of this too in the 
-%case studies section where a single reduction program can be used to generate
+%case studies subsection where a single reduction program can be used to generate
 %code to compute the maximum, minimum and sum very easily. 
 
 %Compositionally, or the ability to use already written programs as building
@@ -1026,7 +1026,7 @@ to broaden the available set of combinators for combining GPU programs.
 %one Kernel that computes the 
  
 %In Obsidian it is easy to describe an initial prototype solution to a problem,
-%such as for example the {\tt mySum} kernels in section~\ref{sec:SyncPar}. 
+%such as for example the {\tt mySum} kernels in subsection~\ref{sec:SyncPar}. 
 %It requires no deep knowledge of the GPU architecture but works out of the 
 %box. The prototype implementation can be tweaked into a more efficient 
 %implementation by performing small changes to the Obsidian code that often 
@@ -1047,11 +1047,11 @@ access pattern is captured in the use of functions such as {\tt pair} and
 
 
 %Obsidian is also an improvement over CUDA in the area of code reuse. The 
-%{\tt reduce} function from section~\ref{sec:CaseStudies} is an example of this. 
+%{\tt reduce} function from subsection~\ref{sec:CaseStudies} is an example of this. 
 %Obsidian is also compositional in another way than CUDA. Reusing kernels as
 %building blocks in other kernels is in CUDA not realistic, while in Obsidian 
 %it is the preferred way to write programs. Take as an example of this the 
-%mergers and sorters in section~\ref{sec:CaseStudies}. In CUDA you would design 
+%mergers and sorters in subsection~\ref{sec:CaseStudies}. In CUDA you would design 
 %one kernel from scratch implementing the merger and sorter simultaneously. 
 
 This paper presented Obsidian an embedded language for GPGPU programming that
@@ -1060,7 +1060,7 @@ Obsidian allows the programmer to think more of the algorithm and less of
 architectural details of the GPU. The contributions of Obsidian to the GPGPU 
 field is a higher level programming environment that eases experimentation. 
 
-\section*{Acknowledgments}
+\subsection*{Acknowledgments}
 \noindent
 This research is funded by the Swedish Research Council.
 

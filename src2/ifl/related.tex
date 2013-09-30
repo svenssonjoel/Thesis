@@ -2,8 +2,8 @@
 %% RELATED WORK
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Discussion} \label{sec:disc}
-\subsection{Our influences}
+\subsection{Discussion} \label{sec:disc}
+\subsubsection{Our influences}
 As mentioned above, our earlier work on Lava has provided the inspiration for
 the combinator-oriented or hardware-like style of programming that we are exploring in Obsidian.
 On the other hand, the {\em implementation} of Obsidian has been much influenced by
@@ -14,7 +14,7 @@ Many ideas from the paper
 ``Compiling Embedded Languages'', describing the implementation of Pan have been 
 used in the implementation of Obsidian~\cite{Elliott03:CompileDSEL-JFP}. 
 
-\subsection{Related work on GPU and GPGPU programming languages}
+\subsubsection{Related work on GPU and GPGPU programming languages}
 We cannot attempt an exhaustive description of GPU programming languages here, but refer the reader to a recent PhD thesis by Philipp Lucas, which contains an enlightening survey~\cite{Lucas08}. Lucas distinguishes carefully between languages (such as CG and HLSL) that aim to raise the level of abstraction at which graphics-oriented GPU programs are written, and those that attempt to abstract the entire GPU, and so must also provide a means to express the placing of programs on the GPU, feeding such programs with data, reading the results back to the CPU, and so on, as well as deciding to what extent the programmer should be involved
 in stipulating those tasks.
 In the first group of graphics-oriented languages, we include PyGPU and Vertigo.
@@ -52,7 +52,7 @@ to create a feedback-driven optimiser. The results are indeed impressive, and we
 will interest functional programmers. We hope to experiment with similar
 search and learning based methods, having applied similar ideas in the simpler setting of arithmetic data-path generation in Lava.
 
-\subsection{Lessons learned so far in the project}
+\subsubsection{Lessons learned so far in the project}
 Our first lesson has been the gradual realisation that a key aspect of a usable
 GPU programming language that exposes details of the GPU architecture to the user is the means to express where and when data is placed in and
 read from the memory hierarchy.
