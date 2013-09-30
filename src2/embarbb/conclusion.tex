@@ -1,0 +1,18 @@
+\section{Conclusion} 
+We have shown that Intel's Array Building Blocks (ArBB) provides
+an interface that is well suited to functional programming. 
+The programs are quite close to mathematical specifications, in the style of NESL~\cite{NESL}. We have only just completed the embedding of the part of ArBB that deals with nested vectors, and we need to tackle many more case studies.
+In our case studies using dense vectors, ArBB seems to do a good job of efficiently using parallel
+hardware resources -- both cores and vector units.
+By
+embedding ArBB, we can, with little implementation effort, provide
+quite an attractive data parallel programming language in Haskell.
+Our benchmarks are preliminary and small, but they show very good performance.
+Once we have completed the ArBB embedding, we will have an interesting platform on which to
+experiment with and develop new programming idioms that exploit the fact
+that we have a data parallel programming language embedded in an
+expressive, strongly typed host language.
+We feel that work in this area (as distinct from implementation methods)
+is overdue. We would be happy to receive suggestions
+for interesting case studies or collaborations.
+

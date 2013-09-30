@@ -1,0 +1,29 @@
+
+Nowadays, performance in processors is increased by adding more cores or
+wider vector units, or by combining accelerators like GPUs and traditional cores on a chip. 
+Programming for these diverse architectures is a challenge. We would 
+like to exploit all the resources at hand without putting too much burden 
+on the programmer. Ideally, the programmer should be presented with a machine 
+model abstracted from the specific number of cores, SIMD width or the existence of 
+a GPU or not. Intel's Array Building Blocks (ArBB) is a system that takes on these 
+challenges. ArBB is a language for data parallel and nested data parallel 
+programming, embedded in C++. By offering a retargetable dynamic compilation 
+framework, it provides vectorisation and threading to programmers without 
+the need to write highly architecture specific code. We aim to bring the 
+same benefits to the Haskell programmer by implementing a Haskell frontend
+(embedding) of the ArBB system. We call this embedding EmbArBB. 
+We use standard Haskell embedded language procedures to provide an interface 
+to the ArBB functionality in Haskell. EmbArBB is work in progress and 
+does not currently support all of the ArBB functionality.
+Some small programming examples illustrate how the Haskell 
+embedding is used to write programs. ArBB code is short and to the point 
+in both C++ and Haskell.
+Matrix multiplication has been benchmarked in sequential C++, ArBB in C++, EmbArBB and the Repa library.
+The C++ and the Haskell embeddings have almost identical performance, showing 
+that the Haskell embedding does not impose any large extra overheads. 
+Two image processing algorithms have also been benchmarked against Repa. In these benchmarks
+at least, EmbArBB performance
+is much better than that of the Repa library, indicating that building on ArBB may be a cheap and easy approach to exploiting data parallelism in Haskell.
+
+
+

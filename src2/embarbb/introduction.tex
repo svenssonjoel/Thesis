@@ -1,0 +1,89 @@
+
+\section{Introduction} 
+
+% --------------------------------------------------------------------------
+%*** something about multi-core CPUs with vector units (intro).
+Modern hardware architectures provide much parallelism in the form of
+multi- and many-core processors and heterogeneous combinations of the two.
+We would like to exploit this parallelism without over-burdening the programmer, and without sacrificing too much performance.
+Ideally, the programmer should be encouraged to write the code in a way that is not too closely linked to the precise combination of cores, SIMD vector processing power and GPU
+that is currently targeted.
+It should also be possible to easily retarget the code to new architectures.
+As processor architectures develop and are combined at an ever increasing pace, these requirements place considerable demands on programming languages
+and libraries for parallel programming.
+
+Intel's Array Building Blocks (ArBB) is one approach to the problem of how to increase productivity for programmers who need to exploit hardware parallelism, but for whom very low level parallel programming (as typically found in High Performance Computing) is too difficult or time consuming~\cite{ARBB2011}. ArBB is a retargettable dynamic compilation framework that is provided as an embedded language in C++. It aims to give the programmer access to data and thread parallelism, while protecting him from common pitfalls such as race conditions and deadlock.
+
+Many of the ideas in ArBB feel familiar to functional programmers.
+For example, when referring to collection data types, reference~\cite{ARBB2011} states that ``Expressions over collections always act as if a completely new collection were created and assignment between collections always behaves as if the entire input collection were copied.''
+This rather functional view of data is accompanied by extensive optimisation that (as the paper states) removes almost all copying.
+A key to the approach is the use of standard patterns of computation such as scan and reduce -- familiar as higher order functions in a functional setting.
+The system tries to fuse away intermediate data-structures
+when these patterns are composed.
+The patterns are deterministic, so that problems with race conditions are avoided by design. Programs are stated to be short and close to the mathematical specification, and that, again, is a familiar mantra. The system allows C++ users to construct code objects called closures.
+The first time the {\em call} operation is applied to
+a particular function, ArBB captures the sequence of operations
+over ArBB types and creates an intermediate representation. 
+This representation is then compiled to
+vector machine language, which is
+cached for later use.  The
+machine code is also invoked (in parallel on multiple
+cores, if appropriate). The next time the function
+is called, ArBB reuses the cached machine
+code rather than regenerating it.
+Although dynamically typed closures are available, ArBB is generally
+statically typed.
+
+
+
+
+%% Note: I felt that this para was too technical to go right at the beginning
+%% Maybe want to add back the mentions of Sandy Bridge and MMX etc.
+%% to a later discussion.
+
+%Multi-, many-core and heterogeneous processors with both on the same chip
+%(such as for example Sandy Bridge CPUs with a built in GPU) are 
+%now common. Programming for a range of slightly different set-ups 
+%of number of cores, SIMD-width, existence of GPU or not can be impractical 
+%if a target architecture specific APIs and methods needs to be used. No doubt
+%in the cases where every last drop of performance needs to be squeezed out 
+%of a system, architecture specific methods will be used. Maybe in the 
+%form of CUDA for a GPU or MMX,SSE,AVX intrinsics in the CPU case. When Good 
+%alround performance across a line of different architectures is desired 
+%a retargettable just-in-time (JIT) compiled approach should be a good idea. 
+%Intel Array Building Blocks (ArBB) is such a system. 
+
+%ArBB is programming language that aspires to
+%make it easier to program modern multi-core CPUs. ArBB gives the 
+%programmer a set of operations that when used results in automatic 
+%vectorisation and threading. 
+%Amongst these operations are scans (prefix sums)  
+%and reductions over vectors, elementwise operations and more. 
+%The compilation 
+%process also tries to fuse away intermediate datastructures~\cite{ARBB2011}. 
+
+ 
+
+ArBB is an embedded language, implemented
+as a library in the host language C++. The embedding makes 
+heavy use of the C++ template machinery. There is also a lower level 
+interface to ArBB, the ArBB Virtual Machine C API~\cite{arbbvm}. The low level C API is not
+intended for use directly by applications programmers, but rather as a base 
+for implementations of alternative ArBB frontends (embeddings)~\cite{ARBB2011}.
+The ArBB VM implements the compilation and parallelisation.
+Reference~\cite{joelryan} presents Haskell bindings to the ArBB C API as well as initial 
+steps towards using ArBB as a backend to the embedded language Accelerate~\cite{accelerate}. 
+
+The design of ArBB seems particularly well suited to a functional setting.
+In this paper, we present work in progress on embedding ArBB in Haskell. We call the embedding EmbArBB.
+It is our hope that using 
+Haskell as a host language will be just as user friendly and efficient as 
+the C++ version. EmbArBB does not yet include all of the functionality of ArBB,
+and this is discussed further in section~\ref{sec:FutureWork}.
+However,  our first benchmarks show that the performance of EmbArBB is very similar to that of ArBB in C++. This bodes well. 
+%We will consider using EmbArBB in the next instance of a course at Chalmers on parallel functional programming. 
+
+EmbArBB is available at GitHub as 
+\newline
+\url{github.com/svenssonjoel/EmbArBB}.
+

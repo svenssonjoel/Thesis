@@ -1,0 +1,89 @@
+
+
+\section{Future Work} 
+\label{sec:FutureWork}
+
+
+%The Haskell - EmbArBB interface needs to be improved. 
+%Currently there is a 
+%transfer of data into ArBB before a function is executed and the results 
+%are directly transferred back into Haskell.
+%This is not ideal when several ArBB functions are composed, as this
+%will lead to unnecessary copying of data into and out of ArBB.
+%One possible solution would be to have the {\tt ArBB} monad keep track of what arrays have been bound 
+%to ArBB variables and stored into ArBB memory.
+%Another problem with the interface is the way {\tt map} works. Currently 
+%{\tt map} takes an identifier pointing out a captured function. These
+%captured functions are maintained by the {\tt ArBB} monad, which means that 
+%either a function that maps some other function over data needs to be defined 
+%in the {\tt ArBB} monad, or it needs to be passed the function as an argument 
+%at capture time. Neither of those alternatives is desirable and new solutions
+%will have to be found.
+
+
+
+%One thought is to 
+%also let the {\tt ArBB} monad keep track of what arrays have been bound 
+%to ArBB variables and stored into ArBB memory. Currently there is a 
+%transfer of data into ArBB before a function is executed and the results 
+%are directly transferred back into Haskell. This is limiting in case 
+%the programmer wants to execute several ArBB functions in sequence, each 
+%on the result of the previous function. In this scenario data will be 
+%copied back and forwards needlessly between function executions in the current 
+%implementation. 
+
+
+The C++ embedding of ArBB allows for dense containers of structs in some cases. 
+The operations on vectors supplied by the ArBB virtual machine are exclusively 
+over vectors of scalar types. So the C++ embedding must be performing a AOS to SOA 
+(Array of Struct to Struct of Array) transformation. The Haskell embedding 
+does not implement any similar transformation. This is an important addition 
+that would for example make implementing functions on complex numbers easier. 
+
+We stress that this paper presents first steps in the implementation of 
+EmbArBB. Our benchmarks, while promising, are very limited. We must devote 
+effort to developing a suite of interesting, larger data parallel programs 
+for use in benchmarking EmbArBB. It is particularly important to explore the 
+nested vectors, and the effects of the limitation to one level of nesting 
+in ArBB. Those parts of ArBB that support nested vectors seem to be less well 
+developed than those supporting dense vectors, as evidenced by the sample 
+applications distributed with ArBB, none of which uses nesting. We expect 
+ArBB to become more complete, and perhaps we will be able to contribute 
+interesting examples both in the C++ and Haskell embeddings.
+
+Having exercised EmbArBB more thoroughly, we will assess the results of 
+the benchmarking and experiments with programming idioms, and decide on future
+research directions. We expect to focus on ways to provide users with an interface that is more 
+functional in style than the current C++ oriented one. 
+%ArBB has nested vectors that are used to implement nested data parallelism, that 
+%is data parallelism with irregularly shaped data, in the style of
+%NESL~\cite{NESL}. The Haskell embedding has so 
+%far been focused entirely on the dense functionality of ArBB. 
+%The next step will be to find ways to embed the nested operations too.
+%Looking on the 
+%nested operations and seeing how these can be embedded as well is next in line. 
+
+
+%GPUs are efficient on flat data parallel workloads, and approaches
+%to GPU programming often offer only flat data parallelism.
+%Although there is some promising recent work on nested data parallelism
+%in a functional setting
+%on GPUs~\cite{NestedGPU}, this area is generally less well explored.
+%We are enticed by the idea of
+%using EmbArBB as a 
+%platform for exploration of GPU programming and nested data-parallelism.
+%Implementing a GPU backend to EmbArBB would require applying 
+%GPU specific optimisations to the EmbArBB AST (expression datatype). 
+%The question of whether to perform the necessary optimisations
+%at the EmbArBB level, or later, inside ArBB, is an interesting
+%one that we would like to explore.
+
+
+
+%However 
+%if implementing a GPU backend on the EmbArBB level is the right thing to do 
+%or if rather it should be implemented as part of the ArBB system? There 
+%could be a point to explore in the setting of EmbArBB the space of different 
+%optimisations and transformations needed to run the functions on a GPU before 
+%doing it in the more complicated (perhaps) setting of full ArBB.  
+  

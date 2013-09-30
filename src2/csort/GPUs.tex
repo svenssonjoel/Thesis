@@ -1,0 +1,144 @@
+\section{GPUs and CUDA} 
+%\FloatBarrier
+% This section provides an overview of GPU programming and architecture. 
+
+The GPUs we target in this paper and with Obsidian are NVIDIA GPUs which
+support CUDA. Here we provide some background information on GPUs 
+that we hope will aid in the understanding of example programs throughout this paper. 
+%% This section briefly outlines features of GPUs that have 
+%% influenced the current version of Obsidian and that we make use of when 
+%% implementing the algorithms in following sections. 
+
+
+GPUs supporting CUDA are based on a scalable design. The GPU consists of a 
+number of so-called multiprocessors (MPs) each consisting of a number of 
+processing elements (PEs); sometimes these are referred to as cores or as 
+stream processors. An MP also contains a local shared memory through which 
+threads running on the PEs can communicate. The key that 
+makes the architecture scalable is that a GPU consists of one or more 
+of these MPs. This also influences the programming model significantly; since
+threads can only communicate in a synchronised manner using the local memory 
+(or in a very limited way using atomic operations) the programmer must 
+partition the computation in such a way that its communication patterns 
+follow this architectural constraint. The GPU also has access to a larger 
+memory called the {\em global} or {\em device} memory. The sizes of these 
+memories and the number of MPs and PEs per MP vary slightly between 
+generations of GPUs. For example, the GPU used in the benchmarks 
+(section \ref{sec:Benchmarks}) has a total of 1344 single-precision floating
+point CUDA cores and has 2 GB global memory. The very latest GPU architectures 
+from NVIDIA slightly digress from what is outlined here but mostly still 
+adhere to the same programming model. For exact details refer to \cite{KEPLER}.  
+
+The programming model that CUDA exposes is called single program multiple 
+threads (SPMT) and is a slight variation of the SPMD concept. This programming 
+model reflects the GPU architecture. In CUDA, the programmer writes a single 
+program that is executed by many threads. Because of the scalable architecture,
+with its one or more MP, these threads are grouped into {\em blocks} 
+(now up to 1024 threads per block). A block of threads is executed on an MP; 
+thus only threads within that block can communicate using the shared memory. 
+The same CUDA program can be executed on any GPU along the scale, from the 
+smallest with only one MP to the largest. The only difference is in the number 
+of blocks of threads that can be executed in parallel. This constraint implies 
+that all blocks must be free of any sequential dependencies. The collection of 
+all blocks is called a {\em Grid}.
+
+A CUDA program has two parts; there is a coordination program that runs on the 
+CPU and there are kernels that execute on the GPU MPs. The program describing 
+a kernel is parameterised over a blockId and a threadId so that 
+decisions can be made from that information during execution. A typical 
+CUDA program starts out by loading data into local memory using some 
+function of blockId and threadId. It then computes on the local memory 
+and uses a syncthreads primitive when exchanging values between threads. 
+When the local computation is done the final results are written back into 
+global memory again using some function of blockId and threadId. 
+%A detail 
+%here is that within a block, a smaller number of threads (32 of them) 
+%called a {\em Warp} can communicate safely without using the synchronisation 
+%primitive. This comes from how the GPU executes the warps; this is done 
+%in SIMD fashion, all threads progress at the same pace (essentially that 
+%they share a single instruction pointer). 
+
+For more CUDA and GPU specifics see references \cite{KEPLER,CUDA}. 
+
+\begin{figure}
+\begin{small}
+\begin{verbatim}
+__global__ void addv(float *i0, 
+                     float *i1, 
+                     float *r){ 
+  unsigned int ix = 
+     blockIdx.x * blockDim.x + threadIdx.x;
+
+  extern __shared__ float sm[]; 
+  sm[threadIdx.x] = i0[ix] + i1[ix]; 
+  r[ix] = sm[threadIdx.x];
+} 
+\end{verbatim}
+\end{small}
+\caption{The code illustrates elementwise addition of vectors. Shared memory 
+(the sm array) is used to allow the {\tt addv} program to be run with the 
+result {\tt r} pointing to the same memory area as either of the inputs.} 
+%But mostly shared memory is used to illustrate the syntax involved.}
+\label{fig:cudaKernel1}
+\end{figure}
+
+\begin{figure}
+\begin{small}
+\begin{verbatim}
+#define BLOCK_SIZE 32
+#define BLOCKS 4 
+#define N (BLOCKS * BLOCK_SIZE)
+
+int main(int argc, char **argv){
+  float *v1, *v2, *r;
+  float *dv1, *dv2, *dr;
+  
+  v1 = (float*)malloc(N*sizeof(float));
+  v2 = (float*)malloc(N*sizeof(float)); 
+  r = (float*)malloc(N*sizeof(float));
+
+  //Generate or read input data.
+  ... 
+
+  //Allocate arrays in Global memory
+  cudaMalloc((void**)&dv1, sizeof(float) * N ); 
+  cudaMalloc((void**)&dv2, sizeof(float) * N ); 
+  cudaMalloc((void**)&dr, sizeof(float) * N ); 
+  
+  //Copy data into Global memory
+  cudaMemcpy(dv1, v1, sizeof(float) * N, 
+                      cudaMemcpyHostToDevice);
+  cudaMemcpy(dv2, v2, sizeof(float) * N, 
+                      cudaMemcpyHostToDevice);
+  
+  //Launch the vector add kernel.
+  addv<<<BLOCKS, BLOCK_SIZE, BLOCK_SIZE * sizeof(float)>>>
+      (dv1,dv2,dr);
+  
+  //Launch further kernels on the data.
+  ... 
+  
+  cudaMemcpy(r, dr, sizeof(float) * N , 
+                    cudaMemcpyDeviceToHost);
+  
+  cudaFree(dv1);
+  cudaFree(dv2);
+  cudaFree(dr);
+  
+  //Show or further process results on the CPU. 
+  ... 
+}
+
+\end{verbatim}
+\end{small} 
+\caption{This code starts a CUDA kernel on  
+the GPU. The syntax $<<<${\tt nb,nt,sm}$>>>$ is used to set up a kernel
+launch configuration. The {\tt nb}, {\tt nt} and {\tt sm} quantities refer to 
+the number of blocks, the number of threads/block and the amount of shared 
+memory.}
+\label{fig:cudaCoord}
+\end{figure}
+
+
+
+%\FloatBarrier

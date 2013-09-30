@@ -1,0 +1,36 @@
+\section{Introduction}
+
+There is a pressing need for new and better ways to program parallel
+machines. Graphics Processing Units (GPUs) are one kind of such parallel
+machines that provide a lot of computing power. Modern GPUs have become
+extremely interesting for {\em general purpose} programming, i.e. computing
+functions that have little or nothing to do with graphics programming.
+
+We aim to develop high-level methods and tools, based on functional
+programming, for low-level general purpose programming of GPUs. The methods
+are high-level because we are making use of common powerful programming
+abstractions in functional programming, such as higher-order functions and
+polymorphism. At the same time, we still want to provide control to the
+programmer on important low-level details such as how much parallelism is
+introduced, and memory layout. (These aims are in contrast to other
+approaches to GPU programming, where the programmer expresses the intent in
+a high-level language, and then lets a smart compiler try to do its best.)
+
+Based on our earlier work on structural hardware design, we plan to
+investigate whether or not a {\em structure-oriented programming style} can
+be used in programming modern GPUs. We are developing Obsidian, a domain
+specific language embedded in Haskell. The aim is to make extensive use of
+higher order functions capturing {\em connection patterns}, and from these
+compact descriptions to generate code to run on the GPUs. Our
+hardware-oriented view of programming also leads us to investigate the use
+of algorithmic ideas from the hardware design community in parallel
+programming.
+
+In the rest of the paper, we first briefly review our earlier work on
+hardware description languages (Sect.\ \ref{sec:combinators}), and introduce
+the GPU architecture we are working with (Sect.\ \ref{sec:gpu}). After
+that, we describe the current status of the language Obsidian, and show
+examples (Sect.\ \ref{sec:obsidian}) and experimental results (Sect.\
+\ref{sec:results}). Obsidian is currently very much work in progress; we
+discuss motivations and current shortcomings (Sect.\ \ref{sec:disc}) and
+future directions (Sect.\ \ref{sec:fut}).

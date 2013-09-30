@@ -1,0 +1,390 @@
+
+
+\section{Implementation} 
+EmbArBB is a deeply embedded language. There is a constructor for 
+every operation that ArBB can perform. A deep embedding is useful when 
+there is need to apply optimisations or transformations to the AST before 
+executing the operations. However, EmbArBB currently relies entirely on 
+ArBB to perform optimisations to the program. The only optimisation 
+performed on the EmbArBB side is sharing detection. Detecting sharing 
+reduces the number of calls into the ArBB C library. Should we add a 
+GPU backend to EmbArBB, further GPU specific optimisations of the AST 
+will likely become necessary. 
+ 
+
+\subsection{Vectors} 
+EmbArBB has support for one, two and three dimensional dense vectors,
+represented by a datatype called {\tt DVector}. 
+
+\begin{verbatim}
+import qualified Data.Vector.Storable as V
+
+data DVector d a 
+  = Vector {vectorData  :: V.Vector a, 
+            vectorShape :: d} 
+\end{verbatim}  
+
+The payload data in a {\tt DVector} is stored in a vector from the 
+{\tt Data.Vector} library. There is also a {\tt d} parameter that specifies 
+the shape of the DVector. 
+
+%The {\tt DVector} type has two parameters. The first parameter {\tt d} 
+%is a type level representation of the dimensionality of a vector. 
+%The dimensionality is encoded using a datatype: 
+
+The {\tt d} parameter is used for a type level representation of the 
+dimensionality of a vector, as in the Repa library~\cite{REPA}. The 
+dimensionality is encoded using the following types together with 
+the {\tt Int} type. 
+
+\begin{verbatim} 
+data a :. b = a :. b  
+infixl :. 
+
+data Z = Z 
+\end{verbatim} 
+
+%There are also easy to use synonyms for the allowed cases:
+The dimensions zero to three are represented as follows:
+
+%% MS : Shouldn't there be a ref. to Repa (or to whatever paper first
+%% used these kinds of types for arrays) here??  I put a suggestion
+%% but it should be changed to the correct ref.
+
+\begin{verbatim} 
+type Dim0 = Z             
+type Dim1 = Dim0 :. Int
+type Dim2 = Dim1 :. Int 
+type Dim3 = Dim2 :. Int
+\end{verbatim} 
+
+For example in the reduction functions provided by EmbArBB the 
+output vector is of a dimensionality one less than the input vector 
+used. Below is the type of {\tt addReduce} to illustrate this. 
+
+\begin{verbatim} 
+addReduce :: Num a 
+           => Exp USize 
+           -> Exp (DVector (t:.Int) a) 
+           -> Exp (DVector t a)
+\end{verbatim} 
+
+A somewhat unfortunate side effect of this is that currently 
+EmbArBB has two kinds of scalars,
+{\tt Exp (DVector Dim0 a)} and {\tt Exp a}. The result of reducing 
+a one-dimensional vector is a zero-dimensional vector. An operation 
+called {\tt index0} converts from zero-dimensional vectors 
+to scalars. 
+
+Irregular container, in ArBB called Nested vectors, are represented in 
+EmbArBB by the type {\tt NVector}. Currently there are no versions of the 
+{\tt copyIn}, {\tt copyOut} or {\tt new} functions for nested vectors. 
+The programmer must transfer dense vectors into the ArBB heap and then 
+apply nesting to them as part of the computation to perform thereupon. This 
+means that having a concrete representation for a NVector is currently 
+not useful. In the hope of being able to implement some of the transfer 
+functions, even without direct support from the ArBB VM, we represent 
+NVectors as a vector of dense data together with a vector containing 
+segment lengths.  
+
+\begin{verbatim} 
+data NVector a = 
+       NVector { nVectorData     :: V.Vector a
+               , nVectorNesting  :: V.Vector USize}
+\end{verbatim} 
+
+As part of the interface between Haskell and EmbArBB there are also mutable 
+vectors, of a type called {\tt BEDVector}. These are vectors that reside in 
+the ArBB heap and are represented only by an integer identifier with which 
+the actual data can be accessed from ArBB. These are used to store the inputs 
+and outputs of calls to {\tt execute} on a captured function. 
+ 
+\begin{verbatim}
+data BEDVector d a = 
+       BEDVector { beDVectorID :: Integer
+                  , beDVectorShape :: d}  
+\end{verbatim}
+
+New {\tt BEVector}s are created using the function {\tt new}.
+The function {\tt copyIn} copies a {\tt DVector} from Haskell to the ArBB heap 
+and there is a function {\tt copyOut} to retrieve data from ArBB.  
+
+
+\subsection{The language} 
+The EmbArBB language is implemented as a set of library functions, operating on an expression datatype:
+
+\begin{verbatim} 
+data Expr = Lit Literal
+          | Var Variable 
+            
+          | Index0 Expr 
+          | ResIndex Expr Int 
+            
+          | Call (R GenRecord) [Expr]  
+          | Map  (R GenRecord) [Expr]   
+            
+          | While ([Expr] -> Expr)  
+                  ([Expr] -> [Expr])  
+                  [Expr] 
+                             
+          | If Expr Expr Expr 
+          | Op Op [Expr]   
+\end{verbatim} 
+Most of the ArBB functionality is taken care of by the {\tt Op} constructor. 
+The datatype {\tt Op} used to represent operations has over 120 
+constructors, so only a selection is shown in figure~\ref{fig:OPS}. 
+Having all these 120+ operations taken care of by one constructor in 
+the expression datatype simplifies the implementation of the backend, 
+since all of these operations are handled in a very similar way. The few 
+remaining special ArBB capabilities such as loops, and function mapping 
+and calling are handled by their own cases, discussed below. There are 
+also some implementation specific details that result in their own 
+constructors in the {\tt Expr} type, namely {\tt Index0} for turning a 
+zero dimensional DVector into a scalar, and {\tt resIndex} that helps with 
+implementing operations that have more than one result. An example of an 
+such an operation is {\tt SortRank}, which returns both the sorted result 
+of an input vector and a vector of indices that specifies a permutation 
+that would have sorted the input vector. 
+
+The {\tt Expr} type also has constructors for the {\em call} and {\em map} 
+functionality. To call a function means to apply it to input data. The 
+{\tt map} operation specifies elementwise application of a function over 
+vectors, like NESL's {\em apply-to-each}~\cite{NESL}, so it corresponds 
+to Haskell's {\tt map} and {\tt zipWith}. Both {\tt Call} and {\tt Map} 
+take a {\tt(R GenRecord)}. This is inspired by the delayed expressions 
+that enable the implementation of {\tt vapply} in Nikola~\cite{NIKOLA}. 
+The {\tt R} is the reification monad used to create DAGs (directed acyclic 
+graphs) from embedded language functions. These DAGs are part of a 
+{\tt GenRecord} that contains all information that the ArBB code generator 
+needs to generate the ArBB function. 
+
+The {\tt While} loop is represented using higher order abstract syntax, 
+that is using functions to represent the condition and body. The state 
+is represented by a list of expressions; this needs to be generalised 
+somewhat in order to support loops with general tuples in the state. 
+Something more structured than a list is needed for this. 
+
+The expression data type used in EmbArBB is untyped (not using a GADT). 
+A typed interface to the language is supplied using the same phantom types 
+method as used in {\em pan}~\cite{ELLIJFP} and many other Haskell embedded 
+languages since then. The choice to use an untyped {\tt Expr} datatype was 
+based on the wish to keep the backend (ArBB code generation) as simple as 
+possible. 
+
+%Currently there 
+%are very few {\tt expr} to {\tt expr} transformations taking place before the code 
+%generation so the benefits of having the typed representation would be small.
+% ** Have commented this out for now as it may cause confusion, esp if
+% the implementation changes before the workshop
+
+\begin{verbatim}
+-- Phantom types
+type Exp a = E Expr 
+\end{verbatim}  
+
+As an example, the operation {\tt addReduce}, which reduces a vector across a specified dimension, is implemented as follows in the EmbArBB library:
+
+\begin{verbatim}
+addReduce :: Num a 
+           => Exp USize 
+           -> Exp (DVector (t:.Int) a) 
+           -> Exp (DVector t a) 
+addReduce (E lev) (E vec) = 
+  E $ Op AddReduce [vec,lev]
+\end{verbatim}  
+
+%The {\tt addReduce} function takes a {\tt DVector} of any dimensionality greater than 0,
+%thats what the (():.t) in its type specifies, and a integer ({\tt USize}) that specifies 
+%the level to reduce across. The result is a {\tt DVector} of dimensionality one less 
+%than the input vector. 
+
+
+
+\begin{figure} 
+\begin{minipage}{\linewidth}
+\begin{Verbatim}[frame=single]
+data Op =  
+   -- elementwise and scalar
+     Add | Sub | Mul | Div | Max | Min 
+   | Sin | Cos | Exp 
+   ... 
+   
+   -- operations on vectors 
+   | Gather | Scatter | Shuffle | Unshuffle
+   | RepeatRow | RepeatCol | RepeatPage 
+   | Rotate | Reverse | Length | Sort 
+   | AddReduce | AddScan | AddMerge
+   ... 
+\end{Verbatim}
+\end{minipage}
+\caption{  ArBB scalar, elementwise and vector operations, which are handled by the {\tt Op} constructor in the {\tt Expr} datatype.
+          This is just a selection from the more than 120 different operations ArBB provides.}
+\label{fig:OPS}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Interfacing with Haskell and Code generation} 
+
+The interface between ArBB and Haskell consists of the {\tt DVector}, {\tt NVector}, {\tt BEDVector} and {\tt BEScalar} types, 
+the {\tt capture}, and {\tt execute} functions, and the ArBB monad with its {\tt withArBB} 
+``run''-function. This section describes what happens when the programmer captures 
+an embedded language function, and when {\tt execute} is called on a captured
+function. 
+
+Capture and execution of functions takes place in the {\tt ArBB} monad, which
+manages state of type {\tt ArBBState}:
+
+\begin{verbatim}
+data ArBBState = 
+  ArBBState 
+    { arbbFunMap :: Map.Map Integer 
+                            ArBBFun        
+    , arbbVarMap :: Map.Map Integer 
+                            VM.Variable 
+    , arbbUnique :: Integer } 
+
+type ArBBFun = (VM.ConvFunction, [Type], [Type])
+\end{verbatim}
+
+This state contains a map from function names to ArBB functions and their input and 
+output types. The {\tt VM.ConvFunction} is how ArBB functions are represented by 
+the ArBB-VM bindings. There is a map from vector and scalar IDs to their 
+corresponding ArBB variables. The last item in {\tt ArBBState} is an Integer 
+that is used to generate new function names and variable IDs as the programmer 
+captures more functions or creates new arrays on the ArBB heap. 
+Now, the {\tt ArBB} monad is defined as: 
+
+\begin{verbatim}
+type ArBB a = StateT ArBBState VM.EmitArbb a  
+\end{verbatim}
+
+{\tt VM.EmitArbb} is also a concept from the virtual machine bindings. It manages 
+low-level functions (the {\tt VM.ConvFunction} functions) and implements an interface to 
+the low level ArBB-VM API. 
+{\tt EmitArBB} is the ArBB code generating monad from the arbb-vm bindings.
+For more or less everything that can be done with the arbb-vm bindings, there is a function
+of the form 
+\begin{verbatim}
+f :: arg1 -> ... argn -> EmitArBB out
+\end{verbatim}
+For example, for generating an operation node (such as +) in the ArBB IR, there is a
+function of type
+\begin{verbatim}
+op_ :: Opcode 
+     -> [Variable] 
+     -> [Variable] 
+     -> EmitArbb ()
+\end{verbatim}
+\noindent
+while the function for generating a while loop in the ArBB IR has type
+\begin{verbatim}
+while_ :: (EmitArbb Variable) 
+        -> EmitArbb a 
+        -> EmitArbb a
+\end{verbatim}
+The details of the translation are omitted for brevity, as the approach is
+standard.
+
+When a function {\tt f} of type 
+\begin{verbatim}
+Exp tin1 -> ... -> Exp tinN -> Exp tout
+\end{verbatim}
+is captured, it is 
+first applied to expressions that represent variable names. For each of the 
+inputs, {\tt (tin1,..,tinN}), a variable is created. The result is an expression 
+(or expressions) representing the function {\tt f}. On this expression, sharing 
+detection is performed, and a directed acyclic graph (DAG) is created. 
+The method of sharing detection used is based on the StableNames method~\cite{Gill}. 
+
+Then, the code generation is implemented using a very 
+direct approach; no extra optimisations or transformations are applied. 
+This is a reasonable choice, since the whole point of ArBB is that the 
+built-in JIT compiler knows and performs architecture specific optimisations. 
+Sharing detection on the Haskell side makes sense because code generation for 
+each node in the DAG results in at least two calls into the ArBB-VM API, which 
+means going through the FFI and incurring the associated cost. Detecting the
+sharing already in the host language should give a smaller workload for the 
+ArBB JIT compiler, thus reducing the time spent on JITing.
+It remains to be seen how important JIT cost will be in practice, however,
+as we expect it to be amortised over a large number of executions of 
+the JITed code. We will need to conduct experiments with a suite of larger 
+examples in order to decide if sharing detection on the Haskell side is 
+worthwhile.
+
+%Now, in a system such as this the time it 
+%takes to JIT is of lesser importance, the JIT cost will likely be amortised over 
+%a large number of executions of the JITed code. 
+
+Applying {\tt capture} to a function gives an object of type
+
+\begin{verbatim}
+type FunctionID = Integer
+
+data Function i o = Function FunctionID
+\end{verbatim}
+
+The {\tt i} and {\tt o} parameters to {\tt Function} represent the input and output 
+types of the captured function. As an example, capturing 
+\begin{verbatim}
+f :: Exp (DVector Dim1 Word32) 
+   -> Exp (DVector Dim1 Word32)
+\end{verbatim}
+results in an object of type
+\begin{verbatim}
+Function (BEDVector Dim1 Word32) 
+         (BEDVector Dim1 Word32)
+\end{verbatim}
+This is just phantom types placed over a function name that is just a {\tt String},
+but it does offer a typed interface for the {\tt capture} and {\tt execute} functions.
+
+The {\tt execute} function that launches a captured function takes a {\tt Function i o} 
+object, inputs of type {\tt i} and outputs of type {\tt o}.
+The function name is looked up in the {\tt ArBB} environment (the monad). The inputs
+and outputs are also looked up in the environment and then the function 
+is executed. 
+
+\begin{verbatim} 
+execute :: (VariableList a, VariableList b) 
+         => Function a b -> a -> b -> ArBB ()       
+execute (Function fid) a b = 
+  do 
+    (ArBBState mf mv _) <- S.get 
+    case Map.lookup fid  mf of 
+      Nothing -> error "execute: Invalid function" 
+      (Just (f,tins,touts)) -> 
+        do 
+          ins <- vlist a 
+          outs <- vlist b
+          
+          liftVM$ VM.execute_ f outs ins 
+\end{verbatim} 
+
+%The {\tt arbbUp}, {\tt arbbDown} and {\tt arbbAlloc} functions are provided by the 
+%{\tt ArBBin} and {\tt ArBBOut} classes. Output storage needs to be allocated before the
+%function is executed. The {\tt arbbAlloc b} uses the sizes and shapes of the output 
+%to allocate proper storage for the results in ArBB memory.
+
+The {\tt vlist} function goes through the heterogeneous list of inputs or outputs 
+and looks up each of the elements in the {\tt arbbVarMap}; the result is a Haskell 
+list of {\tt VM.Variable}. The function {\tt VM.execute\_} is part of the virtual 
+machine API bindings, and corresponds directly to a C function in that library. 
+
+
+%EmbArBB is built on top of the Haskell ArBB-VM bindings~
+
+
+%\begin{figure}
+%\begin{center}
+%\includegraphics[width=5cm]{./img/stack}
+%\end{center}
+%\caption{EmbArBB is implemented on top of Haskell bindings to the ArBB virtual machine C API}
+%\label{fig:stack}
+%\end{figure}
+
+
+\FloatBarrier
+%\subsection{ArBB Code generation}
+%Describe what happens on ``Capture'' and ``Execute'' 
+
+%\subsection{summary} 

@@ -1,0 +1,273 @@
+%-----------------------------------------------------------------------------
+%
+%               Template for sigplanconf LaTeX Class
+%
+% Name:         sigplanconf-template.tex
+%
+% Purpose:      A template for sigplanconf.cls, which is a LaTeX 2e class
+%               file for SIGPLAN conference proceedings.
+%
+% Guide:        Refer to "Author's Guide to the ACM SIGPLAN Class,"
+%               sigplanconf-guide.pdf
+%
+% Author:       Paul C. Anagnostopoulos
+%               Windfall Software
+%               978 371-2316
+%               paul@windfall.com
+%
+% Created:      15 February 2005
+%
+%-----------------------------------------------------------------------------
+
+
+%\documentclass[]{sigplanconf}
+
+% The following \documentclass options may be useful:
+%
+% 10pt          To set in 10-point type instead of 9-point.
+% 11pt          To set in 11-point type instead of 9-point.
+% authoryear    To obtain author/year citation style instead of numeric.
+
+%\usepackage{amsmath}
+
+%\usepackage{graphicx}
+%\usepackage{placeins} 
+%\usepackage{url}
+%\usepackage[T1]{fontenc}
+%\usepackage{tikz}
+%\usepackage{fancyvrb}
+
+%\begin{document}
+
+%\exclusivelicense
+%\conferenceinfo{FHPC~'13}{September 23 2013, Boston, MA, USA} 
+%\copyrightyear{2013} 
+%\copyrightdata{978-1-4503-2381-9/13/09} 
+%\doi{2502323.2502325}
+
+
+
+%\titlebanner{DRAFT}        % These are ignored unless
+%\preprintfooter{Counting Sort}   % 'preprint' option specified.
+
+%\title{Efficient Counting Sort Implementations using an Embedded GPU Programming Language}
+%\title{Implementing Counting Sort for GPUs using an Embedded Language}
+%\title{Counting and Occurrence Sort for GPUs using an Embedded Language}
+%\subtitle{Subtitle Text, if any}
+
+%\authorinfo{Josef Svenningsson \and Bo Joel Svensson \and Mary Sheeran}
+%           {Dept, of Computer Science and Engineering \\ 
+%            Chalmers University of Technology}
+%           {\{josefs, joels, ms\}@chalmers.se}
+
+%\maketitle
+
+\section*{Abstract}
+This paper investigates two sorting algorithms: counting sort and a
+variation, occurrence sort,  which also removes duplicate elements, 
+and examines their suitability for running on the GPU. The duplicate 
+removing variation
+turns out to have a natural functional, data-parallel implementation
+which makes it particularly interesting for GPUs.
+
+The algorithms are implemented in Obsidian, a high-level domain
+specific language for GPU programming.
+
+Measurements show that our implementations in many cases outperform
+the sorting algorithm provided by the library Thrust. Furthermore, occurrence
+sort is another factor of two faster than
+ordinary counting sort. We conclude that counting sort is an important
+contender when considering sorting algorithms for the GPU, and that 
+occurrence sort is highly preferable when applicable. We also show 
+that Obsidian can produce very competitive code.
+
+
+%% \category{CR-number}{subcategory}{third-level}
+%% <<<<<<< HEAD
+
+%% %% \terms
+%% %% term1, term2
+
+%% %% \keywords
+%% %% keyword1, keyword2
+%% \category{D.3.2}{Programming Languages}{Language Classifications}[Applicative (functional) languages; Concurrent, distributed, and parallel languages]
+%% \category{D.3.4}{Programming Languages}{Processors}[Code generation]
+
+%% %\terms
+%% %term1, term2
+%% \terms
+%% Languages, Performance
+%% =======
+%\category{D.3.2}{Programming Languages}{Language Classifications}[Applicative (functional) languages; Concurrent, distributed, and parallel languages]
+%\category{D.3.4}{Programming Languages}{Processors}[Code generation]
+%% \terms
+%% term1, term2
+%% >>>>>>> 3b812338c4f7649982b17fb45df51f13d4285484
+
+%\keywords
+%keyword1, keyword2
+%\keywords
+%% <<<<<<< HEAD
+%% Data parallelism, array programming, embedded language
+%% =======
+%Sorting, embedded language
+
+%% >>>>>>> 3b812338c4f7649982b17fb45df51f13d4285484
+
+\input{./csort/intro.tex}
+\input{./csort/Algorithm.tex}
+\input{./csort/GPUs.tex}
+\input{./csort/Obsidian.tex} 
+\input{./csort/ObsCudaAlgo.tex}
+\input{./csort/benchmarks.tex}
+\input{./csort/discussion.tex}
+
+%\appendix
+%\section{Appendix Title}
+
+%This is the text of the appendix, if you need one.
+
+\section*{Acknowledgments} %\acks
+This research has been funded by the Swedish Foundation for
+Strategic Research (which funds the Resource Aware Functional 
+Programming (RAW FP) Project) and by the Swedish Research Council.
+
+
+%\bibliographystyle{abbrvnat}
+%% \bibliography{paper}
+
+%\begin{thebibliography}{18}
+%\providecommand{\natexlab}[1]{#1}
+%% \providecommand{\url}[1]{\texttt{#1}}
+%% \expandafter\ifx\csname urlstyle\endcsname\relax
+%%   \providecommand{\doi}[1]{doi: #1}\else
+%%   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+%% \bibitem[wik()]{wikipedia}
+%% Wikipedia article: Counting sort.
+%% \newblock \url{http://en.wikipedia.org/wiki/Counting_sort}.
+
+%% \bibitem[Chakravarty et~al.(2011)Chakravarty, Keller, Lee, McDonell, and
+%%   Grover]{Acc}
+%% M.~M. Chakravarty, G.~Keller, S.~Lee, T.~L. McDonell, and V.~Grover.
+%% \newblock {Accelerating Haskell array codes with multicore GPUs}.
+%% \newblock In \emph{Proc. of the sixth workshop on Declarative aspects of
+%%   multicore programming}, DAMP '11. ACM, 2011.
+
+%% \bibitem[Claessen et~al.(2012)Claessen, Sheeran, and Svensson]{PUSH}
+%% K.~Claessen, M.~Sheeran, and B.~J. Svensson.
+%% \newblock {E}xpressive {A}rray {C}onstructs in an {E}mbedded {GPU} {K}ernel
+%%   {P}rogramming {L}anguage.
+%% \newblock In \emph{Proceedings of the 7th workshop on Declarative aspects and
+%%   applications of multicore programming}, DAMP '12, 2012.
+
+%% \bibitem[Elliott et~al.(2003)Elliott, Finne, and de~Moor]{ELLIJFP}
+%% C.~Elliott, S.~Finne, and O.~de~Moor.
+%% \newblock Compiling embedded languages.
+%% \newblock \emph{Journal of Functional Programming}, 13\penalty0 (2), 2003.
+%% \newblock URL \url{http://conal.net/papers/jfp-saig/}.
+
+%% \bibitem[Harris et~al.(2007)Harris, Sengupta, and Owens]{LargeScan}
+%% M.~Harris, S.~Sengupta, and J.~D. Owens.
+%% \newblock Parallel {P}refix {S}um ({S}can) with {CUDA}.
+%% \newblock In H.~Nguyen, editor, \emph{GPU Gems 3}. Addison Wesley, 2007.
+
+%% \bibitem[{J}oel {S}vensson(2011)]{JSLIC}
+%% {J}oel {S}vensson.
+%% \newblock {O}bsidian: {GPU} {K}ernel {P}rogramming in {H}askell.
+%% \newblock Technical Report 77L, {C}omputer {S}cience and {E}nginering,
+%%   {C}halmers {U}niversity of {T}echnology, {G}othenburg, 2011.
+%% \newblock Thesis for the degree of Licentiate of Philosophy.
+
+%% \bibitem[Karras(2012)]{Karras}
+%% T.~Karras.
+%% \newblock {Maximizing Parallelism in the Construction of BVHs, Octrees, and k-d
+%%   Trees}.
+%% \newblock In \emph{Proc. of the Fourth ACM SIGGRAPH / Eurographics conference
+%%   on High-Performance Graphics}, EGGH-HPG'12. Eurographics Association, 2012.
+
+%% \bibitem[Knuth(1998)]{Knuth}
+%% D.~E. Knuth.
+%% \newblock \emph{The art of computer programming, volume 3: (2nd ed.) sorting
+%%   and searching}.
+%% \newblock Addison Wesley Longman Publishing Co., Inc., Redwood City, CA, USA,
+%%   1998.
+%% \newblock ISBN 0-201-89685-0.
+
+%% \bibitem[Kolonias et~al.(2011)Kolonias, Voyiatzis, Goulas, and Housos]{CSORT}
+%% V.~Kolonias, A.~G. Voyiatzis, G.~Goulas, and E.~Housos.
+%% \newblock {Design and implementation of an efficient integer count sort in CUDA
+%%   GPUs}.
+%% \newblock \emph{{Concurrency And Computing: Practice And Experiance}},
+%%   23\penalty0 (18), Dec. 2011.
+
+%% \bibitem[Krueger et~al.(2011)Krueger, Grund, Jaeckel, Zeier, and
+%%   Plattner]{REMOVEDUPS}
+%% J.~Krueger, M.~Grund, I.~Jaeckel, A.~Zeier, and H.~Plattner.
+%% \newblock {Applicability of GPU Computing for Efficient Merge in In-Memory
+%%   Databases}.
+%% \newblock In \emph{The Second International Workshop on Accelerating Data
+%%   Management Systems using Modern Processor and Storage Architectures (ADMS
+%%   11)}, 2011.
+%% \newblock \url{http://www.adms-conf.org/p19-KRUEGER.pdf}.
+
+%% \bibitem[Kulkarni and Newton(2013)]{FPCDSL}
+%% A.~Kulkarni and R.~R. Newton.
+%% \newblock {E}mbrace, {D}efend, {E}xtend: {A} {M}ethodology for {E}mbedding
+%%   {P}reexisting {DSL}s, 2013.
+%% \newblock Functional Programming Concepts in Domain-Specific Languages
+%%   (FPCDSL'13).
+
+%% \bibitem[Mainland and Morrisett(2010)]{NIKOLA}
+%% G.~Mainland and G.~Morrisett.
+%% \newblock {Nikola: embedding compiled {GPU} functions in Haskell}.
+%% \newblock \emph{SIGPLAN Not.}, 45\penalty0 (11), 2010.
+
+%% \bibitem[{NVIDIA}({\natexlab{a}})]{CUDA}
+%% {NVIDIA}.
+%% \newblock {CUDA C Programming Guide}, {\natexlab{a}}.
+%% \newblock URL
+%%   \url{http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html}.
+
+%% \bibitem[{NVIDIA}({\natexlab{b}})]{KEPLER}
+%% {NVIDIA}.
+%% \newblock {NVIDIAs Next Generation CUDA Compute Architecture: Kepler GK110},
+%%   {\natexlab{b}}.
+%% \newblock URL
+%%   \url{http://www.nvidia.com/content/PDF/kepler/NVIDIA-Kepler-GK110-Architecture-Whitepaper.pdf}.
+
+%% \bibitem[{NVIDIA}({\natexlab{c}})]{THRUST}
+%% {NVIDIA}.
+%% \newblock {NVIDIA Thrust Library}, {\natexlab{c}}.
+%% \newblock URL \url{https://developer.nvidia.com/thrust}.
+
+%% \bibitem[Olsson et~al.(2012)Olsson, Billeter, and Assarsson]{Olsson}
+%% O.~Olsson, M.~Billeter, and U.~Assarsson.
+%% \newblock Clustered deferred and forward shading.
+%% \newblock In \emph{Proc. of the Fourth ACM SIGGRAPH / Eurographics conference
+%%   on High-Performance Graphics}, EGGH-HPG'12. Eurographics Association, 2012.
+
+%% \bibitem[Sintorn and Assarsson(2008)]{sintorn}
+%% E.~Sintorn and U.~Assarsson.
+%% \newblock Fast parallel {GPU}-sorting using a hybrid algorithm.
+%% \newblock \emph{Journal of Parallel and Distributed Computing}, 68\penalty0
+%%   (10), 2008.
+
+%% \bibitem[Sklansky(1960)]{Sklansky}
+%% J.~Sklansky.
+%% \newblock {Conditional Sum Addition Logic}.
+%% \newblock \emph{Trans. IRE}, EC-9\penalty0 (2), June 1960.
+
+%% \end{thebibliography}
+
+%% %% % The bibliography should be embedded for final submission.
+
+%% %% \begin{thebibliography}{}
+%% %% \softraggedright
+
+%% %% \bibitem[Smith et~al.(2009)Smith, Jones]{smith02}
+%% %% P. Q. Smith, and X. Y. Jones. ...reference text...
+
+%% %% \end{thebibliography}
+
+%% \end{document}

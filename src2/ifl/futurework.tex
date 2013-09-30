@@ -1,0 +1,31 @@
+% ------------------------------------------------------------------------------
+\section{Future work} \label{sec:fut}
+
+The version of Obsidian described here is at a very experimental stage. 
+The quality of the C code generated needs to improve to get performance 
+on par with the previous version. The previous version however, was very
+limited in what you could express. This older version is described in
+\cite{JMT}.
+There is a clear opportunity to perform classic compiler optimisations on 
+the IC formed by running an Obsidian program. Currently this is not done at all. 
+
+Ways to describe the coordination 
+of kernels in code that is still short and sweet are also needed. Some experiments using 
+methods similar to Lava's netlist generation have been performed, but the
+resulting performance is not yet satisfactory. In CUDA, Kernel coordination 
+is in part described in the actual kernel code. Kernels decide which parts 
+of the given data to use. As future work we will approach the kernel 
+coordination problem at a lower more CUDA-like level. We will, of necessity,
+need to develop programming idioms or combinators that express how data is 
+placed in the memory hierarchy. The isolation of this as a central question 
+is one of the more unexpected and interesting results of the project.
+Right now work is focused on developing combinators that are more clever 
+in their treatment of {\tt sync}s. This leads to new data structures that 
+allow the merging of {\tt sync}s. This new approach seems to make efficient
+implementations of combinators such as {\tt two} possible. 
+
+
+
+%We also need to experiment with ways of ``moving syncs around'' in our 
+%generated code, in order to avoid unnecessary serialisation caused by having 
+%too many syncs of small groups of threads.

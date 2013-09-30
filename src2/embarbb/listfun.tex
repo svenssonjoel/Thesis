@@ -1,0 +1,105 @@
+% -- Get the number of columns
+% getNCols :: Exp (DVector (t:.Int:.Int) a) 
+%           -> Exp USize 
+
+
+
+\begin{figure}
+\begin{small}
+\begin{Verbatim}
+-- Scatter values into a vector 
+-- resolves collisions by adding elements
+addMerge :: Exp (DVector (t:.Int) USize) -- indices
+         -> Exp USize                    -- res length
+         -> Exp (DVector (t:.Int) a)     -- src
+         -> Exp (DVector (t:.Int) a) 
+
+-- Reduce a vector using addition
+addReduce :: Num a 
+          => Exp USize   -- rows, cols or pages
+          -> Exp (DVector (t:.Int) a) 
+          -> Exp (DVector t a) 
+
+-- Segmented version of addReduce
+addReduceSeg :: Num a 
+             => Exp (NVector a)  -- nested input
+             -> Exp (DVector Dim1 a)
+
+-- Create a nested vector from a dense
+applyNesting :: Exp USize  -- lengths or offsets
+             -> Exp (DVector Dim1 USize) -- nesting
+             -> Exp (DVector Dim1 a)     
+             -> Exp (NVector a)
+
+
+-- Create a vector with a constant value
+constVector :: Exp USize  -- length
+            -> Exp a      -- value
+            -> Exp (DVector Dim1 a) 
+
+-- Extract a column from a 2D vector
+extractCol :: Exp USize              -- col. index
+           -> Exp (DVector Dim2 a)  
+           -> Exp (Vector a) 
+ 
+-- Fill a portion of a vector with a constant 
+fill :: Exp a                -- fill value 
+     -> Exp USize            -- start 
+     -> Exp USize            -- end 
+     -> Exp (DVector Dim1 a) -- dst
+     -> Exp (DVector Dim1 a) 
+
+-- Gather elements from a vectors 
+gather1D :: Exp (DVector Dim1 USize)  -- indices
+         -> Exp a                     -- default
+         -> Exp (DVector Dim1 a)      -- values
+         -> Exp (DVector Dim1 a) 
+
+-- Get the number of rows 
+getNRows :: Exp (DVector (t:.Int:.Int) a) 
+         -> Exp USize 
+
+-- Turn a zero dimensional vector into a scalar 
+index0 :: Exp (DVector Z a) -> Exp a 
+
+-- Create a 2D vector by repeating a 1D vector
+repeatRow :: Exp USize            -- #repetitions
+          -> Exp (DVector Dim1 a) -- row
+          -> Exp (DVector Dim2 a) 
+
+-- Replace one column in a 2D vector 
+replaceCol :: Exp USize            -- col
+           -> Exp (DVector Dim1 a) -- new values
+           -> Exp (DVector Dim2 a) 
+           -> Exp (DVector Dim2 a) 
+
+-- Convert every element of a vector to USize
+vecToUSize :: Exp (Vector a) 
+           -> Exp (Vector USize)
+
+\end{Verbatim}
+\end{small}
+\caption{A list of EmbArBB functions that are used in the examples with 
+         short descriptions} 
+\label{fig:listoffun}
+\end{figure} 
+
+\begin{figure}
+\fbox{
+\parbox{8cm}{
+\begin{itemize}
+\item {\tt ISize} is an integer type used to specify for example offsets.
+\item {\tt USize} is an unsigned integer type used for lengths or indices.
+\item {\tt Boolean} replaces the {\tt Bool} type for EmbArBB programs. The 
+reason for this is that ArBB internally represents booleans as 8bit words.
+while the {\tt Storable} instance for {\tt Bool} does not. 
+\item {\tt DVector} is the type of regular shaped vectors.
+\item {\tt NVector} is the type of irregularly shaped vectors.
+\end{itemize}
+}
+}
+\caption{A list of EmbArBB types with short descriptions} 
+\label{fig:listoftyp}
+\end{figure} 
+
+

@@ -1,0 +1,56 @@
+%\documentclass[10pt]{llncs}
+
+
+%\usepackage{amsmath}
+%\usepackage{graphicx}
+%\usepackage{subfigure}
+
+%\usepackage{alltt}
+%\usepackage{placeins}
+
+%\usepackage{fancyvrb}
+
+
+   \DefineVerbatimEnvironment
+     {code}{Verbatim}
+     {fontsize=\small,xleftmargin=0.6cm,samepage=true}
+
+%\begin{document}
+
+
+%\title{Obsidian:\\A Domain Specific Embedded Language\\for Parallel Programming of Graphics Processors}
+       
+
+%\author{Joel Svensson \and Mary Sheeran \and Koen Claessen}
+%\institute{Chalmers University of Technology, G\"oteborg, Sweden}
+
+%\date{}
+%\maketitle
+
+\section*{Abstract}
+
+We present a domain specific language, embedded in Haskell, for general
+purpose parallel programming on GPUs. Our intention is to explore the use of
+{\em connection patterns} in parallel programming. We briefly present our
+earlier work on hardware generation, and outline the current state of GPU
+architectures and programming models. Finally, we present the current status
+of the {\em Obsidian} project, which aims to make GPU programming easier,
+without relinquishing detailed control of GPU resources. Both a programming
+example and some details of the implementation are presented. This is a
+report on work in progress.
+
+%\end{abstract}
+\input{./ifl/intro}
+\input{./ifl/combinators}   %% uncomment when file available
+\input{./ifl/GPUs}           %% I decided to put a separate section on GPUs, rather
+                       %% than trying to cover it in the intro.
+
+\input{./ifl/obsidian}
+\input{./ifl/results}
+\input{./ifl/related}
+\input{./ifl/futurework}
+\input{./ifl/conclusion}
+%\bibliographystyle{plain}
+%\bibliography{ifl08}
+
+%\end{document}

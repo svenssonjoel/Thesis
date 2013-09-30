@@ -1,0 +1,18 @@
+\section{Results} \label{sec:results}
+
+Apart from the parallel prefix algorithm shown in this paper we have used
+Obsidian to implement sorters. For the sorters, the generated C code 
+performs quite well. One periodic sorting network, called {\em Vsort}, implemented in Obsidian in the style of the sorters presented in reference~\cite{LavaSorter},
+has a running time of 95$\mu$secs for 256 elements (the largest size that we can cope with in a single kernel). This running time can be compared to the 
+ 28$\mu$secs running time of the bitonic sort example supplied with the CUDA 
+SDK. However, for 256 inputs, bitonic sort has a depth (counted in number of comparators between input and output), of 36 compared to 
+Vsort's 64. So  we feel confident that we can make a sorter that improves considerably on our Vsort by implementing a recursive algorithm for which the corresponding network depth is less.
+(We implemented the periodic sorter in an earlier version of the system, in which recursion was not available.) The point here is not to be as fast as hand-crafted library code, but to come close enough to allow the user to quickly construct short readable programs that give decent performance. The results for sorting are promising in this respect.
+Sadly, the results for the Sklansky example are rather poor, and we will return to this point in the following section.
+
+
+
+The programs reported here were run on an NVIDIA 8800GTS and timed using 
+the CUDA profiler. 
+
+

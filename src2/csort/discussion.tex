@@ -1,0 +1,92 @@
+
+\section {Discussion} 
+
+It is instructive to compare the code of the two variants of counting
+sort. The standard algorithm requires mutations and its parallel
+implementation is rather complicated. The occurrence sort variation
+avoids key synchronisations, making the algorithm
+data-parallel and this gives it a performance advantage. However, in
+applying the trick to remove synchronisation we have changed the
+semantics of the function. In this case, it is still useful, albeit less
+generally applicable. The idea of removing synchronisation is a
+general and important idea for speeding up algorithms, but it is not
+clear how general the method used in this paper is.  We currently do
+not know of any other algorithms which could benefit from a similar
+trick.
+
+If the desired effect is to sort and remove duplicates 
+(for an example of this see \cite{REMOVEDUPS}) then 
+there is a clear benefit to using occurrence sort
+over the {\tt sort} combined with {\tt unique} method. 
+
+In this paper, we are entirely focused on the implementation and
+performance of kernels. Reference \cite{CSORT} goes into the details
+of performing data transfers in parallel with ongoing computations. We
+have not addressed this issue at all in our implementations. This is
+also the reason why we haven't performed any benchmarks against the algorithm in
+\cite{CSORT}, because it would compare very different things. As a
+piece of future work, it would be interesting to add the capability of
+streaming data from the main memory to the GPU to our algorithms.
+
+In counting sort, an auxiliary array holding the count of how many times 
+each element occurs in the input array, the histogram array, is created. 
+The size of this array is 
+based on the range of elements occurring in the input. This means that 
+more memory is needed for larger ranges and may imply that counting sort 
+is suitable only up to some point. A related algorithm, known as radix 
+sort \cite{Knuth}, addresses this issue by using multiple counting sort 
+like passes, one for each digit position and thus limits this auxiliary 
+memory usage to an array of size related to the radix (number of unique 
+digits) used in the representation of the values being sorted. During 
+our exploration of the counting sort algorithm on a GPU, we were not much 
+concerned by memory usage; all data and auxiliary 
+arrays fit easily in the device memory. The charts (\ref{fig:chart1}, \ref{fig:chart3} and \ref{fig:chart2}) indicate that our implementation offers the most 
+benefit in the ranges labelled as $T10$ to $T17$; these are in fact relatively 
+small ranges (1024 to 131072 unique values). Our current hypothesis 
+is that the decrease in benefit of counting sort from range $T18$ and onward
+is due to more and more complicated memory access patterns in the 
+reconstruction phase. However, more in-depth profiling is needed to 
+understand where the decrease in benefit comes from.
+%%  However, we postulate that 
+%% the decrease in benefit following $T18$ and onward are due to more complicated
+%% memory access patterns during reconstruction
+
+Obsidian is work in progress but this paper shows a step forward in its
+capabilities. New kinds of kernels that operate on global arrays can be 
+implemented. We also added atomic operations to the language. However, 
+when dealing with atomic operations, we express the Obsidian program 
+at a very low level. 
+%% The exact implementation of global arrays is not yet fully 
+%% decided upon. For example, the global arrays shown in this paper does 
+%% not have a length associated with them. The size of a global array is rather
+%% decided as a multiple of the size the kernel operates on in the case of 
+%% local computations. In the case of computations that do not use any local
+%% memory the length of global arrays is more free. These sizes are set when 
+%% launching the kernels. 
+%% Sometimes we made use of very low-level capabilities of Obsidian; when dealing 
+%%with atomic operations. 
+One task for future work is to find some way to raise 
+the level of abstraction in that area. Another future direction in exploring 
+the counting sort algorithm is to consider further optimisations.
+%% Another future direction in exploring 
+%% the counting sort algorithm specifically is to see what other kind of  
+%% optimisations we can perform. 
+One possibility is to work with sequentiality 
+(more work per thread). Continuing exploration in that direction could lead 
+to further improvements of Obsidian when it comes to low-level control.  
+
+In the current version of Obsidian, we need to write some CUDA 
+code by hand in order to implement the algorithm we describe. 
+In the future we want to be able to do all coding without leaving 
+Haskell. 
+
+%% There is already an example of using Obsidian as the code 
+%% generating back end of such an EDSL. This EDSL is called PEGGY and 
+%% is described in \cite{cole2012beauty}. 
+
+%% This case study turned out an interesting exercise in very low-level 
+%% programming in Obsidian. Having the ability to drop down to a CUDA-like 
+%% language allows us to make use of atomic operations... 
+
+
+ 

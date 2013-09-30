@@ -1,0 +1,608 @@
+
+% insert better head of section here 
+\section{Implementing counting sort in Obsidian} 
+\label{sec:parallel}
+
+%This section shows the implementations of the various kernels 
+%involved in our two variants of counting sort. The prefix sum 
+%computation that is used does not vary in the implementations and 
+%is shown in section \ref{sec:sklansky}. 
+
+%Two different kinds 
+%of {\em histogram} and {\em reconstruct} kernels are developed. 
+%The kernels involved in implementing the prefix sum used between the 
+%histogram and reconstruct phases are shown in section \ref{sec:Obsidian}.
+
+%This section outlines the implementation of the different kernels 
+%required by the counting sort algorithm. The main parts are 
+%computing the {\em histogram}, {\em prefix sums} and the {\em reconstruct} 
+%phase. 
+
+%The prefix sums computation consists of 2 different kernels while the 
+%two other phases are performed by a single kernel. The prefix sums are computed
+%in parallel following a scheme originally designed by 
+%J. Sklansky \cite{Sklansky}.  
+
+%Initially, we assumed that in order to tweak the performance of this algorithm 
+%we would substitute various prefix sums networks in the place of the Sklansky 
+%network and evaluate the performance difference. It may still be the case 
+%that the parallel prefix network used is an important aspect in the 
+%performance of this algorithm. But for many data sets the execution time 
+%of the reconstruct kernel completely dominates. In this paper we use two 
+%different versions of the same Sklansky network. One implemented using pull 
+%arrays and the other utilising push arrays. 
+
+%is it J. Sklansky? (whats the J for ?) 
+%Lots of the above should move to discussion, right ? 
+
+%\subsection{Counting sort}
+
+%The missing kernels in order to implement counting sort is histogram,
+%which counts occurrences of values in the input, and reconstruct, which
+%outputs the final sorted array.
+
+\subsection{Histogram} 
+
+When computing the histogram, atomic operations are needed. Index $i$
+in the histogram array is incremented for each occurrence of the value
+$i$ in the input array, and if there are multiple occurrences of $i$
+then multiple threads will try to increment, leading to a possible race.
+CUDA atomic operations must be applied to data stored at an actual memory 
+location. This does not fit very well into our setting with virtual arrays 
+(arrays that do not necessarily represent data in memory). But in Obsidian 
+it is possible to drop down to a low enough level of abstraction to still 
+implement this function. However, we are searching for suitable higher level 
+abstractions to apply here.
+
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%histogram :: GlobPull (EInt32) -> Final (GProgram (GlobPull (EWord32)))
+%histogram (GlobPull ixf) = Final $
+%      do global <- Output $ Pointer (typeOf (undefined :: EWord32))
+%         forAllT $ \gix ->
+%           do AtomicOp global (int32ToWord32 (ixf gix))  AtomicInc
+%              return ()
+%         return (GlobPull (\i -> index global i))
+%\end{Verbatim}
+%\end{small}
+
+\begin{small} 
+\begin{Verbatim}[samepage=true] 
+histogram :: GlobPull EInt32 
+             -> GProgram ()
+histogram gpull = do
+  global <- Output $ Pointer Word32 
+  forAllT $ \gix -> 
+     atomicOp global 
+              (int32ToWord32 (gpull ! gix)) 
+              AtomicInc
+\end{Verbatim} 
+\end{small} 
+
+Below, the code generated from this Obsidian program is shown.
+
+\begin{small}
+\begin{Verbatim}[samepage=true] 
+__global__ void histogram(int32_t *input0,
+                          uint32_t *output0){
+  
+  atomicInc(output0+(uint32_t)(input0[((bid*bDim)+tid)]),
+            0xFFFFFFFF);
+  
+}
+\end{Verbatim}
+\end{small}
+
+
+The generated code uses \verb!atomicInc! to increment a value in an
+array. The function is conditional, incrementing only if the value in
+memory is larger than the second argument. Since we always want to
+increment, no matter the value in memory, we've supplied {\tt
+  0xFFFFFFFF}, which is the largest possible value.
+
+The Obsidian code and the CUDA code are very similar in size and complexity. 
+However, an important advantage of the Obsidian code is that it composes better
+than the CUDA code. If the input to {\tt histogram} was a {\tt
+  GlobPull} array produced by some other Obsidian function, then the
+two functions would be fused, typically generating much faster code
+and not allocating memory for the fused array.
+
+%\newpage
+\subsection{Reconstruct}
+
+The kernel for the reconstruct step uses one thread per element in the
+input array. Each thread is implemented as a loop to write its
+corresponding element as many times as it should occur in the output.
+
+\begin{small}
+\begin{Verbatim}[samepage=true] 
+reconstruct :: GlobPull EWord32 
+               -> GlobPush EInt32
+reconstruct (GlobPull ixf) = GlobPush f
+  where f k = 
+    do forAllT $ \gix ->
+         let startIx = ixf gix 
+         in  SeqFor (ixf (gix + 1) - startIx) $ \ix ->
+               k (word32ToInt32 gix) (ix + startIx)
+\end{Verbatim}
+\end{small}
+
+The generated CUDA code for \verb!reconstruct! can be seen
+below. Modulo syntax and some index manipulation, the code is very
+similar to the Obsidian code.
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+__global__ void reconstruct(uint32_t *input0,
+                            int32_t *output0){
+  
+  for (int i1 =  0;
+       i1 < (input0[(((bid*bDim)+tid)+1)]-
+             input0[((bid*bDim)+tid)]);
+       i1++)
+  {
+    output0[(i1+input0[((bid*bDim)+tid)])] = 
+      (int32_t)(((bid*bDim)+tid));
+    
+  }
+  
+}
+\end{Verbatim}
+\end{small}
+
+Again, the difference between Obsidian and CUDA might seem small, but
+just as above, the code in Obsidian composes better.
+
+\section{Implementing occurrence sort in Obsidian} 
+\label{sec:occur}
+
+Occurrence sort uses an {\tt occurs} kernel instead of a 
+histogram. The result of the occurs computation is an array with a one 
+at indices corresponding to values occurring in the input array. The 
+reconstruction of the sorted (and duplicate free) array is also done 
+slightly differently.
+
+\subsection{Occurs}
+
+The occurs kernel is implemented by using the {\tt scatterGlobal} 
+function from the Obsidian library. This function takes two arrays, one of 
+indices to write to and a second of elements to write. In this case, it 
+is applied to the input array and an array containing all ones 
+({\tt replicateG 1}). 
+
+\begin{small}
+\begin{Verbatim}[samepage=true] 
+occurs :: GlobPull EInt32 -> GlobPush EWord32
+occurs elems = 
+  scatterGlobal (fmap int32ToWord32 elems) (replicateG 1)
+\end{Verbatim}
+\end{small} 
+
+The CUDA code generated from this function is shown below. 
+
+\begin{small}
+\begin{Verbatim}[samepage=true] 
+__global__ void occurs(int32_t *input0,
+                       uint32_t *output0){
+   
+  output0[(uint32_t)(input0[((bid*bDim)+tid)])] = 1;
+  
+}
+\end{Verbatim} 
+\end{small} 
+
+When running this code, it is possible that many threads write to the same 
+target element. Since all are writing a one, no atomic operations are needed; 
+the result will still be one. 
+
+It is worth comparing the Obsidian code for the {\tt histogram} kernel
+and the {\tt occurs} kernel. The {\tt histogram} kernel is highly
+imperative in nature, and requires atomic operations to manage
+synchronisation between threads. The {\tt occurs} kernel, on the other
+hand, has a very straightforward data-parallel implementation. Not only
+is it simpler, but as we will see in section \ref{sec:Benchmarks}, it
+is also significantly faster.
+
+\subsection{Reconstruct} 
+
+The reconstruct kernel for the occurrence sort algorithm  is
+almost identical to the kernel used for standard counting sort. The
+only difference is that a conditional can be used instead of a loop. 
+This can be seen as a slight optimisation; the previous version of reconstruct 
+could still be used in its place. 
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+reconstruct :: GlobPull EWord32 
+               -> GlobPush EInt32
+reconstruct (GlobPull ixf) = GlobPush f
+  where f k = 
+    do forAllT $ \gix ->
+         let startIx = ixf gix 
+         in  Cond ((ixf (gix + 1) - startIx) ==* 1) $
+               k (word32ToInt32 gix) startIx
+\end{Verbatim}
+\end{small}
+
+This variant of reconstruct results in the generated code below. 
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+__global__ void reconstruct(uint32_t *input0,
+                            int32_t *output0){
+   
+  if ((input0[(((bid*bDim)+tid)+1)]-
+       input0[((bid*bDim)+tid)])==1){
+
+  output0[input0[((bid*bDim)+tid)]] = 
+      (int32_t)(((bid*bDim)+tid));
+  
+  }
+
+}
+\end{Verbatim}
+\end{small}
+
+
+
+
+
+%\subsection{Histogram computations} 
+%
+%There are two different variants of the histogram computation used 
+%in our counting sort implementations. The first does not really create 
+%a histogram but creates an array that indicates what elements occurred. A
+%one in position $p$ indicates that $p$ was present in the input array. 
+%
+%There is also a full histogram used in the full version of counting sort. 
+%Here if $n$ occurs at position $p$ in the result array it indicates that 
+%$p$ occurs $n$ times in the input array. 
+
+%\subsubsection{First histogram} 
+%
+%First we implement the histogram for the counting sort variant that removes
+%duplicate elements. This function is not really a histogram, but rather 
+%it places a one at each index that correspond to an element in the data array.
+%The first histogram is implemented by using the {\tt scatterGlobal} 
+%function from the Obsidian library. This function takes two arrays, one of 
+%indices to write to and a second of elements to write. In this case it 
+%is applied to the input array and an array containing all ones 
+%({\tt replicateG 1}). 
+%
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%histogram :: GlobPull (EInt32) -> GlobPush (EWord32)
+%histogram elems = 
+%  scatterGlobal (fmap int32ToWord32 elems) (replicateG 1)
+%\end{Verbatim}
+%\end{small} 
+%
+%The CUDA code generated from this function is shown below. 
+%
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%__global__ void histogram(int32_t *input0,uint32_t *output0){
+%   
+%  output0[(uint32_t)(input0[((bid*bDim)+tid)])] = 1;
+%  
+%}
+%\end{Verbatim} 
+%\end{small} 
+%
+%When running this code it is possible that many threads write to the same 
+%target element. Since all are writing a one no atomic operations are needed, 
+%the result will still be one. 
+
+%\subsubsection{Full histogram}
+%
+%When implementing the full histogram atomic operations are needed. In this 
+%variant index $i$ in the histogram array is incremented for each occurrence 
+%of the value $i$ in the input array. 
+%CUDA atomic operations must be applied to data stored at an actual memory 
+%location. This does not fit very well into our setting with virtual arrays 
+%(arrays that do not necessarily represent data in memory). But in Obsidian 
+%it is possible to drop down to low enough level of abstraction to still 
+%implement this function. However, we are searching for suitable higher level 
+%abstractions to apply here. 
+
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%fullHistogram :: GlobPull (EInt32) -> Final (GProgram (GlobPull (EWord32)))
+%fullHistogram (GlobPull ixf) = Final $
+%      do global <- Output $ Pointer (typeOf (undefined :: EWord32))
+%         forAllT $ \gix ->
+%           do AtomicOp global (int32ToWord32 (ixf gix))  AtomicInc
+%              return ()
+%         return (GlobPull (\i -> index global i))
+%\end{Verbatim}
+%\end{small}
+%
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%__global__ void fullHistogram(int32_t *input0,uint32_t *output0){
+%  
+%  atomicInc(output0+(uint32_t)(input0[((bid*bDim)+tid)]),0xFFFFFFFF);
+%  
+%}
+%\end{Verbatim}
+%\end{small}
+%
+%
+%The generated code uses atomicInc to increment a value in an array. 
+%The second argument {\tt 0xFFFFFFFF} is a maximum required by CUDAs atomicInc, 
+%the value is incremented if it is less than this value. To implement a count, 
+%the maximum possible value is used as this argument. 
+
+
+%\subsection{Array reconstruction} 
+%
+%After the histogram computation and the prefix sum that computes the array 
+%we call the position arrays is done its time to reconstruct the sorted output. 
+%
+%\subsubsection{Reconstruct} 
+%
+%The first variant of reconstruct is for the duplicate removing counting sort. 
+%It takes the original data array and the position array as input. If element 
+%$i$ is in the data array it is written to the position that is pointed out
+%by index $i$ in the position array. 
+%
+%\begin{small} 
+%\begin{Verbatim}[samepage=true] 
+%reconstruct :: GlobPull (EInt32) -> GlobPull (EWord32)
+%               -> GlobPush (EInt32)
+%reconstruct inp pos = scatterGlobal (ixMap f pos) inp  
+%  where
+%    f gix = fmap int32ToWord32 inp ! gix
+%\end{Verbatim}
+%\end{small} 
+%
+%
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%__global__ void kernel(int32_t *input0,uint32_t *input1,int32_t *output0){
+%   
+%  output0[input1[(uint32_t)(input0[((bid*bDim)+tid)])]] = 
+%   input0[((bid*bDim)+tid)];
+%  
+%}
+%\end{Verbatim}
+%\end{small}
+%
+%There is a way to implement an optimised version of reconstruct for 
+%the counting sort that removes duplicates. This version does not take the 
+%original data array as input. Instead the output data is recreated from the 
+%position array alone.  
+%
+%\begin{small}
+%\begin{Verbatim}[samepage=true]
+%reconstruct' :: GlobPull (Exp Word32) -> GlobPush (Exp Int32)
+%reconstruct' (GlobPull ixf) = GlobPush f
+%  where f k = do forAllT $ \gix ->
+%                   let startIx = ixf gix in
+%                   Cond ((ixf (gix + 1) - startIx) ==* 1) $
+%                      k (word32ToInt32 gix) startIx
+%\end{Verbatim}
+%\end{small}
+%
+%\begin{small}
+%\begin{Verbatim}[samepage=true]
+%__global__ void reconstruct_opt(uint32_t *input0,int32_t *output0){
+%   
+%  if ((input0[(((bid*bDim)+tid)+1)]-input0[((bid*bDim)+tid)])==1){
+%
+%  output0[input0[((bid*bDim)+tid)]] = (int32_t)(((bid*bDim)+tid));
+%  
+%  }
+%
+%}
+%\end{Verbatim}
+%\end{small}
+
+
+
+
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%
+%reconstruct :: Exp Word32 
+%            -> GlobalArray Pull (Exp Word32) 
+%            -> GlobalArray Pull (Exp Word32) 
+%            -> Kernel (GlobalArray Push (Exp Word32))
+%reconstruct l inp pos = return $ 
+%  flip mkGlobalPushArray l $ \k ->
+%    forAllGlobal (globLen inp) $ \i ->
+%      k (pos ! (inp ! i),inp ! i)
+%
+%\end{Verbatim} 
+%\end{small}
+
+
+%\subsubsection{Full reconstruction} 
+
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%fullReconstruct :: GlobPull (EWord32) -> GlobPush (EInt32)
+%fullReconstruct (GlobPull ixf) = GlobPush f
+%  where f k = do forAllT $ \gix ->
+%                   let startIx = ixf gix in
+%                   SeqFor (ixf (gix + 1) - startIx) $ \ix ->
+%                      k (word32ToInt32 gix) (ix + startIx)
+%\end{Verbatim}
+%\end{small}
+%
+%\begin{small}
+%\begin{Verbatim}[samepage=true]
+%__global__ void kernel(uint32_t *input0,int32_t *output0){
+%  
+%  for (int i1 =  0;
+%       i1 < (input0[(((bid*bDim)+tid)+1)]-input0[((bid*bDim)+tid)]);
+%       i1++)
+%  {
+%    output0[(i1+input0[((bid*bDim)+tid)])] = (int32_t)(((bid*bDim)+tid));
+%    
+%  }
+%  
+%}
+%\end{Verbatim}
+%\end{small}
+
+
+
+%\subsection{The CUDA framework MOVE TO BENCHMARK SECTION} 
+
+%Given the generated code for all the kernels described previously it is now 
+%possible to construct the complete algorithm in CUDA by simply providing the 
+%skeleton that launches them. This involves allocation memory on the CUDA device 
+%for all intermediate results (here intermediate means between the launches of two 
+%kernels). Data needs to be copied to the device and then the kernels launched.
+%for example, the kernel generated from the Obsidian histogram function can 
+%be launched on the GPU by issuing: 
+
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%histogram<<<nblocks, nthreads,0>>>(dvalues,0,histresult);
+%\end{Verbatim} 
+%\end{small}
+
+%This indicates that {\tt histogram} should be started using {\tt nblocks}
+%number of blocks of each {\tt nthreads} number of threads and no shared 
+%memory. 
+%In the current status of Obsidian this ``kernel coordination'' code needs 
+%to be described in CUDA. 
+
+%Definitely not room for the actual code here! (Maybe not even pseudocode) 
+
+
+ 
+%The histogram kernel is operating on a large global input array. It looks 
+%at each element in the input array and then puts a one in the output 
+%array to signal the presence of a particular value. 
+
+%This particular kernel does not need to use any local memory on the GPU and 
+%there is no communication between threads. To implement this kernel it is 
+%suitable to use Obsidian's global arrays.
+ 
+
+%The kernel takes two inputs, a maximum length related to the size of the largest 
+%element in the input data and a global array containing that data. A global 
+%push array is created that contains a one at each index which corresponds to a
+%value in the input data.
+
+% \subsection{Computing prefix sums} 
+
+%The prefix sum computation is different from the histogram one. Here threads
+%needs to communicate and thus a kernel that utilises the GPU shared memory 
+%is more suitable. 
+
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%sklansky :: (Choice a, Syncable (Array Pull) a) 
+%         =>Int
+%         -> (a -> a -> a)
+%         -> Array Pull a
+%         -> Kernel (Array Pull a)
+%sklansky 0 op = pure id
+%sklansky n op = pure (twoK (n-1) (fan op)) 
+%              ->- sync 
+%              ->- sklansky (n-1) op 
+%
+%fan op arr = conc (a1, fmap (op c) a2) 
+%    where 
+%      (a1,a2) = halve arr
+%      c = a1 ! (fromIntegral (len a1 - 1)) 
+%\end{Verbatim} 
+%\end{small}
+%
+%With this Obsidian code CUDA kernels can be generated that operate on certain 
+%small sized sub arrays (called blocks). The factors that limit the number of 
+%elements that the kernel can operate upon are size of shared memory and number 
+%of threads per block that the CUDA device can launch. For this particular 
+%kernel the number of threads limits it to operate on a maximum of 512 or 
+%1024 elements depending on generation of GPU.  
+%In order to build a large parallel prefix from these small ones an approach 
+%similar to the one taken in \cite{LargeScan} is implemented. This requires 
+%that the {\tt sklansky} kernel also outputs the maximum element from each 
+%small block into a separate array of ``block maximums''. On the 
+%block maximums a second prefix sum is computed and the result of that is then 
+%distributed over the elements of the other blocks in the appropriate way. 
+%So, to implement this the {\tt sklansky} function is modified into a function 
+%that also outputs the block-maxima to a separate array: 
+%
+%\begin{small} 
+%\begin{Verbatim}[samepage=true] 
+%sklanskyM n op = sklansky n op ->- pure pairMax 
+%  where
+%    pairMax a = (a,
+%                 let i = fromIntegral (len a - 1)
+%                 in singleton (a ! i))
+
+%\end{Verbatim}
+%\end{small}
+
+%The next step is the kernel that distributes (scanned) block-maximums. This is 
+%again a kernel that does not need to use any local storage or communication
+%between threads so the global array approach is suitable. The  inputs 
+%to this kernel is, the block size, the array block maximums and the array 
+%of elements we operate on. The output is an array where the element i of 
+%the block maximums array is combined with each element in block i+1 of the 
+%input data array.  
+
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%distribute :: Exp Word32 
+%           -> (GlobalArray Pull (Exp Word32), 
+%               GlobalArray Pull (Exp Word32)) 
+%           -> Kernel (GlobalArray Push (Exp Word32)) 
+%distribute bsize (bmaxs,arr) = pure distr arr1
+%    where 
+%      distr arr = 
+%          pushGlobal (zipWithGlobal (+) 
+%                                    (expand bsize bmaxs) 
+%                                    arr)
+%      expand n arr =
+%        mkGlobalPullArray (\ix -> arr ! (ix `div` n))  
+%                          (globLen arr * n) 
+%\end{Verbatim} 
+%\end{small}
+
+%Distribute works by expanding the array of block maximums, that is repeating each 
+%of its elements a certain number of times and then performing a traditional 
+%{\tt zipWith} operation with the values array. 
+
+%The Obsidian code for {\tt sklansky} uses the {\tt conc} operation and the 
+%generated code has an unfortunate conditional that is executed by each thread.
+%Because of this another version was implemented using push arrays. The push 
+%array version uses half as many threads and each thread computes both 
+%branches of the conditional from the previous version. 
+
+%\begin{small}
+%\begin{Verbatim}[samepage=true] 
+%ilv2v :: Choice a => Int -> (a -> a -> a) -> 
+%                    Array Pull a -> Array Push a
+%ilv2v i g arr 
+%   = mkPushArray (\k -> a5 !* k *>* a6 !* k) n
+%  where
+%    n  = len arr
+%    n2 = n `div` 2
+%    a1 = resize (ixMap left arr) (n-n2) 
+%    a2 = resize (ixMap right arr) (n2)  
+%    a3 = resize (ixMap mid arr) (n2) 
+%    a4 = zipWith g a3 a2
+%    a5 = ixMap left (push a1)
+%    a6 = ixMap right (push a4)
+%    left = insertZero i
+%    right = flipBit i  . left
+%    mid = (.|. oneBits i) . left
+%
+%fan1 n op arr = ilv2v n op arr
+%  
+%%sklansky1 n op = [ilv2v i op | i <- [0..(n-1)]]
+%\end{Verbatim} 
+%\end{small}
+%assumes we provide compose.
+%maybe we should assume ilv2v is a library function 
+%  and just explain what it does. 
+%maybe Mary wants to tweak the above slightly ? 
+
+%For space reasons we omit all examples of generated code. For many examples 
+%of the kind of code Obsidian generates see references \cite{JSLIC,PUSH}. 

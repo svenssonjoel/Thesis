@@ -1,0 +1,218 @@
+\documentclass{sigplanconf}
+
+% The following \documentclass options may be useful:
+%
+% 10pt          To set in 10-point type instead of 9-point.
+% 11pt          To set in 11-point type instead of 9-point.
+% authoryear    To obtain author/year citation style instead of numeric.
+
+%\usepackage[none]{hyphenat}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{fancyvrb}
+
+\begin{document}
+\conferenceinfo{FHPC'12,} {September 15, 2012, Copenhagen, Denmark.}
+\CopyrightYear{2012}
+\copyrightdata{978-1-4503-1577-7/12/09}
+
+\titlebanner{}        % These are ignored unless
+\preprintfooter{}   % 'preprint' option specified.
+
+% \title{}
+\title{Parallel Programming in Haskell Almost for Free} 
+\subtitle{an embedding of Intel's Array Building Blocks}
+
+
+\authorinfo{Bo Joel Svensson}
+           {Chalmers University of Technology}
+           {joels@chalmers.se}
+\authorinfo{Mary Sheeran}
+           {Chalmers University of Technology}
+           {ms@chalmers.se}
+
+\maketitle
+
+\begin{abstract}
+\input{abstract.tex}
+\end{abstract}
+
+%\category{CR-number}{subcategory}{third-level}
+\category{D.3.2}{Programming Languages}{Language Classifications}[Applicative (functional) languages; Concurrent, distributed, and parallel languages]
+\category{D.3.4}{Programming Languages}{Processors}[Code generation]
+
+\terms
+Languages, Performance
+
+\keywords
+Data parallelism, array programming, dynamic compilation, embedded language
+
+%\input{outline.tex}
+
+\input{introduction.tex}
+\input{related.tex} 
+\input{programming.tex}
+\input{implementation.tex}
+\input{results.tex}
+
+%\input{discussion}
+\input{future.tex}
+\input{conclusion.tex} 
+
+%\cite{joelryan}
+%\cite{arbbpb}
+%\cite{arbbcpp}
+%\cite{arbbvm}
+%\cite{ARBB2011}
+%\cite{REPA}
+%\appendix
+%\section{Appendix Title}
+
+%This is the text of the appendix, if you need one.
+
+\acks
+
+%** Note. Joel should thank Intel. We should ack funding from VR and SSF.
+Svensson was first introduced to ArBB while on a three month internship at Intel
+during 2011. Thanks go to Ryan R. Newton for inspiring supervision 
+during that internship.
+%while 
+%working on Haskell bindings to ArBB at Intel as well as trying to understand 
+%the intricate details of the inside of Data.Array.Accelerate. 
+
+This research has been funded by the Swedish Foundation for
+Strategic Research (which funds the Resource Aware Functional 
+Programming (RAW FP) Project) and by the
+Swedish Research Council.
+
+
+
+% We recommend abbrvnat bibliography style.
+
+\bibliographystyle{abbrvnat}
+
+% The bibliography should be embedded for final submission.
+
+\begin{thebibliography}{}
+\softraggedright
+\bibitem[Axelsson et~al.(2010)Axelsson, Claessen, D{\'e}vai, Horv{\'a}th,
+  Keijzer, Lyckeg{\aa}rd, Persson, Sheeran, Svenningsson, and
+  Vajda]{FELDSPAR2010}
+E.~Axelsson, K.~Claessen, G.~D{\'e}vai, Z.~Horv{\'a}th, K.~Keijzer,
+  B.~Lyckeg{\aa}rd, A.~Persson, M.~Sheeran, J.~Svenningsson, and A.~Vajda.
+\newblock Feldspar: {A} domain specific language for digital signal processing
+  algorithms.
+\newblock In \emph{8th ACM/IEEE International Conference on Formal Methods and
+  Models for Codesign (MEMOCODE 2010)}, pages 169--178. IEEE Computer Society,
+  2010.
+
+\bibitem[Blelloch(1996)]{NESL}
+G.~Blelloch.
+\newblock Programming {P}arallel {A}lgorithms.
+\newblock \emph{Communications of the ACM}, 39\penalty0 (3), 1996.
+
+\bibitem[Chakravarty et~al.(2011)Chakravarty, Keller, Lee, McDonell, and
+  Grover]{accelerate}
+M.~M. Chakravarty, G.~Keller, S.~Lee, T.~L. McDonell, and V.~Grover.
+\newblock {A}ccelerating {H}askell {A}rray {C}odes with {M}ulticore {GPU}s.
+\newblock In \emph{Proceedings of the sixth workshop on Declarative aspects of
+  multicore programming}, DAMP '11, pages 3--14, New York, NY, USA, 2011. ACM.
+\newblock ISBN 978-1-4503-0486-3.
+%\newblock \doi{10.1145/1926354.1926358}.
+\newblock URL \url{http://doi.acm.org/10.1145/1926354.1926358}.
+
+\bibitem[Elliott et~al.(2003)Elliott, Finne, and de~Moor]{ELLIJFP}
+C.~Elliott, S.~Finne, and O.~de~Moor.
+\newblock Compiling embedded languages.
+\newblock \emph{Journal of Functional Programming}, 13\penalty0 (2), 2003.
+\newblock URL \url{http://conal.net/papers/jfp-saig/}.
+
+\bibitem[Gill(2009)]{Gill}
+A.~Gill.
+\newblock Type-{S}afe {O}bservable {S}haring in {H}askell.
+\newblock In \emph{Proceedings of the 2009 ACM SIGPLAN Haskell Symposium},
+  09/2009 2009.
+\newblock URL
+  \url{http://www.ittc.ku.edu/csdl/fpg/sites/default/files/Gill-09-TypeSafeRei%
+fication.pdf}.
+
+\bibitem[Hughes and Sheeran(2012)]{TFPIEPFP}
+J.~Hughes and M.~Sheeran.
+\newblock Teaching parallel functional programming at {C}halmers.
+\newblock In \emph{presentation at Trends in Functional Programming in
+  Education, Workshop associated with Conf. on Trends in Functional
+  Programming, St. Andrews}, 2012.
+
+\bibitem[Intel()]{arbbvm}
+Intel.
+\newblock {I}ntel(r) {A}rray {B}uilding {B}locks {V}irtual {M}achine
+  {S}pecification.
+\newblock \url{http://software.intel.com/sites/whatif/arbb/arbb_vm.pdf}.
+
+\bibitem[Keller et~al.(2010)Keller, Chakravarty, Leshchinskiy, Peyton~Jones,
+  and Lippmeier]{REPA}
+G.~Keller, M.~M. Chakravarty, R.~Leshchinskiy, S.~Peyton~Jones, and
+  B.~Lippmeier.
+\newblock Regular, shape-polymorphic, parallel arrays in haskell.
+\newblock In \emph{Proceedings of the 15th ACM SIGPLAN international conference
+  on Functional programming}, ICFP '10, pages 261--272, New York, NY, USA,
+  2010. ACM.
+\newblock ISBN 978-1-60558-794-3.
+%\newblock \doi{10.1145/1863543.1863582}.
+\newblock URL \url{http://doi.acm.org/10.1145/1863543.1863582}.
+
+\bibitem[Lippmeier et~al.(2012)Lippmeier, Chakravarty, Keller, Leshchinskiy,
+  and Jones]{DPH}
+B.~Lippmeier, M.~M.~T. Chakravarty, G.~Keller, R.~Leshchinskiy, and S.~P.
+  Jones.
+\newblock {W}ork {E}fficient {H}igher-{O}rder {V}ectorisation.
+\newblock \url{http://www.cse.unsw.edu.au/~chak/papers/replicate-tr.pdf}, 2012.
+\newblock ICFP'12.
+
+\bibitem[Mainland and {M}orrisett(2010)]{NIKOLA}
+G.~Mainland and G.~{M}orrisett.
+\newblock Nikola: {E}mbedding {C}ompiled {GPU} {F}unctions in {H}askell.
+\newblock In \emph{Proceedings of the third ACM Haskell symposium}, pages
+  67--78. ACM, 2010.
+\newblock ISBN 978-1-4503-0252-4.
+\newblock URL \url{http://doi.acm.org/10.1145/1863523.1863533}.
+
+\bibitem[Newburn et~al.(2011)Newburn, So, Liu, McCool, Ghuloum, Toit, Wang, Du,
+  Chen, Wu, Guo, Liu, and Zhang]{ARBB2011}
+C.~J. Newburn, B.~So, Z.~Liu, M.~McCool, A.~Ghuloum, S.~D. Toit, Z.~G. Wang,
+  Z.~H. Du, Y.~Chen, G.~Wu, P.~Guo, Z.~Liu, and D.~Zhang.
+\newblock Intel's array building blocks: A retargetable, dynamic compiler and
+  embedded language.
+\newblock In \emph{Proceedings of the 2011 9th Annual IEEE/ACM International
+  Symposium on Code Generation and Optimization}, CGO '11, pages 224--235,
+  Washington, DC, USA, 2011. IEEE Computer Society.
+\newblock ISBN 978-1-61284-356-8.
+
+\bibitem[Sheeran(2004)]{LavaMultipliers}
+M.~Sheeran.
+\newblock Generating fast multipliers using clever circuits.
+\newblock In \emph{Int. Conf. on Formal Methods in Computer Aided Design
+  (FMCAD)}, volume 3312 of \emph{LNCS}, pages 6--20, 2004.
+
+\bibitem[Sheeran(2011)]{SheeranJFP}
+M.~Sheeran.
+\newblock Functional and dynamic programming in the design of parallel prefix
+  networks.
+\newblock \emph{J. Funct. Program.}, 21\penalty0 (1):\penalty0 59--114, 2011.
+
+\bibitem[Svensson and Newton(2011)]{joelryan}
+B.~J. Svensson and R.~Newton.
+\newblock {P}rogramming {F}uture {P}arallel {A}rchitectures with {H}askell and
+  {A}r{BB}.
+\newblock \url{http://faspp.ac.upc.edu/faspp11/pdf/faspp11-final12.pdf}, 2011.
+\newblock Presented at the workshop: {F}uture {A}rchitectural {S}upport for
+  {P}arallel {P}rogramming (FASPP), in conjuction with ISCA '11.
+
+
+\end{thebibliography}
+%\bibliography{paper}
+
+\end{document}

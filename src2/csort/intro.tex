@@ -1,0 +1,104 @@
+\section{Introduction} 
+
+Sorting is an ever important, ever fascinating field of computer
+science. The introduction of GPUs has introduced new challenges in
+designing fast sorting algorithms.
+
+This paper focuses on counting sort together with a variation which
+removes duplicate elements. We call this variation
+{\em occurrence sort}. Counting sort is a non-comparing sort
+suitable for parallel implementation. The occurrence sort variation 
+presented here is interesting because it seems to be a particularly
+good fit for executing on the GPU. It has a very natural functional,
+data-parallel implementation. We believe we are the first to study
+this variation in the literature.
+
+These algorithms are explored in Obsidian \cite{JSLIC,PUSH}, a domain
+specific language targeting GPU programming. The goal of Obsidian is
+to strike a balance between high-level constructs and low-level control. 
+We want to provide the programmer with a set of tools for low-level 
+experimentation with the details that influence performance when 
+implementing GPU kernels. The counting sort
+case study shows that Obsidian generates competitive kernels with
+relatively little programmer effort. That Obsidian is an embedded language 
+allows us to rapidly experiment with the addition of features and with varying 
+programming idioms. The version used in this case study
+adds global arrays and atomic instructions to Obsidian, see section 
+\ref{sec:OBSHist}. 
+
+The contributions of this paper are:
+\begin{itemize}
+\item We provide measurements (section \ref{sec:Benchmarks}) showing
+  that counting sort is a competitive algorithm for sorting keys on the GPU,
+  outperforming the sorting implementation in the library
+  Thrust\cite{THRUST} in many cases.
+\item Occurrence sort is shown to be particularly
+  suitable for implementing on the GPU (section \ref{sec:occur}) and
+  performs well (section \ref{sec:Benchmarks}).
+\item The Obsidian implementation of the two sorting algorithms is
+  detailed along with the generated CUDA (sections
+  \ref{sec:Obsidian} and \ref{sec:parallel}).
+\end{itemize}
+
+
+\subsection{Related work} 
+
+Sorting has applications in the computer graphics field \cite{sintorn}. 
+Example instances of sorting and duplicate element removal in computer graphics 
+can be identified in references \cite{Olsson} and \cite{Karras}. Another example 
+of where sorting and the removal of duplicates have applications is 
+in databases \cite{REMOVEDUPS}. 
+
+%% Sorting on the GPU is interesting both for computer graphics
+%% applications \cite{SINTORN} and for using the GPU to offload the
+%% processor, for example in database applications \cite{REMOVEDUPS}.
+
+The paper \cite{CSORT} implements counting sort in CUDA, and also optimisations 
+that overlap computations with transferring data to and from the GPU.
+Our work differs by being implemented in a high-level embedded
+language and also by implementation of the occurrence sort variant of counting sort. We have not been concerned with
+trying to overlap computations and data transfer, but have instead
+focused solely on computations within the GPU.
+
+Obsidian is a high-level embedded language for GPU
+programming. Other such approaches include Accelerate
+\cite{Acc} and Nikola \cite{NIKOLA}. Accelerate and Nikola both take an even
+higher level approach compared to Obsidian and abstract more from GPU
+details. Another example of providing a high-level interface to
+programming the GPU is the C++ library Thrust \cite{THRUST}.
+%\cite{FELDSPAR} 
+
+%% With the Obsidian language we raise the level of abstraction for 
+%% GPU kernel implementation. In order to generate CUDA code that performs well, 
+%% Obsidian tries to strike a balance between high level constructs and low level 
+%% control. 
+
+%% This paper describes a case study. We implement a sorting algorithm known 
+%% as counting sort. As an extra bonus we explore a variant of counting sort 
+%% that can be given a nice purely functional description and lends itself well 
+%% to parallelisation. The experimental results in section \ref{sec:Benchmarks} 
+%% compares the performance of the counting sort algorithm we implement here to 
+%% the NVIDIA Thrust \cite{THRUST} library. The Obsidian generated kernels perform
+%% very well at relatively light work effort. 
+
+%% Counting sort places new demands on Obsidian and points out areas of 
+%% improvement. Some left to do, some already implemented and used here. 
+%% First, in order to implement counting sort we added atomic operations to 
+%% Obsidian. However, currently you can only use them by very low level features 
+%% of Obsidian. This is shown in section \ref{sec:parallel}. This paper also 
+%% shows for the first time the new global arrays and what they can be used for.
+   
+
+%Vague intro ideas.
+%\begin{itemize}
+%  \item Quickly, what is our idea. 
+%  \item Why is this sorting useful.
+%        (Or is i just a fun experiment.) 
+%  \item GPUs are pretty cool 
+%  \item This is an Obsidian case-study. 
+%  \item Sneak in ref to Feldspar.
+%  
+%\end{itemize} 
+
+%\cite{CSORT} 
+%\cite{FELDSPAR}

@@ -1,0 +1,127 @@
+
+\section{Related Work} 
+\subsection{Data.Array.Accelerate} 
+Accelerate~\cite{accelerate} is an embedded language for general purpose, 
+flat data parallel computations on GPUs. 
+
+The Accelerate programmer expresses algorithms using collective operations 
+over vectors. These collective operations are similar to the 
+parallel patterns of ArBB, but are generally higher order. That is, where 
+ArBB and EmbArBB have {\tt addReduce}, {\tt mulReduce} and so on, Accelerate
+has a single higher-order fold function. This means that the Accelerate library
+gets away with a much smaller set of operations, while maintaining a higher 
+level of expressivity in the language. 
+
+Accelerate arrays have their dimensionality (shape) encoded in the type 
+and this was the inspiration for the similar approach taken in EmbArBB. In 
+Accelerate, a one dimensional array of integers has type {\tt Array DIM1 Int}.
+However, Accelerate does not limit the dimensionality to one, two or three,
+as ArBB does, but rather supports arbitrary dimensionality.
+
+\subsection{Data Parallel Haskell} 
+Data Parallel Haskell (DPH) is an extension to GHC for nested data parallelism. 
+This is one thing that DPH and ArBB have in common. 
+ 
+In DPH, the programmer can use parallel arrays of type {\tt [:e:]} that look
+similar to normal Haskell lists, but give access to data parallel execution.
+The similarity to Haskell list processing doesn't end there. The operations 
+on these parallel arrays are also reminiscent of Haskell's normal list processing functions.
+For example, {\tt mapP}, {\tt unzipP} and {\tt sumP} are parallel versions of 
+these well known functions. 
+
+DPH relies on a technique called flattening to transform its nested data parallelism 
+into flat data parallelism. 
+A recent article about DPH is reference~\cite{DPH}. 
+  
+ 
+
+\subsection{Feldspar} 
+Feldspar is a language for Digital Signal Processing (DSP) programming
+developed at Chalmers, ELTE University and Ericsson 
+(the telecom company)~\cite{FELDSPAR2010}. The functional {\tt while} loop 
+of EmbArBB is inspired by the same concept in Feldspar. 
+
+Feldspar is based on a deeply embedded core language and implements 
+a vector library as a shallow embedding on top of that. 
+This means that there are no vector specific 
+constructs in the core abstract syntax. 
+
+%The most recent release of Feldspar uses the {\em Syntactic} library
+%for manipulating abstract syntax~\cite{SyntacticICFP12,FELDSYNTACTIC}. 
+%We will consider switching to using the Syntactic library in the continued
+%implementation of EmbArbb.
+%Initial discussions with our colleague Emil Axelsson, the implementor of Syntactic, indicate that
+%we should encounter no major difficulties.
+
+
+
+\subsection{Nikola} 
+Nikola is an embedded language for GPU programming\cite{NIKOLA}, also
+in Haskell.  
+During the early phases of implementation of EmbArBB, the source code of 
+Nikola was often studied for inspiration.
+
+The embedding used in Nikola makes use of an untyped expression 
+data structure wrapped up in phantom types, in the style of Pan~\cite{ELLIJFP}.
+The EmbArBB embedding works in the same way. 
+One of the listed strengths of Nikola is the ability to generate GPU functions 
+from Haskell functions, which enables function reuse and the ability to 
+amortise the cost of code generation over several launches in an easy 
+way. The ability the generate target language function from Haskell functions 
+is a present in EmbArBB as well. 
+
+Nikola, like Accelerate, provides a set of higher-order functions with
+general {\tt map}, {\tt reduce} and {\tt zipWith} functionality.
+
+\subsection{Repa} 
+Repa is a library for regular, shape polymorphic parallel arrays~\cite{REPA}. Repa 
+uses a concept of {\tt delayed} arrays to obtain fusion of operations, such as the 
+typical map fusion:
+\begin{verbatim}
+map f . map g  = map (f . g)
+\end{verbatim} 
+A delayed array 
+has a representation that is quite direct to parallelise; it is represented 
+as a function from an index-space to an element and the extents of that same 
+index-space. Concretely: 
+
+\begin{verbatim} 
+data DArray sh e = DArray sh (sh -> e)  
+\end{verbatim} 
+
+Parallelising the computation of such an array is done by splitting up the 
+index-space over the available parallel resources of the system. Repa does 
+not use SIMD (vector) instructions; this is something that ArBB does and 
+that EmbArBB gets for free. 
+
+Repa is compared to EmbArBB in the benchmarks in section~\ref{sec:Benchmarks}.
+
+%\subsection{Obsidian}
+%Really ? \cite{Obsidian}
+
+\section{Motivation}
+
+We have two main motivations for implementing EmbArBB.
+
+Firstly, we are interested in exploring programming idioms for
+data parallel programming in a functional setting. Embedding ArBB gives
+a quick route to a platform for such exploration, without too much implementation effort. This is what the ``almost for free'' in the title is intended to refer to.
+We wish to explore ways to make use of the fact that we have an array programming library embedded in a sophisticated, strongly typed host language. In our earlier work on the embedded hardware description language Lava, we investigated various approaches to exploiting the host language during netlist synthesis~\cite{LavaMultipliers}, and we have also experimented with the use of search and dynamic programming in generating parallel prefix (or scan) networks~\cite{SheeranJFP}. We intend to apply similar methods to the development of data parallel programs once the EmbArBB implementation is more complete and stable.
+
+
+
+%It would be interesting to explore ways of using the host language in more sophisticated ways, rather as we have done for hardware generation in Lava~\cite{LavaMultipliers}.
+
+A second motivation is the desire to teach NESL-style data parallel programming
+in a Masters course on parallel functional programming that has recently been
+introduced at Chalmers~\cite{TFPIEPFP}. The first instance of the course (in Spring 2012)
+covered Blelloch's NESL language, with its
+associated cost model~\cite{NESL}, but did not provide any satisfactory way for the students
+to experience real, nested data parallel programming. This was due not only to a lack of suitable hardware, but also to deficiencies in the available tools.
+We used the Repa library to get flat data parallelism, but then suffered from
+the lack of a built-in scan primitive (as many of Blelloch's NESL examples use scan). Perhaps as a result
+of needing scan, we did not get good performance.
+We have not done enough examples or experiments yet, but it seems to us that EmbArBB
+could be used to give students an experience of real parallel programming in a NESL-like
+functional language. It remains to be seen whether the limited degree of nesting allowed in ArBB can be offset, at least to some extent, by clever use of the host programming language during generation of the desired abstract syntax tree.
+

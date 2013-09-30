@@ -1,0 +1,90 @@
+
+\begin{tikzpicture}[scale=0.78]
+\usetikzlibrary{calc}
+\tikzstyle{myedgestyle} = [->]
+\tikzstyle{every node} = [draw, shape = rectangle]
+ 		 
+\pgfmathsetmacro{\inpY}{1.5};
+\pgfmathsetmacro{\vY}{\inpY-1};
+\pgfmathsetmacro{\aY}{\vY-0.8};
+\pgfmathsetmacro{\rY}{\aY-0.8};
+\pgfmathsetmacro{\oY}{\rY-1};
+
+\node (i0) at (1,\inpY) {$5$};
+\node (i1) at (2,\inpY) {$2$};
+\node (i2) at (3,\inpY) {$5$};
+\node (i3) at (4,\inpY) {$7$};
+\node (i4) at (5,\inpY) {$1$};
+
+\node (v0) at (1,\vY) {$1$};
+\node (v1) at (2,\vY) {$1$};
+\node (v2) at (3,\vY) {$0$};
+\node (v3) at (4,\vY) {$0$};
+\node (v4) at (5,\vY) {$1$};
+\node (v5) at (6,\vY) {$0$};
+\node (v6) at (7,\vY) {$1$};
+\node (v7) at (8,\vY) {$0$};
+\node (v8) at (9,\vY) {$0$};
+\node (v9) at (10,\vY) {$0$};
+
+\draw [->] (i0.south) -- (v4.north);
+\draw [->] (i1.south) -- (v1.north);
+\draw [->] (i2.south) -- (v4.north);
+\draw [->] (i3.south) -- (v6.north);
+\draw [->] (i4.south) -- (v0.north);
+
+\node (re) at (0,\rY) {$0$};
+\node (r0) at (1,\rY) {$1$};
+\node (r1) at (2,\rY) {$2$};
+\node (r2) at (3,\rY) {$2$};
+\node (r3) at (4,\rY) {$2$};
+\node (r4) at (5,\rY) {$3$};
+\node (r5) at (6,\rY) {$3$};
+\node (r6) at (7,\rY) {$4$};
+\node (r7) at (8,\rY) {$4$};
+\node (r8) at (9,\rY) {$4$};
+\node (r9) at (10,\rY) {$4$};
+
+
+\tikzstyle{every node} = [draw, inner sep=0.1, fill=gray!60,shape = circle]
+
+\node (1) at (2,\aY) {\bf{+}};
+\node (2) at (3,\aY) {\bf{+}};
+\node (3) at (4,\aY) {\bf{+}};
+\node (4) at (5,\aY) {\bf{+}};
+\node (5) at (6,\aY) {\bf{+}};
+\node (6) at (7,\aY) {\bf{+}};
+\node (7) at (8,\aY) {\bf{+}};
+\node (8) at (9,\aY) {\bf{+}};
+\node (9) at (10,\aY) {\bf{+}};
+
+
+\foreach \i in {1,...,9}
+{
+	\draw [->] (v\i.south) -- (\i);
+	\draw [->] (\i.south) -- (r\i);
+}
+
+\foreach \i in {1,...,8}
+{
+    \pgfmathtruncatemacro{\n}{(\i+1)};
+    \draw [->] (\i) -- (\n);
+}
+
+\draw [->] (v0.south) -- (r0);
+\draw [->] (v0.south) -- (1);
+
+\tikzstyle{every node} = [draw, shape = rectangle]
+\node (o0) at (1,\oY) {$1$};
+\node (o1) at (2,\oY) {$2$};
+\node (o2) at (3,\oY) {$5$};
+% \node (o3) at (4,\oY) {$5$};
+\node (o4) at (4,\oY) {$7$};
+
+\draw [->] (re.south) -- (o0.north);
+\draw [->] (r0.south) -- (o1.north);
+\draw [->] (r3.south) -- (o2.north);
+%\draw [->] (r3.south) -- (o3.north);
+\draw [->] (r5.south) -- (o4.north);
+
+\end{tikzpicture}
