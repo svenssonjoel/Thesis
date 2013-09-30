@@ -36,6 +36,17 @@ applyNesting :: Exp USize  -- lengths or offsets
 constVector :: Exp USize  -- length
             -> Exp a      -- value
             -> Exp (DVector Dim1 a) 
+\end{Verbatim}
+\end{small}
+\caption{A list of EmbArBB functions that are used in the examples with 
+         short descriptions, part 1.} 
+\label{fig:listoffunA}
+\end{figure} 
+
+
+\begin{figure}
+\begin{small}
+\begin{Verbatim}
 
 -- Extract a column from a 2D vector
 extractCol :: Exp USize              -- col. index
@@ -80,13 +91,13 @@ vecToUSize :: Exp (Vector a)
 \end{Verbatim}
 \end{small}
 \caption{A list of EmbArBB functions that are used in the examples with 
-         short descriptions} 
+         short descriptions, part 2.} 
 \label{fig:listoffun}
 \end{figure} 
 
 \begin{figure}
 \fbox{
-\parbox{8cm}{
+\parbox{\linewidth}{
 \begin{itemize}
 \item {\tt ISize} is an integer type used to specify for example offsets.
 \item {\tt USize} is an unsigned integer type used for lengths or indices.

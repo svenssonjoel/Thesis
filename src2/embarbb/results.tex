@@ -1,4 +1,4 @@
-\section{Benchmarks}
+\subsection{Benchmarks}
 \label{sec:Benchmarks}
 %\FloatBarrier
 
@@ -14,7 +14,7 @@ come from the {\tt repa-examples-3.2.1.1} package on Hackage.
 The processor used for all measurements is a four core Intel Core-I7 930 at 
 2.80Ghz. 
 
-\subsection{matrix-matrix multiplication}
+\subsubsection{matrix-matrix multiplication}
 The matrix multiplication benchmarks consist of square matrices 
 of sizes 256x256, 384x384, 512x512, 640x640 and 768x768. 
 Figure~\ref{fig:mmchart1} shows the runtimes for the four implementations 
@@ -30,7 +30,7 @@ directly from the ArBB distribution.
 \label{fig:mmchart1}
 \end{figure}
 
-\subsection{Sobel edge detection}
+\subsubsection{Sobel edge detection}
 In the Repa Sobel code, only the applications of the stencils are timed. This 
 part is defined as follows 
 \begin{verbatim}
@@ -101,7 +101,7 @@ compared to the C++ implementation.
 \label{fig:sobelchart1}
 \end{figure}
 
-\subsection{Blur}
+\subsubsection{Blur}
 
 The {\tt blur} benchmark is performed using an algorithm similar to the example 
 code in section~\ref{sec:Blur} but with the following changes. The image used
@@ -153,7 +153,7 @@ reconstructing a planar RGB image in the end.
 \end{table}
 
 
-\subsection{About the numbers} 
+\subsubsection{About the numbers} 
 This section presents three benchmarks, two of which compare to Repa only and 
 one that compares to Repa, ArBB in C++ and sequential C++ code. In all of these comparisons,
 JIT compilation time is excluded.

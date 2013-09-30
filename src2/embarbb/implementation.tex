@@ -1,6 +1,6 @@
 
 
-\section{Implementation} 
+\subsection{Implementation} 
 EmbArBB is a deeply embedded language. There is a constructor for 
 every operation that ArBB can perform. A deep embedding is useful when 
 there is need to apply optimisations or transformations to the AST before 
@@ -12,7 +12,7 @@ GPU backend to EmbArBB, further GPU specific optimisations of the AST
 will likely become necessary. 
  
 
-\subsection{Vectors} 
+\subsubsection{Vectors} 
 EmbArBB has support for one, two and three dimensional dense vectors,
 represented by a datatype called {\tt DVector}. 
 
@@ -110,7 +110,7 @@ The function {\tt copyIn} copies a {\tt DVector} from Haskell to the ArBB heap
 and there is a function {\tt copyOut} to retrieve data from ArBB.  
 
 
-\subsection{The language} 
+\subsubsection{The language} 
 The EmbArBB language is implemented as a set of library functions, operating on an expression datatype:
 
 \begin{verbatim} 
@@ -224,7 +224,7 @@ data Op =
 
 \FloatBarrier
 
-\subsection{Interfacing with Haskell and Code generation} 
+\subsubsection{Interfacing with Haskell and Code generation} 
 
 The interface between ArBB and Haskell consists of the {\tt DVector}, {\tt NVector}, {\tt BEDVector} and {\tt BEScalar} types, 
 the {\tt capture}, and {\tt execute} functions, and the ArBB monad with its {\tt withArBB} 

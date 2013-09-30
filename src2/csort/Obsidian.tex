@@ -1,4 +1,4 @@
-\section{Obsidian} 
+\subsection{Obsidian} 
 \label{sec:Obsidian} 
 %\FloatBarrier
 
@@ -15,7 +15,7 @@ language. From the abstract syntax trees generated while running an
 Obsidian program, NVIDIA CUDA code is generated. 
 
 
-\subsection{A brief history of Obsidian} 
+\subsubsection{A brief history of Obsidian} 
 \label{sec:OBSHist}
 
 In the Obsidian project we experiment with combinators and language 
@@ -178,7 +178,7 @@ better integrate the atomic operations\footnote{github.com/svenssonjoel/Obsidian
 %synchronisations occurs. Global arrays are also used as the inputs 
 %and outputs of a top level Obsidian program (a program you want to generate runnable CUDA code from). In the cases where threads need to cooperate 
 %on solving a task the local arrays should be used. 
-\subsection{Obsidian programming example} 
+\subsubsection{Obsidian programming example} 
 \label{sec:sklansky}
 \FloatBarrier
 
@@ -501,7 +501,7 @@ __global__ void distribute(uint32_t s0,
 \label{fig:genDistrib} 
 \end{figure}
 
-\subsection{A note about generated code} 
+\subsubsection{A note about generated code} 
 
 All generated code shown in this paper has been edited slightly by hand. This 
 is partly to increase readability but also to conserve space. The changes 

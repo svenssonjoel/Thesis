@@ -1,6 +1,6 @@
 
-\section{Related Work} 
-\subsection{Data.Array.Accelerate} 
+\subsection{Related Work} 
+\subsubsection{Data.Array.Accelerate} 
 Accelerate~\cite{accelerate} is an embedded language for general purpose, 
 flat data parallel computations on GPUs. 
 
@@ -18,7 +18,7 @@ Accelerate, a one dimensional array of integers has type {\tt Array DIM1 Int}.
 However, Accelerate does not limit the dimensionality to one, two or three,
 as ArBB does, but rather supports arbitrary dimensionality.
 
-\subsection{Data Parallel Haskell} 
+\subsubsection{Data Parallel Haskell} 
 Data Parallel Haskell (DPH) is an extension to GHC for nested data parallelism. 
 This is one thing that DPH and ArBB have in common. 
  
@@ -35,7 +35,7 @@ A recent article about DPH is reference~\cite{DPH}.
   
  
 
-\subsection{Feldspar} 
+\subsubsection{Feldspar} 
 Feldspar is a language for Digital Signal Processing (DSP) programming
 developed at Chalmers, ELTE University and Ericsson 
 (the telecom company)~\cite{FELDSPAR2010}. The functional {\tt while} loop 
@@ -55,7 +55,7 @@ constructs in the core abstract syntax.
 
 
 
-\subsection{Nikola} 
+\subsubsection{Nikola} 
 Nikola is an embedded language for GPU programming\cite{NIKOLA}, also
 in Haskell.  
 During the early phases of implementation of EmbArBB, the source code of 
@@ -73,7 +73,7 @@ is a present in EmbArBB as well.
 Nikola, like Accelerate, provides a set of higher-order functions with
 general {\tt map}, {\tt reduce} and {\tt zipWith} functionality.
 
-\subsection{Repa} 
+\subsubsection{Repa} 
 Repa is a library for regular, shape polymorphic parallel arrays~\cite{REPA}. Repa 
 uses a concept of {\tt delayed} arrays to obtain fusion of operations, such as the 
 typical map fusion:
@@ -99,7 +99,7 @@ Repa is compared to EmbArBB in the benchmarks in section~\ref{sec:Benchmarks}.
 %\subsection{Obsidian}
 %Really ? \cite{Obsidian}
 
-\section{Motivation}
+\subsection{Motivation}
 
 We have two main motivations for implementing EmbArBB.
 

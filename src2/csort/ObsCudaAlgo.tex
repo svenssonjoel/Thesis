@@ -1,6 +1,6 @@
 
 % insert better head of section here 
-\section{Implementing counting sort in Obsidian} 
+\subsection{Implementing counting sort in Obsidian} 
 \label{sec:parallel}
 
 %This section shows the implementations of the various kernels 
@@ -41,7 +41,7 @@
 %which counts occurrences of values in the input, and reconstruct, which
 %outputs the final sorted array.
 
-\subsection{Histogram} 
+\subsubsection{Histogram} 
 
 When computing the histogram, atomic operations are needed. Index $i$
 in the histogram array is incremented for each occurrence of the value
@@ -108,7 +108,7 @@ two functions would be fused, typically generating much faster code
 and not allocating memory for the fused array.
 
 %\newpage
-\subsection{Reconstruct}
+\subsubsection{Reconstruct}
 
 The kernel for the reconstruct step uses one thread per element in the
 input array. Each thread is implemented as a loop to write its
@@ -153,7 +153,7 @@ __global__ void reconstruct(uint32_t *input0,
 Again, the difference between Obsidian and CUDA might seem small, but
 just as above, the code in Obsidian composes better.
 
-\section{Implementing occurrence sort in Obsidian} 
+\subsection{Implementing occurrence sort in Obsidian} 
 \label{sec:occur}
 
 Occurrence sort uses an {\tt occurs} kernel instead of a 
@@ -162,7 +162,7 @@ at indices corresponding to values occurring in the input array. The
 reconstruction of the sorted (and duplicate free) array is also done 
 slightly differently.
 
-\subsection{Occurs}
+\subsubsection{Occurs}
 
 The occurs kernel is implemented by using the {\tt scatterGlobal} 
 function from the Obsidian library. This function takes two arrays, one of 
@@ -203,7 +203,7 @@ hand, has a very straightforward data-parallel implementation. Not only
 is it simpler, but as we will see in section \ref{sec:Benchmarks}, it
 is also significantly faster.
 
-\subsection{Reconstruct} 
+\subsubsection{Reconstruct} 
 
 The reconstruct kernel for the occurrence sort algorithm  is
 almost identical to the kernel used for standard counting sort. The

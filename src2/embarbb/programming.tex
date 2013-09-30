@@ -1,4 +1,4 @@
-\section{Programming in ArBB}
+\subsection{Programming in ArBB}
 \label{sec:ProgrammingArBB}
 
 What the authors of ArBB call {\em latent parallelism} is expressed both
@@ -110,7 +110,7 @@ Nested vectors in ArBB allow the creation of an array of dense vectors of varyin
 
 
 %\FloatBarrier
-\section{Programming in EmbArBB} 
+\subsection{Programming in EmbArBB} 
 \label{sec:Programming}
 
 
@@ -272,7 +272,7 @@ and Prelude or Data.Vector functions, these are prefixed by either ``{\tt V.}'' 
 ``{\tt P.}''. 
 
 % \FloatBarrier 
-\subsection{Saxpy} 
+\subsubsection{Saxpy} 
 {\em Saxpy} is a vector operation that gets its name from the 
 description of what it does ``{\em S}ingle-precision {\em A}lpha {\em X} {\em P}lus {\em Y}''. 
 There is also a double-precision version called {\em daxpy}. Here we can use a single source 
@@ -329,7 +329,7 @@ A function needs to be captured at every type at which it is to be used. This
 is because the resulting ArBB function is not polymorphic over something corresponding 
 to {\tt Num} types (while the embedded language function is). 
 
-\subsection{Matrix-vector multiplication} 
+\subsubsection{Matrix-vector multiplication} 
 In section~\ref{sec:ProgrammingArBB}, matrix-vector multiplication was shown using the C++ ArBB interface. 
 Here, EmbArBB is used to implement the same function. The function definition itself 
 is very similar to the C++ one:
@@ -379,7 +379,7 @@ C++ version. However, the C++ version could probably be made shorter as well; th
 %This is 
 %a very short example and cannot be expected to show off the strengths of either language. 
 
-\subsection{Matrix-matrix multiplication}
+\subsubsection{Matrix-matrix multiplication}
 
 %Matrix multiplication is studied in the benchmarks in section~\ref{sec:Benchmarks}.
 The following EmbArBB implementation of matrix-matrix multiplication is used as a benchmark in section~\ref{sec:Benchmarks}:
@@ -421,7 +421,7 @@ In every iteration of the loop, the body is applied to the state and the conditi
 %does and is something that must be improved as future work. An improvement could be 
 %if the programmer specified {\tt (newMatrix m n,0)} as initial state. 
 
-\subsection{Histogram}
+\subsubsection{Histogram}
 \FloatBarrier
 
 The histogram of a grayscale image contains the frequency with 
@@ -490,7 +490,7 @@ histImage input = fst $ while cond body (cvn,0)
 \end{figure} 
 
 \FloatBarrier
-\subsection{Sobel edge detection filter}
+\subsubsection{Sobel edge detection filter}
 \label{sec:Sobel}
 \FloatBarrier 
 
@@ -634,7 +634,7 @@ lists and operations is already becoming obvious.
 %\subsection{Programming Examples}
 \FloatBarrier
 
-\subsection{Image filtering} 
+\subsubsection{Image filtering} 
 \label{sec:Blur}
 The blur operation, which is a kind of spatial linear filter, shows another way to implement a stencil operation. The {\tt mapStencil} function used is a composite 
 function in the EmbArBB library; it is not provided as a primitive from 
@@ -663,7 +663,7 @@ that if the programmer says the stencil is two dimensional then it can only
 be applied to two dimensional vectors. Applying similar Template Haskell based
 extension here as well is probably quite easy now that Repa has shown how.
 
-\subsection{Sparse matrix multiplication}\label{sec:smvm}
+\subsubsection{Sparse matrix multiplication}\label{sec:smvm}
 A sparse matrix can be represented by three vectors, one (cidx) containing
 column indices, one (offsets) indicating indices in the vector of values
 at which the first non-zero element of each row appears, and one containing the

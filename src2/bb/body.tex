@@ -39,7 +39,7 @@
 %  Prof. asks student to verify that Monad laws hold.
 
 
-\section{Introduction}
+\subsection{Introduction}
 \studname{} is a computer science student working in a project involving programming 
 robots in a low-level imperative language. However, \studname{} has a budding 
 interest in functional programming using Haskell and has read ``The Haskell 
@@ -112,7 +112,7 @@ a particularly simple solution to this problem.
 %}
 %\end{minipage}
 
-\subsection{Example programs}
+\subsubsection{Example programs}
 
 \studname{} is quite happy with his language design and decides to
 write some programs to try it out.
@@ -147,7 +147,7 @@ moveToWall = while ((liftM not) sensor) move
 Based on these examples, \studname{} is quite satisfied with the design of his
 language and turns to implementing it.
 
-\subsection{Implementation and data structures} 
+\subsubsection{Implementation and data structures} 
 
 Enthused by the prospect of compiling these programs to the target language and 
 seeing some robot action, \studname{} goes to work on the data structures. 
@@ -219,7 +219,7 @@ introductory Haskell course and should be able to provide feedback.
 
 
 
-\subsection{Problem statement} 
+\subsubsection{Problem statement} 
 \emph{Meanwhile in Professor \docname{}'s Office}\newline %\newline
 
 \noindent Prof. \docname{} notices an email from \studname{} in his inbox and 
@@ -335,8 +335,8 @@ then run in the graphical simulator (see figure~\ref{fig:programs}) \newline \ne
 \FloatBarrier
 
 \begin{figure*}
-\begin{tabular}{c|c}
-\begin{minipage}[]{0.45\columnwidth}
+%\begin{tabular}{c|c}
+\begin{minipage}[]{0.50\linewidth}
 \begin{small}
 \begin{verbatim}
 spiralIn :: Int -> Program () 
@@ -349,12 +349,12 @@ spiralIn n = do
 \end{verbatim}
 \end{small}
 \end{minipage}
-\hspace{0.05\columnwidth} 
-\begin{minipage}[]{0.45\columnwidth}
-\includegraphics[width=\columnwidth]{./bb/spiral1}
+\hspace{0.05\linewidth} 
+\begin{minipage}[]{0.45\linewidth}
+\includegraphics[width=\linewidth]{./bb/spiral1}
 \end{minipage}
-&
-\begin{minipage}[]{0.45\columnwidth}
+%&
+\begin{minipage}[]{0.50\linewidth}
 \begin{small}
 \begin{verbatim} 
 followWall :: Program () 
@@ -373,12 +373,12 @@ checkLeft = do
 \end{verbatim}
 \end{small}
 \end{minipage}
-\hspace{0.05\columnwidth}
-\begin{minipage}[]{0.45\columnwidth}
-\includegraphics[width=\columnwidth]{./bb/wall2}
+\hspace{0.05\linewidth}
+\begin{minipage}[]{0.45\linewidth}
+\includegraphics[width=\linewidth]{./bb/wall2}
 \end{minipage}
 
-\end{tabular}
+%\end{tabular}
 \caption{The {\tt spiralIn} and {\tt followWall} programs sent from \studname{}
 to \docname{} in an email}
 \label{fig:programs}
@@ -386,7 +386,7 @@ to \docname{} in an email}
 
 
 
-\section{Compilation of the monadic robot EDSL} 
+\subsection{Compilation of the monadic robot EDSL} 
 \emph{\docname{} receives \studname{}'s latest email}\newline %\newline 
 
 \noindent \docname{} looks through the {\tt Compiler} module and finds a data type describing
@@ -430,7 +430,7 @@ sensible, but he is very interested in seeing the {\tt Program a -> Prg}
 transformation. The compile function assumes a splittable name
 supply with the interface described in figure \ref{fig:namesupply}.
 
-\pagebreak
+%\pagebreak
 \begin{small} 
 \begin{verbatim}
 runCompile :: Program a -> Prg
@@ -515,7 +515,7 @@ a simple and convenient way to reify monads.
 
 \docname{} sends an email to \studname{}, inviting him to a meeting. 
 
-\section{Meeting in \docname{}'s office} %\section{Related Work} 
+\subsection{Meeting in \docname{}'s office} %\section{Related Work} 
 %\emph{Meeting in \docname{}'s office} \newline 
 
 %TODO Here I want to cast light on more related work 
@@ -602,7 +602,7 @@ just did what I thought was the most straightforward thing to do.
 
 \end{dialogue}
 
-\subsection{Related work} 
+\subsubsection{Related work} 
 
 \begin{dialogue}
 
@@ -684,7 +684,7 @@ However, there is one particular thing I like about your technique.
 
 \end{dialogue}
 
-\subsection{Compositionality} 
+\subsubsection{Compositionality} 
 
 \begin{dialogue} 
 \speak{\studname{}} What does it mean that my technique is compositional?
@@ -712,7 +712,7 @@ particular brand of robots.
 \end{dialogue}
 
 
-\subsection{The Monad laws} 
+\subsubsection{The Monad laws} 
 
 \begin{dialogue}
 \speak{\docname{}} There is still one problem with your method though.
@@ -803,7 +803,7 @@ robot language.
 
 \end{dialogue}
 
-\section{Composing reifiable monadic languages} 
+\subsection{Composing reifiable monadic languages} 
 \label{sec:composing} 
 
 \emph{At \studname{}'s computer} \newline
@@ -1145,7 +1145,7 @@ Syntactic library \cite{syntactic}.
 % Infinite programs 
 % Only certain ``kinds'' of reification!
 
-\section{Epilogue} 
+\subsection{Epilogue} 
 
 %This short story has outlined the discovery process and the many turns from 
 %hopefulness to despair and back to hopefulness of two people who met over 
