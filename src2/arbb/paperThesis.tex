@@ -52,30 +52,30 @@
 
 \newcommand{\note}[1]{\begin{itemize}\item \textcolor{blue}{#1} \end{itemize}}
 
-\newenvironment{mycode}
-{% This is the begin code
-  \begin{verbatim}}%
-  %\footnotesize
-  %\noindent
-  %\begin{code}\noindent\vspace{-1mm}}
-%  \begin{code}\noindent}
-{% This is the end code
-  \end{verbatim}
-  %\end{code} 
-}
+%% \newenvironment{mycode}
+%% {% This is the begin code
+%%   \begin{Verbatim}[commandchars=\\\{\}]}%
+%%   %\footnotesize
+%%   %\noindent
+%%   %\begin{code}\noindent\vspace{-1mm}}
+%% %  \begin{code}\noindent}
+%% {% This is the end code
+%%   \end{Verbatim}
+%%   %\end{code} 
+%% }
 
-\newenvironment{inlinecode}
-{
-  \begin{center}
-  \begin{minipage}{4in}
-  \begin{mycode}
-} 
-{
-  \end{mycode}
-  \end{minipage}
-  \end{center}
-  \vspace{-1.5ex}
-}
+%% \newenvironment{inlinecode}
+%% {
+%%   \begin{center}
+%%   \begin{minipage}{4in}
+%%   \begin{mycode}
+%% } 
+%% {
+%%   \end{mycode}
+%%   \end{minipage}
+%%   \end{center}
+%%   \vspace{-1.5ex}
+%% }
 
 %% ============================================================
 %% USE TO DISABLE COMMENTS:
@@ -216,7 +216,7 @@ phase and therefore do not reach the parallel hardware itself.
 In pursuit of this vision, we offer a
 % 
  new EDSL implementation, called \accarbb{}, that combines
-existing systems, Accelerate \cite{Accelerate} and ArBB \cite{ArBB}, to produce a unified
+existing systems, Accelerate \cite{ACCELERATEDAMP11} and ArBB \cite{ArBB}, to produce a unified
 high-level programming environment equally suited to multicore,
 vectorized CPUs, as to GPUs and other accelerators (such as Intel MIC chips \cite{larrabee}).
 %
@@ -282,20 +282,21 @@ language constructs can be overloaded to operate over {\em abstract
 for example, through operator-overloading in C++ or type classes in
 Haskell.}.  For example, the following simple function operates on scalars:
 
+
 \vspace{1mm}
-\begin{code}
+\begin{Verbatim}[commandchars=\\\{\}]
   float f(float x) \{ return (2*x - 1); \}
-\end{code}
+\end{Verbatim}
 \noindent
 But simply by changing the types, \cde{f} might be lifted to operate on {\em
   expressions} (which, when evaluated, will yield \cde{floats}):
 
 \vspace{1mm}
-\begin{code}
+\begin{Verbatim}[commandchars=\\\{\}]
   \kw{exp<float>} f(\kw{exp<float>} x) \{
     return (2*x - 1);
   \}
-\end{code}
+\end{Verbatim}
 
 A common arrangement is for the host language program to execute at
 runtime but to generate ASTs that are executed by a just-in-time
@@ -319,13 +320,13 @@ gains the software engineering benefits of the host language
 paying the cost at runtime for additional layers of abstraction or
 indirection.  Indeed, the embedded languages for 
 performance-oriented EDSLs are often simple, first-order
-languages without pointers \cite{wavescript, Accelerate}.
+languages without pointers \cite{wavescript, ACCELERATEDAMP11}.
 
 % , paul-lius-thingy
 
 % regiment,
 As a research area, EDSLs and two-stage DSLs have been actively pursued for at least a
-decade \cite{vertigo, wavescript} but are gaining steam
+decade \cite{VERTIGO, wavescript} but are gaining steam
 recently 
 %\cite{sejits, stanford-ppl} 
 \cite{copperhead, stanford-ppl} 
@@ -404,13 +405,13 @@ All of these collective operations are easily parallelizable.
 %% dotProd :: Vector Float -> 
 %%            Vector Float -> 
 %%            Acc (Scalar Float) 
-\begin{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 dotProd (xs :: Vector Float) 
         (ys :: Vector Float) = 
   \kw{let} xs\_ = use xs 
       ys\_ = use ys 
   \kw{in}  fold (+) 0 (zipWith (*) xs\_ ys\_) 
-\end{verbatim}
+\end{Verbatim}
 
 The Accelerate code listing above specifies a function that takes two 1-dimensional 
 arrays as inputs (of type \cde{Vector Float}, e.g. a vector of floats). The result of the function is a single
@@ -470,14 +471,14 @@ Using ArBB/C++ to express the dot product computation can be done
 as follows:
 
 %\vspace{2mm}
-\begin{code}
+\begin{Verbatim}[commandchars=\\\{\}]
 \kw{void} dot\_product(\kw{const} dense<f32>& a, 
                  \kw{const} dense<f32>& b,
                  f32& c) 
-\{ 
+{ 
   c = add\_reduce(a * b);
-\}
-\end{code} 
+}
+\end{Verbatim} 
 
 
 % The above program takes two arrays of type \cde{dense<f32>} as input. 
@@ -493,23 +494,23 @@ ArBB computation\footnote{In OpenCL and CUDA the glue code situation is even wor
 how data is bound, {\tt bind}, for use in ArBB. 
 
 \vspace{2mm}
-\begin{code}
+\begin{Verbatim}[commandchars=\\\{\}]
 \kw{int} main() 
-\{ 
+{ 
   double a[SIZE];
   double b[SIZE];
 
-  for ( \kw{int} i = 0; i < SIZE; ++i) \{ 
+  for ( \kw{int} i = 0; i < SIZE; ++i) { 
     a[i] = ...; b[i] = ...;
-  \}
+  }
   dense<f32> va, vb;
   f32 vc;
   bind(va, a, SIZE); 
   bind(vb, b, SIZE); 
   call(dot\_product)(va, vb, &vc); 
   ...
-\}
-\end{code}
+}
+\end{Verbatim}
 
 
 %\rnote{SPECIFICALLY ADDRESS THE FUNCTIONALITY GAP?  E.G general
@@ -711,7 +712,7 @@ but we leave that as future work.
 %  dismiss those that make no effort on the CPU side.}
 
 Black-Scholes option pricing is a finance-related benchmark that has been used in similar
-DSLs targeting GPUs \cite{Accelerate, nikola}. Since we are re-using the 
+DSLs targeting GPUs \cite{ACCELERATEDAMP11, NIKOLA}. Since we are re-using the 
 Accelerate front-end, we can directly use the Black-Scholes benchmark that 
 is shipped with that system.  Figure \ref{fig:blackscholes} shows the
 complete code listing for an Accelerate Black-Scholes function which
@@ -855,7 +856,7 @@ OpenCL programs are relatively low-level and require a large amount of
 boilerplate to create and invoke.  In this sense they occupy a very
 different niche than Accelerate.
 
-Microsoft Accelerator~\cite{accelerator} is an embedded language with similar 
+Microsoft Accelerator~\cite{ACCELERATOR} is an embedded language with similar 
 aspirations as ArBB, that is, to target a diverse range of architectures using the 
 same source code. Accelerate can be used from the C\# language or the 
 functional F\# language and targets GPUs or of CPUs and their
@@ -945,7 +946,7 @@ This is a compiler backend research challenge.
 The {\em skeletons} method mentioned in
 Section~\ref{sec:accelerate-arbb} is one approach to this problem, as
 are the optimizations studied in the Copperhead \cite{copperhead} and
-Obsidian \cite{obsidian} projects.
+Obsidian \cite{OBSIDIAN-TECHREPORT} projects.
 %
 On the other hand, systems that rely on advanced optimizations
 typically suffer to some extent from performance-predictability

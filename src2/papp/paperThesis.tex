@@ -675,7 +675,7 @@ Sorting is a popular function to place on the GPU, see~\cite{SORT1,SORT3}.
 merger merges two sorted arrays. In Obsidian this merger and sorter 
 can be implemented using the combinators {\tt two}, {\tt ilv}, {\tt evens}
 and {\tt odds}. For a detailed description of these combinators see
-~\cite{lavaSorter}.
+~\cite{LAVASORTER}.
 
 \begin{small}
 \begin{verbatim}
@@ -730,7 +730,7 @@ to particular nestings of these combinators will bring significant performance i
 \FloatBarrier
 
 This subsection shows the implementation of a parallel prefix (also called scan) 
-kernel, known as {\tt sklansky} after J. Sklansky \cite{Sklansky:1960:CSA}.
+kernel, known as {\tt sklansky} after J. Sklansky \cite{Sklansky}.
 This kernel will then be optimised step-by-step using Obsidian. This 
 optimisation effort uses an experimental feature of Obsidian called {\tt syncHow}. 
 This is different from the normal {\tt sync} in the way it assigns work to threads. 
@@ -876,7 +876,7 @@ so the code is considerably more complicated than that of any of the Obsidian pa
 %-------------------------------------------------------------------------------
 \FloatBarrier
 \subsection{Future work}
-\label{sec:FutureWork}
+% \label{sec:PAPPFutureWork}
 
 Obsidian is work in progress and as such it changes a lot. Future work will both
 explore improvements to code generation for kernels and ways to coordinate kernels.
@@ -971,13 +971,13 @@ Obsidian is to implement basic algorithmic building blocks such as
 reductions and prefix sums, Accelerate provide these building blocks as 
 primitives. 
 
-Vertigo is another GPU programming language embedded in Haskell\cite{Vertigo}.
+Vertigo is another GPU programming language embedded in Haskell\cite{VERTIGO}.
 Vertigo can be used to describe procedureal surfaces and textures and generates
 efficient DirectX9 shader code. 
 
 There are also many examples of domain specific languages (DSLs)
 that target not only GPUs but also other platforms, such as multicore machines.
-Of particular interest to us is Microsoft's Accelerator project~\cite{Accelerator}. Interestingly, Accelerator includes the same restriction to ``hardware-like'' algorithms as Obsidian does.
+Of particular interest to us is Microsoft's Accelerator project~\cite{ACCELERATOR}. Interestingly, Accelerator includes the same restriction to ``hardware-like'' algorithms as Obsidian does.
 %However, Vertigo is targeting graphical applications. 
 
 %There are also many examples of languages that do not specifically target 

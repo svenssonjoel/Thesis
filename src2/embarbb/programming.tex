@@ -162,7 +162,7 @@ capture explicit for simplicity.
 The {\tt capture} function takes a Haskell function as input and produces an 
 opaque typed function identifier as output. The identifier points out the function 
 in an environment that is managed by a monad called {\tt ArBB}. To make this 
-concrete, Figure~\ref{fig:code1} shows the complete procedure from capturing 
+concrete, Figure~\ref{fig:EmbArBBcode1} shows the complete procedure from capturing 
 to execution.  
 
 %\begin{verbatim} 
@@ -248,7 +248,7 @@ main =
 \end{Verbatim}
 \caption{The code shows how to capture a function, upload data to ArBB and 
          how to execute the captured function.}
-\label{fig:code1}
+\label{fig:EmbArBBcode1}
 \end{figure}  
 %$
 %** Note, I think it would be best to put the code above into a figure and then just refer to it in the discussion, rather than have three versions of it of
@@ -382,7 +382,7 @@ C++ version. However, the C++ version could probably be made shorter as well; th
 \subsubsection{Matrix-matrix multiplication}
 
 %Matrix multiplication is studied in the benchmarks in section~\ref{sec:Benchmarks}.
-The following EmbArBB implementation of matrix-matrix multiplication is used as a benchmark in section~\ref{sec:Benchmarks}:
+The following EmbArBB implementation of matrix-matrix multiplication is used as a benchmark in section~\ref{sec:EmbArBBBenchmarks}:
 
 \begin{verbatim} 
 matmul :: Exp (DVector Dim2 Float) 

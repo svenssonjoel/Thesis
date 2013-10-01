@@ -31,14 +31,14 @@ The program representation generated when running an Obsidian program
 is compiled into CUDA code. We are also working on an OpenCL backend.
 
 Our approach is different from that of other Haskell DSELs targetting
-GPUs~\cite{ACCELERATE,NIKOLA,BARRACUDA}. 
+GPUs~\cite{ACCELERATEDAMP11,NIKOLA,BARRACUDA}. 
 We do not try to abstract away from 
 all the peculiarities of GPU programming, but rather provide a higher 
 level language in which to experiment with them.
 For instance,
 Accelerate provides a standard set of basic operations such as 
 {\tt map}, {\tt reduce} and {\tt zipWith} as built in skeletons, implemented
-with the help of small, predefined, hand-tuned CUDA kernels~\cite{ACCELERATE}. 
+with the help of small, predefined, hand-tuned CUDA kernels~\cite{ACCELERATEDAMP11}. 
 Obsidian, on the other hand, allows the user to experiment with the
 {\em generation} of small kernels for fixed size array inputs
 from higher level descriptions.

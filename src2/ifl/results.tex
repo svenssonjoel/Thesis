@@ -2,7 +2,7 @@
 
 Apart from the parallel prefix algorithm shown in this paper we have used
 Obsidian to implement sorters. For the sorters, the generated C code 
-performs quite well. One periodic sorting network, called {\em Vsort}, implemented in Obsidian in the style of the sorters presented in reference~\cite{LavaSorter},
+performs quite well. One periodic sorting network, called {\em Vsort}, implemented in Obsidian in the style of the sorters presented in reference~\cite{LAVASORTER},
 has a running time of 95$\mu$secs for 256 elements (the largest size that we can cope with in a single kernel). This running time can be compared to the 
  28$\mu$secs running time of the bitonic sort example supplied with the CUDA 
 SDK. However, for 256 inputs, bitonic sort has a depth (counted in number of comparators between input and output), of 36 compared to 

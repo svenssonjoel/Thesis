@@ -34,7 +34,7 @@ Thus, small, fast sorting kernels have a variety of uses.
 
 The bitonic merger is typically presented as a recursive
 construction and we have earlier explored ways to describe
-and analyse it in both (our) Ruby and in Lava~\cite{sortsRuby,LavaSorter}.
+and analyse it in both (our) Ruby and in Lava~\cite{sortsRuby,LAVASORTER}.
 Here, we consider iterative descriptions using similar combinators.
 
 Figure~\ref{fig:bitonicMerger} illustrates the merger for 16 inputs.
@@ -527,7 +527,7 @@ has one column of small sorters and $24-9=15$ of small mergers.}
 \label{fig:newmixedsorter}
 \end{figure}
 
-Table~\ref{fig:table} shows the performance figures for the large sorter
+Table~\ref{tab:expressive-table1} shows the performance figures for the large sorter
 for $5$ different $512-$input small sorter kernels.
 {\tt tsort1} is defined above, and is a variant of bitonic sort
 that does not require {\tt if} statements to determine the direction
@@ -543,16 +543,70 @@ As a reference small kernel implementation, we include a simple hand-coded biton
 that uses one thread per index (see code in Appendix).
 None of the kernels has been subject to optimisations related to warp size.
 
-\input{./expressive/table1.tex}
+%\input{./expressive/table1.tex}
+\begin{table}
+\begin{center}
+  \begin{tabular}{| l | r | r | r | r | r | r | }
+    \hline
+        k                             &  $20$ &  $21$ & $22$& $23$ & $24$ & $24$(CPU)  \\ \hline
+    bitonic(CUDA)(512)                &  5 & 12 & 25 & 54 & 117 & 2741   \\      
+    tsort1(512)                       &  4 & 10 & 22 & 47 & 102 & 2742    \\
+    tsort2(256)                       &  4 & 9 & 23 & 45 & 98 & 2741     \\ 
+    vsort1(512)                       &  4 & 10 & 21 & 47 & 102 & 2747    \\ 
+    vsort(256)                        &  4 & 9 & 20 & 44 & 96 & 2783    \\ 
+    \hline
+  \end{tabular}
+\end{center}
+\caption{Sorting time (ms) for $2^k$ inputs, $20 \leq k \leq 24$.  The GPU used is an NVIDIA GTX480.
+Each line shows the result using a particular small $512$ input sort kernel with the
+indicated number of threads as {\tt sortSmall} in the CUDA code above. The small merge kernel used
+is our generated {\tt bmerge2}, with two indices per thread and $512$ inputs. Memory transfer time (GPU-CPU)
+is not shown. In the $2^{24}$ input case using {\tt vsort}, the total sorting time, including
+memory transfers was 141 ms.
+The rightmost column shows the time taken for the C quicksort function {\tt qsort}, compiled with
+{\tt gcc -O3}, to sort the same inputs as those sorted on the GPU on an i7-920 2.8GHz CPU.
+} 
+\label{tab:expressive-table1}
+\end{table}
 
-We also recorded the GPU time spent in the calls to the small sorters alone (using the NVIDIA CUDA Visual profiler), see Table~\ref{tab:table2}.
+We also recorded the GPU time spent in the calls to the small sorters alone (using the NVIDIA CUDA Visual profiler), see Table~\ref{tab:expressive-table2}.
 The {\tt tsort1} and {\tt vsort1} kernels, which are built using only pull arrays, 
 (and which have one index per thread in the generated code) are
 noticeably slower than those that have two indices per thread.
 The generation of the latter kernels is made possible by the introduction of 
 push arrays.
 
-\input{./expressive/table2.tex}
+%\input{./expressive/table2.tex}
+\begin{table}
+\begin{center}
+  \begin{tabular}{| l | r | r |   }
+
+    \hline
+                              & time & percent \\ \hline
+    bitonic(CUDA)             & 30203 & 32.07\\
+    tsort1                    & 15823 & 19.72  \\
+    vsort1                       & 14955 & 18.76 \\ 
+    tsort2                      & 11562 & 15.37    \\ 
+    vsort                       & 9228 &  12.67 \\ 
+    bitonic (NVIDIA SDK)        & 23815 & 6.55 \\
+    \hline
+  \end{tabular}
+\end{center}
+\caption{time: GPU time (in $\mu$s) spent in calls to small sorter kernels 
+in the initial phase of the sorter for $2^{24}$ inputs. percent: percentage 
+of total GPU time spent in the small sort kernel.
+The final line shows the numbers for the bitonic code (for large sorts) that 
+is distributed with the the NVIDIA SDK. Its structure also starts with a phase 
+of small sorting kernels. It takes 274 ms to sort $2^{24}$ key-value pairs on 
+an NVIDIA GTX480 GPU. It could be sped up by using our {\tt vsort} kernel, 
+and also by (hand) fusing single ``column'' kernels as we did with {\tt iSwap}, 
+although the need to calculate directions of comparators in the bitonic network 
+would complicate this. Our CUDA code is simpler because all comparators
+point in the same direction in the sorter construction.
+} 
+\label{tab:expressive-table2}
+\end{table}
+
 
 Although none of our generated kernels is optimised (for example with respect to warp size), 
 their performance is, nevertheless, very good. We are working on automated warp size-related 

@@ -28,13 +28,13 @@ adds global arrays and atomic instructions to Obsidian, see section
 
 The contributions of this paper are:
 \begin{itemize}
-\item We provide measurements (section \ref{sec:Benchmarks}) showing
+\item We provide measurements (section \ref{sec:CSORTBenchmarks}) showing
   that counting sort is a competitive algorithm for sorting keys on the GPU,
   outperforming the sorting implementation in the library
   Thrust\cite{THRUST} in many cases.
 \item Occurrence sort is shown to be particularly
   suitable for implementing on the GPU (section \ref{sec:occur}) and
-  performs well (section \ref{sec:Benchmarks}).
+  performs well (section \ref{sec:CSORTBenchmarks}).
 \item The Obsidian implementation of the two sorting algorithms is
   detailed along with the generated CUDA (sections
   \ref{sec:Obsidian} and \ref{sec:parallel}).
