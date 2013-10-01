@@ -12,13 +12,13 @@ Conal Elliot~\cite{PAN}. Because of the computational complexity of image genera
 code is generated. This C code can then be compiled by an optimising compiler. 
 Many ideas from the paper 
 ``Compiling Embedded Languages'', describing the implementation of Pan have been 
-used in the implementation of Obsidian~\cite{Elliott03:CompileDSEL-JFP}. 
+used in the implementation of Obsidian~\cite{COMPILEEDSL}. 
 
 \subsubsection{Related work on GPU and GPGPU programming languages}
 We cannot attempt an exhaustive description of GPU programming languages here, but refer the reader to a recent PhD thesis by Philipp Lucas, which contains an enlightening survey~\cite{Lucas08}. Lucas distinguishes carefully between languages (such as CG and HLSL) that aim to raise the level of abstraction at which graphics-oriented GPU programs are written, and those that attempt to abstract the entire GPU, and so must also provide a means to express the placing of programs on the GPU, feeding such programs with data, reading the results back to the CPU, and so on, as well as deciding to what extent the programmer should be involved
 in stipulating those tasks.
 In the first group of graphics-oriented languages, we include PyGPU and Vertigo.
-PyGPU is a language for image processing embedded in Python~\cite{LUNDPAPER}. 
+PyGPU is a language for image processing embedded in Python~\cite{PyGPU}. 
 PyGPU uses the introspective abilities of Python and thus bypasses
 the need to implement new loop structures and conditionals for the embedded 
 language. In Python it is possible to access the bytecode of a function and 

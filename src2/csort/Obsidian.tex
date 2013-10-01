@@ -31,10 +31,10 @@ a complementary array representation, that we call push arrays, that the traditi
 array was renamed to pull. 
 
 The Obsidian implementation of pull arrays was influenced by Pan's representation 
-of images as functions from coordinates to colour values \cite{ELLIJFP}. A pull array 
+of images as functions from coordinates to colour values \cite{PAN}. A pull array 
 is a function from index to value and an associated length.  
 
-Push arrays were added to Obsidian first in reference \cite{PUSH}. A push array
+Push arrays were added to Obsidian first in reference \cite{Obsidian-Expressive}. A push array
 specifies where elements are to end up in a result array, rather than where 
 they come from (as in a pull array). In essence, a push array is a
 computation which writes an array to memory, but is parameterised on
@@ -193,7 +193,7 @@ written.
 We need to operate on arrays that are too long to fit in a single block.
 %This large prefix sum is implemented as shown in
 The resulting prefix sum is implemented as shown in reference 
-\cite{LargeScan}, see figure \ref{fig:prefixsum}. There are three steps 
+\cite{ScanCUDA}, see figure \ref{fig:prefixsum}. There are three steps 
 involved. First local prefix sums are computed; the rightmost elements elements are also stored in a separate, auxiliary, array. Following this, 
 the prefix sum of the auxiliary array is  computed. The prefix sums used 
 in phase A and B of the 

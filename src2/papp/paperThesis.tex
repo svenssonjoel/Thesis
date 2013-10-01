@@ -156,7 +156,7 @@ by another data structure, closely related to Arrows~\cite{Arrows}, representing
 left out because of space limitations, the use of this GPU program representation 
 can be seen in subsection~\ref{sec:GPUPrograms}. For a description of the implementation 
 see~\cite{JSTECH} and for more general information on embedded language 
-implementation see~\cite{Elliott03:CompileDSEL-JFP}.
+implementation see~\cite{COMPILEEDSL}.
 
 GPU design is driven by the performance demands of graphics applications. 
 The kind of processing that is common in graphics falls in the data-parallel 
@@ -670,7 +670,7 @@ how we want to write GPGPU programs using Obsidian.
 
 \subsubsection{Sorting}
 
-Sorting is a popular function to place on the GPU, see~\cite{SORT1,SORT3}.
+Sorting is a popular function to place on the GPU, see~\cite{SINTORNSORT,SORT3}.
 {\em Odd-Even merge sort}, due to Batcher, uses a merger component called the Odd-Even merger. This 
 merger merges two sorted arrays. In Obsidian this merger and sorter 
 can be implemented using the combinators {\tt two}, {\tt ilv}, {\tt evens}
@@ -836,7 +836,7 @@ are variants of {\tt sync} that enforce {\em in-place} computation.
 
 The Sklansky kernels given above can be used in an algorithm that computes 
 the parallel prefix of a large array. This is done in the same way as in
-~\cite{harris07parallel}.
+~\cite{ScanCUDA}.
 The table below shows the results of using the different parallel prefix 
 kernels from above in an algorithm for computing the prefix sums of 
 $2^{20}$ elements.
@@ -868,7 +868,7 @@ is identical to {\tt sklansky2} except is in-place. Even the very first version,
 the performance can be pushed quite close to the hand optimised version.  
 The fastest kernel, called {\em NVIDIA SDK}, is the one supplied 
 with the CUDA SDK. This kernel is based on the Brent-Kung network and its 
-implementation is shown in~\cite{harris07parallel}. The {\tt NVIDIA SDK} 
+implementation is shown in~\cite{ScanCUDA}. The {\tt NVIDIA SDK} 
 kernel is highly optimized with regards to its memory access pattern and 
 so the code is considerably more complicated than that of any of the Obsidian parallel-prefix kernels.
  
