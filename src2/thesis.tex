@@ -21,6 +21,7 @@
 \usepackage{mathtools}
 %\usepackage{lingmacros}
 \usepackage{subfig}
+\usepackage{fancyhdr}
 
 
 \pagestyle{plain}
@@ -47,6 +48,9 @@
 %\renewcommand*{\thesection}{\arabic{section}}
 
 \newcommand{\thesistitle}{Not decided upon}
+\newcommand{\dept}{Department of Computer Science and Engineering}
+\newcommand{\uni}{Chalmers University of Technology and G\"oteborg University}
+\newcommand{\group}{Functional Programming Research Group}
 
 \begin{document}
 
@@ -61,18 +65,55 @@
 
 \large Bo Joel Svensson
 \vfill
+\includegraphics[width=120mm]{./img/ChalmGUtextsvEng}\\[5mm]
+\includegraphics[height=4cm]{./img/ChalmGUmarke}\\
 
 \vspace{1cm}
 \normalsize
-{\sc Department of Computer Science and Engineering}\\
-{\sc Chalmers University of Technology and G\"oteborg University}\\
+{\sc \dept}\\
+{\sc \uni}\\
 G\"oteborg, Sweden 2013
 
 \end{centering}
 \end{titlepage}
 
+% ---------------------------------------------------------------------------
+% Tryckortssida
+% ---------------------------------------------------------------------------
+
+\quad \vfill
+
+{\noindent\large\bf\thesistitle} \\
+\noindent Bo Joel Svensson \\
+\noindent ISBN \\
+
+\vspace{1cm}
+
+\noindent\copyright {\sc {Bo Joel Svensson}}, 2013 \\*[5mm]
+\vspace{1cm} 
+
+\noindent Technical Report ..D\\
+\noindent ISSN                \\
+\noindent \dept \\
+\noindent \group\\
+
+\vspace{1cm} 
+
+\noindent \uni \\
+\noindent SE--412~96~~G\"oteborg, Sweden\\
+\noindent Phone: +46 (0)31--772~1000 \\
+
+\vspace{1cm} 
+
+\noindent Printed in Sweden\\
+\noindent Chalmers Reproservice\\
+\noindent G\"oteborg, Sweden 2013
+
+
+\thispagestyle{empty}
 
 \clearpage
+\pagenumbering{roman}
 
 \section*{Abstract}
 Abstract abstract 
@@ -81,7 +122,7 @@ Abstract abstract
 
 \noindent
 
-\textbf{Keywords:} Keyword1, Keyword2  
+ \textbf{Keywords:} Keyword1, Keyword2  
 
 \clearpage
 
@@ -97,8 +138,15 @@ Programming (RAW FP) Project) and by the Swedish Research Council.
 \tableofcontents
 
 
-\newpage
+\cleardoublepage
 
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\fancyfoot{}
+\fancyhead[LO]{}
+\fancyhead[RO]{\leftmark}
+\renewcommand{\headrulewidth}{0.0pt}
+\fancyhead[LE,RO]{\thepage}
 
 \chapter{Introduction}
 
