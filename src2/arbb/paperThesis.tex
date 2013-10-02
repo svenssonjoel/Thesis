@@ -496,20 +496,20 @@ how data is bound, {\tt bind}, for use in ArBB.
 \vspace{2mm}
 \begin{Verbatim}[commandchars=\\\{\}]
 \kw{int} main() 
-{ 
+\{ 
   double a[SIZE];
   double b[SIZE];
 
-  for ( \kw{int} i = 0; i < SIZE; ++i) { 
+  for ( \kw{int} i = 0; i < SIZE; ++i) \{ 
     a[i] = ...; b[i] = ...;
-  }
+  \}
   dense<f32> va, vb;
   f32 vc;
   bind(va, a, SIZE); 
   bind(vb, b, SIZE); 
   call(dot\_product)(va, vb, &vc); 
   ...
-}
+\}
 \end{Verbatim}
 
 

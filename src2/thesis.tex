@@ -31,6 +31,8 @@
 %stuff
 \usepackage{latexsym}
 \usepackage{tikz,pgflibraryshapes}
+\usetikzlibrary{shapes,snakes,positioning}
+\usepackage{pgfplots}
 \usepackage{booktabs}
 %%
 
@@ -47,7 +49,7 @@
 
 %\renewcommand*{\thesection}{\arabic{section}}
 
-\newcommand{\thesistitle}{Not decided upon}
+\newcommand{\thesistitle}{Embedded Languages for Data Parallel Computation}
 \newcommand{\dept}{Department of Computer Science and Engineering}
 \newcommand{\uni}{Chalmers University of Technology and G\"oteborg University}
 \newcommand{\group}{Functional Programming Research Group}
@@ -89,7 +91,7 @@ G\"oteborg, Sweden 2013
 
 \vspace{1cm}
 
-\noindent\copyright {\sc {Bo Joel Svensson}}, 2013 \\*[5mm]
+\noindent\copyright {\sc {Bo Joel Svensson}}, 2013 \\ 
 \vspace{1cm} 
 
 \noindent Technical Report ..D\\
@@ -139,6 +141,7 @@ Programming (RAW FP) Project) and by the Swedish Research Council.
 
 
 \cleardoublepage
+\clearpage
 
 \pagenumbering{arabic}
 \pagestyle{fancy}
@@ -190,6 +193,7 @@ Programming (RAW FP) Project) and by the Swedish Research Council.
 \cleardoublepage 
 
 \section{Obsidian: A Domain Specific Embedded Language for Parallel Programming of Graphics Processors}
+\label{sec:paper1}
 %\addcontentsline{toc}{chapter}{Obsidian: A Domain Specific Embedded Language for
 %Parallel Programming of Graphics Processors}
 
@@ -205,6 +209,7 @@ Bo Joel Svensson, Mary Sheeran, Koen Claessen
 \cleardoublepage 
 
 \section{Obsidian: GPU Computing Using Haskell}
+\label{sec:paper2}
 %\addcontentsline{toc}{chapter}{Obsidian: GPU Computing Using Haskell}
 
 \begin{center} 
@@ -220,6 +225,7 @@ Bo Joel Svensson, Koen Claessen, Mary Sheeran
 \cleardoublepage 
 
 \section{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
+\label{sec:paper3}
 %\addcontentsline{toc}{chapter}{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
 
 \begin{center} 
@@ -234,6 +240,7 @@ Koen Claessen, Mary Sheeran, Bo Joel Svensson
 \cleardoublepage 
 
 \section{Counting and Occurrence Sort for GPUs using an Embedded Language}
+\label{sec:paper4}
 %\addcontentsline{toc}{chapter}{Counting and Occurrence Sort for GPUs using an Embedded Language}
 
 \begin{center} 
@@ -250,6 +257,7 @@ Josef Svenningsson, Bo Joel Svensson, Mary Sheeran
 
 
 \section{Simple and Compositional Reification of Monadic Embedded Languages}
+\label{sec:paper5}
 %\addcontentsline{toc}{chapter}{Simple and Compositional Reification of Monadic Embedded Languages}
 
 \begin{center} 
@@ -258,6 +266,24 @@ Josef Svenningsson, Bo Joel Svensson
 
 
 \input{./bb/paperThesis}
+
+% ---------------------------------------------------------------------------
+% 
+% ---------------------------------------------------------------------------
+\cleardoublepage 
+
+
+\section{A High-Level Embedded Language for Low-Level GPU Kernel Programming}
+\label{sec:paper6}
+%\addcontentsline{toc}{chapter}{Simple and Compositional Reification of Monadic Embedded Languages}
+
+\begin{center} 
+Bo Joel Svensson, Mary Sheeran
+\end{center}
+
+
+\input{./hl/paperThesis}
+
 
 
 % ---------------------------------------------------------------------------
@@ -272,6 +298,7 @@ Josef Svenningsson, Bo Joel Svensson
 
 
 \section{Programming Future Parallel Architectures with Haskell and Intel ArBB}
+\label{sec:paper7}
 %\addcontentsline{toc}{chapter}{Parallel Programming in Haskell Almost for Free}
 
 \begin{center} 
@@ -288,6 +315,7 @@ Bo Joel Svensson, Ryan R. Newton
 
 
 \section{Parallel Programming in Haskell Almost for Free}
+\label{sec:paper8}
 %\addcontentsline{toc}{chapter}{Parallel Programming in Haskell Almost for Free}
 
 \begin{center} 

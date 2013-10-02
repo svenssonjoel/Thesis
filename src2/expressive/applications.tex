@@ -274,7 +274,7 @@ Here, we use exactly the same approach to make a new version of
 the {\em interleave} combinator. The results of applying
 the {\tt f}s and {\tt gs} are combined into a Push array, in the right
 order.
-\pagebreak
+%\pagebreak
 %% ** TODO More explanation needed.
 \begin{codesize}
 \begin{verbatim}
@@ -501,7 +501,7 @@ Because {\tt iSwap} is used repeatedly, we also wrote kernels
 corresponding to compositions of two and three of them (avoiding
 memory accesses between the columns).
 That is, we replaced the loop containing {\tt iSwap} above by
-\pagebreak
+% \pagebreak
 \begin{codesize}
 \begin{verbatim}
 for(int j = i-1; j >= 0; j -= 3){ 

@@ -75,8 +75,8 @@ implemented like this:
 % ------------------------------------------------------------------------------
 \begin{code}
 scan_add_kernel2 :: GArr IntE -> W (GArr IntE) 
-scan_add_kernel2 = cache ->- sync ->- sklansky (+) ->- wb ->- 
-                     sync
+scan_add_kernel2 = cache ->- sync ->- sklansky (+) ->- 
+                   wb ->- sync
 \end{code}
 % ------------------------------------------------------------------------------
 Here the array is first stored into shared memory. The {\tt sklansky} stages
@@ -89,8 +89,9 @@ session using a function called {\tt execute}:
 
 % ------------------------------------------------------------------------------
 \begin{code}
-execute :: ExecMode -> (GArr (Exp a) -> W (GArr (Exp b)) -> 
-              [Exp a] -> IO [Exp b]
+execute :: ExecMode 
+         -> (GArr (Exp a) -> W (GArr (Exp b)) 
+         -> [Exp a] -> IO [Exp b]
 \end{code}
 % ------------------------------------------------------------------------------
 Here {\tt ExecMode} can be either {\tt GPU} for launching the kernel on the 
@@ -211,13 +212,15 @@ input = mkArray (\ix -> (index (variable "input") ix)) 256
 Applying {\tt fun (+1)} to this input array results in an array with the 
 following indexing function:
 \begin {code}
-(\ix -> (E (BinOp Add (Index (Variable "input") ix) (LitInt 1)))) 
+(\ix -> (E (BinOp Add (Index (Variable "input") ix) 
+                      (LitInt 1)))) 
 \end{code} 
 
 At the code generation phase this function is evaluated using a variable 
 representing a thread Id. The result is an expression looking as follows:
-\begin {code}
-E (BinOp Add (Index (Variable "input") (Variable "tid")) (LitInt 1))
+\begin{code}
+E (BinOp Add (Index (Variable "input") (Variable "tid")) 
+             (LitInt 1))
 \end{code} 
 
 This expression is a direct description of what is to be computed. 

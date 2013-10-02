@@ -443,7 +443,8 @@ GPU programs can be executed on the GPU from
 
 \begin{small}
 \begin{verbatim}
-execute :: (Flatten a, Flatten b) => (Arr a :-> Arr b) -> [a] -> IO [b]
+execute :: (Flatten a, Flatten b) 
+         => (Arr a :-> Arr b) -> [a] -> IO [b]
 \end{verbatim}
 \end{small}
 \noindent
@@ -611,7 +612,9 @@ The example program {\tt prg} would be represented as follows:
 %
 \begin{small}
 \begin{verbatim} 
-Sync (fmap (toFData . f)) (Sync ((fmap toFData) . rev . (fmap fromFData)) (Pure (fmap g)))   
+Sync (fmap (toFData . f)) 
+     (Sync ((fmap toFData) . rev . (fmap fromFData)) 
+           (Pure (fmap g)))   
 \end{verbatim}
 \end{small} 
 \noindent
@@ -679,7 +682,8 @@ and {\tt odds}. For a detailed description of these combinators see
 
 \begin{small}
 \begin{verbatim}
-mergeOE :: (Choice a, Flatten a) => Int -> ((a,a) -> (a,a)) -> (Arr a :-> Arr a)
+mergeOE :: (Choice a, Flatten a) 
+         => Int -> ((a,a) -> (a,a)) -> (Arr a :-> Arr a)
 mergeOE 1 f = pure (evens f)
 mergeOE n f = ilv (mergeOE (n-1) f) ->- sync ->- pure (odds f)
 \end{verbatim}
@@ -692,7 +696,8 @@ can be plugged. However, we choose the following {\em comparator} function (a co
 cmp :: (Ordered a, Choice (a, a)) => (a, a) -> (a, a)
 cmp (a,b) = ifThenElse (a <* b)  (a,b) (b,a)
 
-*Obsidian> execute GPU (mergeOE 3 cmp) ([1,3,5,7,2,4,6,8] :: [IntE]) 
+*Obsidian> let input = ([1,3,5,7,2,4,6,8] :: [IntE]) 
+*Obsidian> execute GPU (mergeOE 3 cmp) input
 [1,2,3,4,5,6,7,8]
 \end{verbatim}
 \end{small}
@@ -757,9 +762,11 @@ The {\tt sklansky} function is now implemented using
 
 \begin{small}
 \begin{verbatim}
-sklansky :: (Flatten a, Choice a) => Int -> (a -> a -> a) -> (Arr a :-> Arr a) 
+sklansky :: (Flatten a, Choice a) 
+          => Int -> (a -> a -> a) -> (Arr a :-> Arr a) 
 sklansky 0 op = pure id
-sklansky n op = two (sklansky (n-1) op) ->- pure (fan op) ->- sync
+sklansky n op = two (sklansky (n-1) op) ->- 
+                pure (fan op) ->- sync
 \end{verbatim}
 \end{small}
 
@@ -797,9 +804,11 @@ program is shown below:
 
 \begin{small}
 \begin{verbatim}
-sklansky1 :: (Flatten a, Choice a) => Int -> (a -> a -> a) -> (Arr a :-> Arr a) 
+sklansky1 :: (Flatten a, Choice a) 
+           => Int -> (a -> a -> a) -> (Arr a :-> Arr a) 
 sklansky1 0 op = pure id
-sklansky1 n op = two (sklansky1 (n-1) op) ->- pure (fan op) ->- syncHow (pairNth 256) 
+sklansky1 n op = two (sklansky1 (n-1) op) ->- 
+                 pure (fan op) ->- syncHow (pairNth 256) 
 \end{verbatim}
 \end{small}
 
@@ -815,7 +824,8 @@ the sklansky networks of size 32 or smaller use {\tt syncWarpHow}.
 
 \begin{small}
 \begin{verbatim} 
-sklansky2 :: (Flatten a, Choice a) => Int -> (a -> a -> a) -> (Arr a :-> Arr a) 
+sklansky2 :: (Flatten a, Choice a) 
+           => Int -> (a -> a -> a) -> (Arr a :-> Arr a) 
 sklansky2 0 op = pure id
 sklansky2 n op = two (sklansky2 (n-1) op) ->- pure (fan op) 
                    ->-  if n <= 5 
