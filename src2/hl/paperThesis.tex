@@ -2143,7 +2143,7 @@ and local size of 4096 gives a 16 Million element reduction in only two stages.
 
 The CUDA code we need to write by hand is very simple and only describes the 
 actual order of the kernels we wish to launch. We make no changes to the 
-kernels themselves. The listing below shows an outline
+kernels themselves. The listing in figure~\ref{fig:cudareductioncode} shows an outline
 of the CUDA code for launching {\tt red5l} to give $2^{24}$ (= 16777216)
 element reduction.   
 
@@ -2151,7 +2151,7 @@ element reduction.
 %% of the CUDA code for launching {\tt red5l} to give $2^{24}$ (= 16777216)
 %% element reduction.   
 %% \pagebreak
-
+\begin{figure} 
 \begin{small}
 \begin{Verbatim}[samepage=true] 
 
@@ -2203,6 +2203,9 @@ int main(void) {
   return SUCCESS; 
 \end{Verbatim} 
 \end{small}
+\caption{CUDA code that combines reduction kernels into reduction of a large array.}
+\label{fig:cudareductioncode}
+\end{figure}
 
 This is just a very simple example of what CUDA code can look like. Part of 
 the motivation for showing it is to make the presentation complete. 
