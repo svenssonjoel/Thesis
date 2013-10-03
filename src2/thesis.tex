@@ -54,6 +54,22 @@
 \newcommand{\uni}{Chalmers University of Technology and G\"oteborg University}
 \newcommand{\group}{Functional Programming Research Group}
 
+
+% ---------------------------------------------------------------------------
+% Papers 
+% ---------------------------------------------------------------------------
+\newcommand{\paperBB}{Simple and Compositional Reification of Monadic Embedded Languages}
+\newcommand{\paperIFL}{Obsidian: A Domain Specific Embedded Language for Parallel Programming of Graphics Processors}
+\newcommand{\paperPAPP}{GPGPU Kernel Implementation and Refinement using Obsidian} 
+\newcommand{\paperEXPRESSIVE}{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
+\newcommand{\paperCSORT}{Counting and Occurrence Sort for GPUs using an Embedded Language}
+\newcommand{\paperHL}{A High-Level Embedded Language for Low-Level GPU Kernel Programming}
+\newcommand{\paperARBB}{Programming Future Parallel Architectures with Haskell and Intel ArBB}
+\newcommand{\paperEMBARBB}{Parallel Programming in Haskell Almost for Free}
+
+% ---------------------------------------------------------------------------
+% BEGIN ! 
+% ---------------------------------------------------------------------------
 \begin{document}
 
 \begin{titlepage}
@@ -94,8 +110,8 @@ G\"oteborg, Sweden 2013
 \noindent\copyright {\sc {Bo Joel Svensson}}, 2013 \\ 
 \vspace{1cm} 
 
-\noindent Technical Report ..D\\
-\noindent ISSN                \\
+\noindent Technical Report 101D\\
+\noindent ISSN                 \\
 \noindent \dept \\
 \noindent \group\\
 
@@ -128,7 +144,7 @@ Abstract abstract
 
 \clearpage
 
-\section*{Acknowledgements}
+\section*{Acknowledgments}
 
 
 \vspace{5mm}
@@ -150,6 +166,46 @@ Programming (RAW FP) Project) and by the Swedish Research Council.
 \fancyhead[RO]{\leftmark}
 \renewcommand{\headrulewidth}{0.0pt}
 \fancyhead[LE,RO]{\thepage}
+
+\chapter{About this thesis} 
+
+This thesis contains an introduction and a selection of papers. The introduction 
+gives background and context to the papers. 
+
+\section{Papers} 
+
+The papers contained in this thesis falls in three different categories. 
+\begin{itemize} 
+\item General EDSL methodology in chapter~\ref{chap:EDSLImplementation}. 
+\item GPU Programming using an EDSL in chapter~\ref{chap:GPUProgramming}. 
+\item Retargetable parallel programming in chapter~\ref{chap:ArBB}. 
+\end{itemize} 
+
+\subsection{EDSL implementation papers} 
+
+\subsubsection{\paperBB} 
+
+apa apa apa bepa cepa apa 
+
+\subsection{GPU Programming papers} 
+
+\subsubsection{\paperIFL}
+
+\subsubsection{\paperPAPP}
+
+\subsubsection{\paperEXPRESSIVE}
+
+\subsubsection{\paperCSORT} 
+
+\subsubsection{\paperHL}
+
+\subsubsection{Retargetable parallel programming} 
+
+\subsubsection{\paperARBB}
+
+\subsubsection{\paperEMBARBB}
+
+
 
 \chapter{Introduction}
 
@@ -182,18 +238,37 @@ Programming (RAW FP) Project) and by the Swedish Research Council.
 %\bibliographystyle{plain}
 %\bibliography{intro}
 
+\chapter{EDSL implementation papers}
+\label{chap:EDSLImplementation}
+% ---------------------------------------------------------------------------
+% 
+% ---------------------------------------------------------------------------
+\cleardoublepage 
+
+
+\section{\paperBB}
+\label{sec:paperBB}
+%\addcontentsline{toc}{chapter}{Simple and Compositional Reification of Monadic Embedded Languages}
+
+\begin{center} 
+Josef Svenningsson, Bo Joel Svensson
+\end{center}
+
+
+\input{./bb/paperThesis}
 
 
 
 \chapter{GPU programming papers}
+\label{chap:GPUProgramming}
 
 % ---------------------------------------------------------------------------
 % 
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
-\section{Obsidian: A Domain Specific Embedded Language for Parallel Programming of Graphics Processors}
-\label{sec:paper1}
+\section{\paperIFL}
+\label{sec:paperIFL}
 %\addcontentsline{toc}{chapter}{Obsidian: A Domain Specific Embedded Language for
 %Parallel Programming of Graphics Processors}
 
@@ -208,8 +283,8 @@ Bo Joel Svensson, Mary Sheeran, Koen Claessen
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
-\section{Obsidian: GPU Computing Using Haskell}
-\label{sec:paper2}
+\section{\paperPAPP}
+\label{sec:paperPAPP}
 %\addcontentsline{toc}{chapter}{Obsidian: GPU Computing Using Haskell}
 
 \begin{center} 
@@ -224,8 +299,8 @@ Bo Joel Svensson, Koen Claessen, Mary Sheeran
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
-\section{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
-\label{sec:paper3}
+\section{\paperEXPRESSIVE}
+\label{sec:paperEXPRESSIVE}
 %\addcontentsline{toc}{chapter}{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
 
 \begin{center} 
@@ -239,8 +314,8 @@ Koen Claessen, Mary Sheeran, Bo Joel Svensson
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
-\section{Counting and Occurrence Sort for GPUs using an Embedded Language}
-\label{sec:paper4}
+\section{\paperCSORT}
+\label{sec:paperCSORT}
 %\addcontentsline{toc}{chapter}{Counting and Occurrence Sort for GPUs using an Embedded Language}
 
 \begin{center} 
@@ -250,22 +325,6 @@ Josef Svenningsson, Bo Joel Svensson, Mary Sheeran
 
 \input{./csort/paperThesis}
 
-% ---------------------------------------------------------------------------
-% 
-% ---------------------------------------------------------------------------
-\cleardoublepage 
-
-
-\section{Simple and Compositional Reification of Monadic Embedded Languages}
-\label{sec:paper5}
-%\addcontentsline{toc}{chapter}{Simple and Compositional Reification of Monadic Embedded Languages}
-
-\begin{center} 
-Josef Svenningsson, Bo Joel Svensson
-\end{center}
-
-
-\input{./bb/paperThesis}
 
 % ---------------------------------------------------------------------------
 % 
@@ -273,8 +332,8 @@ Josef Svenningsson, Bo Joel Svensson
 \cleardoublepage 
 
 
-\section{A High-Level Embedded Language for Low-Level GPU Kernel Programming}
-\label{sec:paper6}
+\section{\paperHL}
+\label{sec:paperHL}
 %\addcontentsline{toc}{chapter}{Simple and Compositional Reification of Monadic Embedded Languages}
 
 \begin{center} 
@@ -291,14 +350,15 @@ Bo Joel Svensson, Mary Sheeran
 % ---------------------------------------------------------------------------
 
 \chapter{Retargetable parallel programming papers}
+\label{chap:ArBB}
 % ---------------------------------------------------------------------------
 % 
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
 
-\section{Programming Future Parallel Architectures with Haskell and Intel ArBB}
-\label{sec:paper7}
+\section{\paperARBB}
+\label{sec:paperARBB}
 %\addcontentsline{toc}{chapter}{Parallel Programming in Haskell Almost for Free}
 
 \begin{center} 
@@ -314,8 +374,8 @@ Bo Joel Svensson, Ryan R. Newton
 \cleardoublepage 
 
 
-\section{Parallel Programming in Haskell Almost for Free}
-\label{sec:paper8}
+\section{\paperEMBARBB}
+\label{sec:paperEMBARBB}
 %\addcontentsline{toc}{chapter}{Parallel Programming in Haskell Almost for Free}
 
 \begin{center} 
