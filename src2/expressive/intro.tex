@@ -26,19 +26,19 @@ languages such as CUDA and OpenCL.
 Obsidian is a
 domain specific embedded language (DSEL) implemented in Haskell.
 When an Obsidian program is run, a representation of the program is created 
-as a syntax tree. For more information on EDSL implementation see~\cite{COMPILEEDSL}.
+as a syntax tree. For more information on EDSL implementation see~\citeexp{COMPILEEDSL}.
 The program representation generated when running an Obsidian program 
 is compiled into CUDA code. We are also working on an OpenCL backend.
 
 Our approach is different from that of other Haskell DSELs targetting
-GPUs~\cite{ACCELERATEDAMP11,NIKOLA,BARRACUDA}. 
+GPUs~\citeexp{ACCELERATEDAMP11,NIKOLA,BARRACUDA}. 
 We do not try to abstract away from 
 all the peculiarities of GPU programming, but rather provide a higher 
 level language in which to experiment with them.
 For instance,
 Accelerate provides a standard set of basic operations such as 
 {\tt map}, {\tt reduce} and {\tt zipWith} as built in skeletons, implemented
-with the help of small, predefined, hand-tuned CUDA kernels~\cite{ACCELERATEDAMP11}. 
+with the help of small, predefined, hand-tuned CUDA kernels~\citeexp{ACCELERATEDAMP11}. 
 Obsidian, on the other hand, allows the user to experiment with the
 {\em generation} of small kernels for fixed size array inputs
 from higher level descriptions.
@@ -49,13 +49,13 @@ by a single thread in the generated CUDA code.
 An important aspect of Obsidian is the symbolic array representation used, along
 with its associated {\tt sync} operation. As we shall see, the {\tt sync} operation
 allows the programmer to guide code generation and control parallelism and thread
-use~\cite{JSLIC}.
+use~\citeexp{JSLIC}.
 
 
 
 
 %Today there are number of EDSLs written in Haskell targeting 
-%GPUs~\cite{ACCELERATE,NIKOLA,BARRACUDA}. We justify our work on yet 
+%GPUs~\citeexp{ACCELERATE,NIKOLA,BARRACUDA}. We justify our work on yet 
 %another by having a slightly different approach. We do not try to abstract away from 
 %all the peculiarities of GPU programming but rather giving a higher 
 %level language in which to experiment with them.
@@ -77,7 +77,7 @@ use~\cite{JSLIC}.
 %nomenclature, is the programmers tool to guide code generation and 
 %obtain parallelism. The presentation of Obsidian here will be somewhat 
 %cursory, for a more complete view of the various versions and approaches 
-%we have tried, see~\cite{JSLIC}.
+%we have tried, see~\citeexp{JSLIC}.
 %More details on this later.
 
 In Obsidian, a kernel that sums an array can be expressed as: 
@@ -168,8 +168,8 @@ This array representation has served us well. It has these properties:
 \item Many basic operations can be implemented: {\tt map}, {\tt zipWith} etc.
 \end{itemize}
 Using this array representation in a DSEL is not new; the first occurence that we know of is in
-Pan~\cite{PAN}. Similar array representations have also later been 
-used in Feldspar~\cite{FELDSPAR}, and more recently also in the Repa library~\cite{REPA}.
+Pan~\citeexp{PAN}. Similar array representations have also later been 
+used in Feldspar~\citeexp{FELDSPAR}, and more recently also in the Repa library~\citeexp{REPA}.
 Functions for indexing and getting the length of arrays are as follows:
 \begin{codesize} 
 \begin{verbatim}
@@ -587,7 +587,7 @@ of places. Using just Pull arrays, we have been unable to solve the
 problems described so far in this section. The solution is to add a complementary array type to Obsidian. 
 
 %For a more in depth view of the parts of Obsidian that has been showed 
-%in this section see~\cite{JSLIC}.
+%in this section see~\citeexp{JSLIC}.
 
 
 

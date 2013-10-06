@@ -33,7 +33,7 @@ the shape of the DVector.
 %The dimensionality is encoded using a datatype: 
 
 The {\tt d} parameter is used for a type level representation of the 
-dimensionality of a vector, as in the Repa library~\cite{REPA}. The 
+dimensionality of a vector, as in the Repa library~\citeemb{REPA}. The 
 dimensionality is encoded using the following types together with 
 the {\tt Int} type. 
 
@@ -149,10 +149,10 @@ that would have sorted the input vector.
 The {\tt Expr} type also has constructors for the {\em call} and {\em map} 
 functionality. To call a function means to apply it to input data. The 
 {\tt map} operation specifies elementwise application of a function over 
-vectors, like NESL's {\em apply-to-each}~\cite{NESL}, so it corresponds 
+vectors, like NESL's {\em apply-to-each}~\citeemb{NESL}, so it corresponds 
 to Haskell's {\tt map} and {\tt zipWith}. Both {\tt Call} and {\tt Map} 
 take a {\tt(R GenRecord)}. This is inspired by the delayed expressions 
-that enable the implementation of {\tt vapply} in Nikola~\cite{NIKOLA}. 
+that enable the implementation of {\tt vapply} in Nikola~\citeemb{NIKOLA}. 
 The {\tt R} is the reification monad used to create DAGs (directed acyclic 
 graphs) from embedded language functions. These DAGs are part of a 
 {\tt GenRecord} that contains all information that the ArBB code generator 
@@ -166,7 +166,7 @@ Something more structured than a list is needed for this.
 
 The expression data type used in EmbArBB is untyped (not using a GADT). 
 A typed interface to the language is supplied using the same phantom types 
-method as used in {\em pan}~\cite{COMPILEEDSL} and many other Haskell embedded 
+method as used in {\em pan}~\citeemb{COMPILEEDSL} and many other Haskell embedded 
 languages since then. The choice to use an untyped {\tt Expr} datatype was 
 based on the wish to keep the backend (ArBB code generation) as simple as 
 possible. 
@@ -295,7 +295,7 @@ first applied to expressions that represent variable names. For each of the
 inputs, {\tt (tin1,..,tinN}), a variable is created. The result is an expression 
 (or expressions) representing the function {\tt f}. On this expression, sharing 
 detection is performed, and a directed acyclic graph (DAG) is created. 
-The method of sharing detection used is based on the StableNames method~\cite{Gill}. 
+The method of sharing detection used is based on the StableNames method~\citeemb{Gill}. 
 
 Then, the code generation is implemented using a very 
 direct approach; no extra optimisations or transformations are applied. 

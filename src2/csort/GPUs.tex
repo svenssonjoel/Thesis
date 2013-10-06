@@ -27,7 +27,7 @@ generations of GPUs. For example, the GPU used in the benchmarks
 (section \ref{sec:CSORTBenchmarks}) has a total of 1344 single-precision floating
 point CUDA cores and has 2 GB global memory. The very latest GPU architectures 
 from NVIDIA slightly digress from what is outlined here but mostly still 
-adhere to the same programming model. For exact details refer to \cite{KEPLER}.  
+adhere to the same programming model. For exact details refer to \citecsort{KEPLER}.  
 
 The programming model that CUDA exposes is called single program multiple 
 threads (SPMT) and is a slight variation of the SPMD concept. This programming 
@@ -58,7 +58,7 @@ global memory again using some function of blockId and threadId.
 %in SIMD fashion, all threads progress at the same pace (essentially that 
 %they share a single instruction pointer). 
 
-For more CUDA and GPU specifics see references \cite{KEPLER,CUDA}. 
+For more CUDA and GPU specifics see references \citecsort{KEPLER,CUDA}. 
 
 \begin{figure}
 \begin{small}

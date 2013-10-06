@@ -94,7 +94,7 @@ programming language Haskell. The user writes code using constructs
 familiar from Haskell (like {\tt map} and {\tt reduce}), recursion 
 and some specially designed combinators for combining GPU programs. 
 NVIDIA CUDA code is generated from these high level descriptions, and 
-passed to the {\tt nvcc} compiler~\cite{CUDAGuide2.0}. Currently, we 
+passed to the {\tt nvcc} compiler~\citepapp{CUDAGuide2.0}. Currently, we 
 consider only the generation of single kernels, and not their coordination.
 
 This paper is focussed on how the user should work with Obsidian, 
@@ -115,11 +115,11 @@ Haskell are briefly discussed.
 %programming on graphics processors (GPUs) embedded in Haskell. 
 %From high level descriptions, code for execution on a GPU is generated.
 %Obsidian generates NVIDIA CUDA code that is passed to the {\tt nvcc} 
-%compiler \cite{CUDAGuide2.0}. 
+%compiler \citepapp{CUDAGuide2.0}. 
 
 %This paper is mainly focused on the usage of Obsidian. The implementation
 %of Obsidian itself and a discussion of how the CUDA code is generated can 
-%be found in \cite{JSTECH}.
+%be found in \citepapp{JSTECH}.
 
 
 
@@ -145,22 +145,22 @@ Haskell are briefly discussed.
 Multicore and manycore processors are becoming increasingly common. Modern 
 graphics processing units (GPUs) are examples of manycore processors. Today 
 GPUs come with hundreds of processing elements capable of managing thousands 
-of threads \cite{Brief8800}. The Obsidian project is about exploring ways 
+of threads \citepapp{Brief8800}. The Obsidian project is about exploring ways 
 to program these new machines.  
 
 Obsidian is a domain specific language for general purpose programming on 
 GPUs (GPGPU), capable of generating code for modern NVIDIA GPUs. 
-In~\cite{JSMSKC_IFL08} we describe a version of Obsidian that uses a monadic 
+In~\citepapp{JSMSKC_IFL08} we describe a version of Obsidian that uses a monadic 
 interface. In the current version of Obsidian the monad has been replaced 
-by another data structure, closely related to Arrows~\cite{Arrows}, representing GPU programs. Although the details are 
+by another data structure, closely related to Arrows~\citepapp{Arrows}, representing GPU programs. Although the details are 
 left out because of space limitations, the use of this GPU program representation 
 can be seen in subsection~\ref{sec:GPUPrograms}. For a description of the implementation 
-see~\cite{JSTECH} and for more general information on embedded language 
-implementation see~\cite{COMPILEEDSL}.
+see~\citepapp{JSTECH} and for more general information on embedded language 
+implementation see~\citepapp{COMPILEEDSL}.
 
 GPU design is driven by the performance demands of graphics applications. 
 The kind of processing that is common in graphics falls in the data-parallel 
-category \cite{GEMS2}.
+category \citepapp{GEMS2}.
 % One example of a computation from graphics is the 
 %transformation of vertices between different coordinate systems. That is, 
 %each vertex is multiplied by the same transformation matrix, fitting  the 
@@ -183,7 +183,7 @@ of processors are replaced by a single kind with capabilities surpassing both
 of the old ones. This new unified architecture together with development tools 
 for GPGPU programming go under the 
 name CUDA (Compute Unified Device Architecture) 
-\cite{CUDAGuide2.0}. CUDA offers the GPGPU programmer a C %,wwwcuda,Brief8800
+\citepapp{CUDAGuide2.0}. CUDA offers the GPGPU programmer a C %,wwwcuda,Brief8800
 compiler and libraries for CUDA enabled GPUs (NVIDIA 8000 series and above).  
 
 Figure~\ref{fig:gpu}, shows a conceptual picture of a CUDA enabled GPU. The GPU 
@@ -200,12 +200,12 @@ over the SPs available. Threads are scheduled in groups called {\em warps}
 consisting of 32 threads that are executed in an SIMD fashion on the MPs.
 Conditionals that take different paths within a warp have a negative effect 
 on performance; the two diverging paths will in fact be executed sequentially 
-\cite{BestPrac}.
+\citepapp{BestPrac}.
 %There are however, more threads in a
 %warp then there are SPs, so the SPs are switching threads to work on 
 %between every instruction. This means that conditionals that
 %take different paths within a warp have a negative effect on performance;
-%the two diverging paths will in fact be executed sequentially \cite{BestPrac}. 
+%the two diverging paths will in fact be executed sequentially \citepapp{BestPrac}. 
 
 
 
@@ -270,10 +270,10 @@ and change without major rewrites of the code.
 
 Obsidian is a language for GPGPU programming embedded in Haskell. Many of 
 the language features resemble those of Lava, a hardware description and 
-verification language \cite{lavaICFP}. The justification to use language 
+verification language \citepapp{lavaICFP}. The justification to use language 
 constructs similar to that of a hardware description language came from 
 the observation that GPGPU algorithms often were explained using circuit-like 
-pictures, see for example \cite{GEMS3}. 
+pictures, see for example \citepapp{GEMS3}. 
 
 %Obsidian can be used to describe hardware like algorithms. These are algorithms
 %where the number of inputs and outputs are fixed, not dependent on 
@@ -282,7 +282,7 @@ pictures, see for example \cite{GEMS3}.
 %there are numerous sorting algorithms (sorting networks) and parallel prefix 
 %algorithms implementable in this way. Also, there are examples in the 
 %literature where GPGPU programmers implement their kernels to operate on very 
-%specific array sizes \cite{GEMS3}. In a later stage, when the kernels are 
+%specific array sizes \citepapp{GEMS3}. In a later stage, when the kernels are 
 %composed into algorithms on large arrays, support for variable length 
 %arrays is introduced.
 
@@ -411,7 +411,7 @@ shows a program that performs some computation using a number of threads
 followed by a barrier synchronisation, and so on. The contents of the 
 boxes marked with {\em Pure} can be thought of as containing an array 
 program.% such as those in subsection~\ref{sec:ArrayLanguage}.
-The type constructor {\tt :->} is a variant of an arrow, which in turn is a generalisation of a monad~\cite{JSTECH}.
+The type constructor {\tt :->} is a variant of an arrow, which in turn is a generalisation of a monad~\citepapp{JSTECH}.
 %
 \begin{figure}
 \begin{center}
@@ -673,12 +673,12 @@ how we want to write GPGPU programs using Obsidian.
 
 \subsubsection{Sorting}
 
-Sorting is a popular function to place on the GPU, see~\cite{SINTORNSORT,SORT3}.
+Sorting is a popular function to place on the GPU, see~\citepapp{SINTORNSORT,SORT3}.
 {\em Odd-Even merge sort}, due to Batcher, uses a merger component called the Odd-Even merger. This 
 merger merges two sorted arrays. In Obsidian this merger and sorter 
 can be implemented using the combinators {\tt two}, {\tt ilv}, {\tt evens}
 and {\tt odds}. For a detailed description of these combinators see
-~\cite{LAVASORTER}.
+~\citepapp{LAVASORTER}.
 
 \begin{small}
 \begin{verbatim}
@@ -735,12 +735,12 @@ to particular nestings of these combinators will bring significant performance i
 \FloatBarrier
 
 This subsection shows the implementation of a parallel prefix (also called scan) 
-kernel, known as {\tt sklansky} after J. Sklansky \cite{Sklansky}.
+kernel, known as {\tt sklansky} after J. Sklansky \citepapp{Sklansky}.
 This kernel will then be optimised step-by-step using Obsidian. This 
 optimisation effort uses an experimental feature of Obsidian called {\tt syncHow}. 
 This is different from the normal {\tt sync} in the way it assigns work to threads. 
-For a more thorough explanation of {\tt syncHow} see ~\cite{JSTECH}.
-For an explanation of the parallel-prefix operation see~\cite{BlellochTR90}. 
+For a more thorough explanation of {\tt syncHow} see ~\citepapp{JSTECH}.
+For an explanation of the parallel-prefix operation see~\citepapp{BlellochTR90}. 
 
 The sklansky parallel prefix algorithm 
 is implemented by splitting the inputs in two halves and recursively 
@@ -846,7 +846,7 @@ are variants of {\tt sync} that enforce {\em in-place} computation.
 
 The Sklansky kernels given above can be used in an algorithm that computes 
 the parallel prefix of a large array. This is done in the same way as in
-~\cite{ScanCUDA}.
+~\citepapp{ScanCUDA}.
 The table below shows the results of using the different parallel prefix 
 kernels from above in an algorithm for computing the prefix sums of 
 $2^{20}$ elements.
@@ -878,7 +878,7 @@ is identical to {\tt sklansky2} except is in-place. Even the very first version,
 the performance can be pushed quite close to the hand optimised version.  
 The fastest kernel, called {\em NVIDIA SDK}, is the one supplied 
 with the CUDA SDK. This kernel is based on the Brent-Kung network and its 
-implementation is shown in~\cite{ScanCUDA}. The {\tt NVIDIA SDK} 
+implementation is shown in~\citepapp{ScanCUDA}. The {\tt NVIDIA SDK} 
 kernel is highly optimized with regards to its memory access pattern and 
 so the code is considerably more complicated than that of any of the Obsidian parallel-prefix kernels.
  
@@ -918,7 +918,7 @@ common subexpression elimination would also lower the instruction count,
 which is quite high to begin with, because loops are unrolled. 
 The register usage and instruction count values on which these conclusions 
 are based where obtained using the CUDA profiler supplied as part of the 
-CUDA toolkit~\cite{wwwcuda}.
+CUDA toolkit~\citepapp{wwwcuda}.
 
 Obsidian can currently only be used to generate kernels, the small 
 building blocks used to form larger GPU algorithms. As future work, 
@@ -956,15 +956,15 @@ to add that enables expressing such algorithms.
 GPUs are becoming more and more interesting to use in non-graphical applications.
 A modern GPU is a manycore machine with, today, hundreds of processing elements. 
 The question of how to program these machines arises. NVIDIA's answer is CUDA
-\cite{CUDAGuide2.0}. CUDA supplies a slightly extended version of C in which 
+\citepapp{CUDAGuide2.0}. CUDA supplies a slightly extended version of C in which 
 the programmer can specify GPU kernels and the controlling CPU program in the 
 same language. In CUDA the programmer writes a single program parameterised 
 over a thread identity. Compare this to Obsidian where the program describes 
 a computation over an array. 
 
 There are a number of other C/C++ based languages that target 
-GPGPU programmers, for example Brook\cite{Brook} and 
-RapidMind\cite{RapidMind}. Brook, CUDA and RapidMind are major improvements from 
+GPGPU programmers, for example Brook\citepapp{Brook} and 
+RapidMind\citepapp{RapidMind}. Brook, CUDA and RapidMind are major improvements from 
 what was previously available for the programmer interested in general purpose 
 computations on the GPU. 
 %Before these, the GPGPU programmer only had the 
@@ -972,22 +972,22 @@ computations on the GPU.
 %graphics vocabulary in order to use the GPU. 
 
 Higher level approaches are also being investigated. PyGPU embedds a GPGPU 
-programming language in Python\cite{PyGPU}. PyGPU makes use of Python's 
+programming language in Python\citepapp{PyGPU}. PyGPU makes use of Python's 
 introspective abilities to generate efficient code. 
 
-Like Obsidian, Accelerate is embedded in Haskell \cite{GPUGEN}. Accelerate 
+Like Obsidian, Accelerate is embedded in Haskell \citepapp{GPUGEN}. Accelerate 
 however, is higher level language than Obsidian. Where the purpose of 
 Obsidian is to implement basic algorithmic building blocks such as 
 reductions and prefix sums, Accelerate provide these building blocks as 
 primitives. 
 
-Vertigo is another GPU programming language embedded in Haskell\cite{VERTIGO}.
+Vertigo is another GPU programming language embedded in Haskell\citepapp{VERTIGO}.
 Vertigo can be used to describe procedureal surfaces and textures and generates
 efficient DirectX9 shader code. 
 
 There are also many examples of domain specific languages (DSLs)
 that target not only GPUs but also other platforms, such as multicore machines.
-Of particular interest to us is Microsoft's Accelerator project~\cite{ACCELERATOR}. Interestingly, Accelerator includes the same restriction to ``hardware-like'' algorithms as Obsidian does.
+Of particular interest to us is Microsoft's Accelerator project~\citepapp{ACCELERATOR}. Interestingly, Accelerator includes the same restriction to ``hardware-like'' algorithms as Obsidian does.
 %However, Vertigo is targeting graphical applications. 
 
 %There are also many examples of languages that do not specifically target 
@@ -995,9 +995,9 @@ Of particular interest to us is Microsoft's Accelerator project~\cite{ACCELERATO
 %In this category we have Sequoia, where the memory hierarchy is in focus. 
 %Sequoia programs can for example be compiled to the Cell BE architecture. 
 %Data-Parallel Haskell extends Haskell with parallel arrays and operations 
-%on parallel arrays\cite{DPH}. Data-Parallel Haskell implements the nested 
+%on parallel arrays\citepapp{DPH}. Data-Parallel Haskell implements the nested 
 %data-parallel paradigm and is in that sense following in the path of 
-%NESL\cite{NESL}. 
+%NESL\citepapp{NESL}. 
 
 
  
@@ -1005,14 +1005,14 @@ Of particular interest to us is Microsoft's Accelerator project~\cite{ACCELERATO
 
 
 %\begin{itemize}
-%\item Chapel \cite{Chapel}
-%\item DPH \cite{DPH}
-%\item Fortress \cite{fortress}
-%\item GPUGen \cite{GPUGEN}
-%\item Lava \cite{lavaTutorial}
-%\item RapidMind \cite{RapidMind}
-%\item Sequoia \cite{SEQUOIA}
-%\item X10 \cite{X10}
+%\item Chapel \citepapp{Chapel}
+%\item DPH \citepapp{DPH}
+%\item Fortress \citepapp{fortress}
+%\item GPUGen \citepapp{GPUGEN}
+%\item Lava \citepapp{lavaTutorial}
+%\item RapidMind \citepapp{RapidMind}
+%\item Sequoia \citepapp{SEQUOIA}
+%\item X10 \citepapp{X10}
 %\end{itemize}
 
 \subsection{Discussion and conclusion}
@@ -1079,8 +1079,8 @@ This research is funded by the Swedish Research Council.
 %-------------------------------------------------------------------------------
 
 
-%\bibliographystyle{elsarticle-num}
-%\bibliography{obs_okt}
+\bibliographystylepapp{alpha}
+\bibliographypapp{thesis}
 		
 
 

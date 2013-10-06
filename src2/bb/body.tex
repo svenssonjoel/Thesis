@@ -43,7 +43,7 @@
 \studname{} is a computer science student working in a project involving programming 
 robots in a low-level imperative language. However, \studname{} has a budding 
 interest in functional programming using Haskell and has read ``The Haskell 
-school of expression'' \cite{HUDAK}. He gets the idea to implement 
+school of expression'' \citebb{HUDAK}. He gets the idea to implement 
 a language for robot control embedded in Haskell. \studname{} realises that the 
 capabilities of the robot hardware are very similar to those of the 
 robots that Hudak evaluates graphically in a grid world. There is however 
@@ -52,7 +52,7 @@ some form that is understood by the robot.
 %\studname{} in a computer science student with a budding interest in functional 
 %programming using Haskell. \studname{} is developing  
 %an embedded domain specific language (EDSL) for robot control. Inspired 
-%by the book ``the Haskell school of expression'' \cite{HUDAK} but instead of 
+%by the book ``the Haskell school of expression'' \citebb{HUDAK} but instead of 
 %evaluating his robot EDSL, \studname{} wants to compile the language to a form 
 %he can run on actual robot hardware. 
 %with 
@@ -270,9 +270,9 @@ to handle arbitrary values. It cannot possibly work! This is a very
 difficult problem and such a naive solution is bound to fail. 
 \newline \newline
 %% \noindent For hints towards a solution to this I suggest that you follow 
-%% this \underline{link} \cite{GillBlog}. Another idea is that you refer 
+%% this \underline{link} \citebb{GillBlog}. Another idea is that you refer 
 %% to the article ``Generic monadic constructs for embedded languages'' 
-%% \cite{Generic}.
+%% \citebb{Generic}.
 %% \newline \newline
 
 \noindent Prof. \docname{} \newline
@@ -609,7 +609,7 @@ just did what I thought was the most straightforward thing to do.
 \speak{\docname{}} Others have solved this problem before but I have
 never seen a solution as simple as yours and was quite surprised that
 it works. For example, in this paper \direct{\docname{} shows
-  \studname{} the paper \cite{Generic}}, the authors use a
+  \studname{} the paper \citebb{Generic}}, the authors use a
 continuation monad to be able to reify the monadic constructs of their
 language. If they were to implement your robot language they would use
 the same \texttt{Program} data type as you do. However, they would not
@@ -658,7 +658,7 @@ transforming higher-order programs to first-order programs?
 \speak{\docname{}} That's a good question. The transformation to first
 order programs is dealt with by a library called Syntactic. It is
 described in a separate paper \direct{\docname{} pulls out the paper
-  \cite{axelsson2012generic} from a pile of papers}. It's hard to do
+  \citebb{axelsson2012generic} from a pile of papers}. It's hard to do
 an apples to apples comparison between Syntactic and your
 technique. Syntactic solves a much bigger problem than what you're
 doing so it is naturally more complicated.
@@ -666,7 +666,7 @@ doing so it is naturally more complicated.
 \speak{\studname{}} Ok.
 
 \speak{\docname{}} There are also the papers
-\cite{Farmer,sculthorpe2013constrained} which solves
+\citebb{Farmer,sculthorpe2013constrained} which solves
 the problem in a manner that is more similar to yours. They also have explicit
 constructors {\tt Bind} and {\tt Return} but give them a slightly different
 type which guarantees that all applications of {\tt Bind} are {\em normalised},
@@ -703,7 +703,7 @@ between the constructs as they are defined independently. But it also
 means that it should be possible to factor out the constructors
 \texttt{Return} and \texttt{Bind} into a data type of their own. Then,
 it could be combined with other data types using techniques like Data
-Types \'{a} la Carte \cite{Wouter} or CompData \cite{CompData}. This
+Types \'{a} la Carte \citebb{Wouter} or CompData \citebb{CompData}. This
 way, a language can be designed piece by piece.You can then select the
 set of pieces required for a particular task or that suits a
 particular brand of robots.
@@ -1099,7 +1099,7 @@ I note that the data type for monadic operations cannot be composed as
 freely as the other operations, but instead has to be applied
 separately as a final step. Your
 solution is very similar to how variable binding is handled in the
-Syntactic library \cite{syntactic}.
+Syntactic library \citebb{syntactic}.
 \newline \newline
 
 \noindent Prof. \docname{}
@@ -1116,7 +1116,7 @@ Syntactic library \cite{syntactic}.
 %languages.
 
 %A consequence of the compositionality is that we can use techniques
-%such as CompData \cite{} to decompose the definition of DSLs into
+%such as CompData \citebb{} to decompose the definition of DSLs into
 %smaller reusable building blocks. Figure \ref{fig:compdata} shows a
 %compositional implementation of the monadic constructs, separately
 %from any other constructs. The type \verb!Cxt! is defined in the
@@ -1167,7 +1167,7 @@ The example language used throughout the story is small and quite
 limited. But the technique presented in this paper does scale up to
 larger languages and more complicated language constructs.  It is
 currently used in the implementation of Obsidian, an EDSL for general
-purpose GPU programming \cite{Obsidian-Expressive}. Obsidian has language
+purpose GPU programming \citebb{Obsidian-Expressive}. Obsidian has language
 constructs which are considerably more advanced than the robot
 language is this paper. One example is the sequential for-loop which
 is higher-order (the type parameter {\tt t} is not relevant to the
@@ -1220,7 +1220,7 @@ expressiveness of our method is currently unknown to us.
 %Suppose you have just bought yourself a little programmable toy robot
 %and you want to design a small DSL in Haskell to program it. The robot
 %can turn, move forward and has a sensor to detect whether it is facing
-%an obstacle or not. Inspired by the robot language in \cite{} you come
+%an obstacle or not. Inspired by the robot language in \citebb{} you come
 %up with a set of primitives shown in figure
 %\ref{fig:interface}. In particular, you would like to use the
 %do-notation to sequence programs.

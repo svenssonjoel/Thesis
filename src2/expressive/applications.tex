@@ -23,8 +23,8 @@ programs to sort much larger sequences of inputs. In section~\ref{sec:benchmarks
 we show how to build a sorter for large arrays from small building blocks, including
 small kernels for sorting and merging that are generated from Obsidian.
 Our small kernels are constructed in the form of sorting and merging {\em networks},
-building on Batcher's bitonic merger~\cite{Batcher} and
-on the periodic balanced merger~\cite{PeriodicBalanced}.
+building on Batcher's bitonic merger~\citeexp{Batcher} and
+on the periodic balanced merger~\citeexp{PeriodicBalanced}.
 We chose also to implement the large sorter used  in benchmarking the
 small kernels as a sorting network. However, large
 sorters that are not themselves sorting networks (with typical examples being radix sort and quicksort) often call small sorting networks when they need to sort small arrays during their execution.
@@ -34,7 +34,7 @@ Thus, small, fast sorting kernels have a variety of uses.
 
 The bitonic merger is typically presented as a recursive
 construction and we have earlier explored ways to describe
-and analyse it in both (our) Ruby and in Lava~\cite{sortsRuby,LAVASORTER}.
+and analyse it in both (our) Ruby and in Lava~\citeexp{sortsRuby,LAVASORTER}.
 Here, we consider iterative descriptions using similar combinators.
 
 Figure~\ref{fig:bitonicMerger} illustrates the merger for 16 inputs.
@@ -338,7 +338,7 @@ is significantly faster. This is because it uses one thread per two array elemen
 and the code no longer contains any conditionals.
 
 In order to go faster still, we resort to building a different sorting network, of
-exactly the same size as the bitonic sorter, but based instead on the balanced period merger of Dowd et al~\cite{PeriodicBalanced}.
+exactly the same size as the bitonic sorter, but based instead on the balanced period merger of Dowd et al~\citeexp{PeriodicBalanced}.
 This involves the introduction of one new combinator that can be seen as a mixture
 of the {\tt ilv} and {\tt vee} combinators already introduced.
 

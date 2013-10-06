@@ -13,7 +13,7 @@ good fit for executing on the GPU. It has a very natural functional,
 data-parallel implementation. We believe we are the first to study
 this variation in the literature.
 
-These algorithms are explored in Obsidian \cite{JSLIC,Obsidian-Expressive}, a domain
+These algorithms are explored in Obsidian \citecsort{JSLIC,Obsidian-Expressive}, a domain
 specific language targeting GPU programming. The goal of Obsidian is
 to strike a balance between high-level constructs and low-level control. 
 We want to provide the programmer with a set of tools for low-level 
@@ -31,7 +31,7 @@ The contributions of this paper are:
 \item We provide measurements (section \ref{sec:CSORTBenchmarks}) showing
   that counting sort is a competitive algorithm for sorting keys on the GPU,
   outperforming the sorting implementation in the library
-  Thrust\cite{THRUST} in many cases.
+  Thrust\citecsort{THRUST} in many cases.
 \item Occurrence sort is shown to be particularly
   suitable for implementing on the GPU (section \ref{sec:occur}) and
   performs well (section \ref{sec:CSORTBenchmarks}).
@@ -43,17 +43,17 @@ The contributions of this paper are:
 
 \subsubsection{Related work} 
 
-Sorting has applications in the computer graphics field \cite{SINTORNSORT}. 
+Sorting has applications in the computer graphics field \citecsort{SINTORNSORT}. 
 Example instances of sorting and duplicate element removal in computer graphics 
-can be identified in references \cite{Olsson} and \cite{Karras}. Another example 
+can be identified in references \citecsort{Olsson} and \citecsort{Karras}. Another example 
 of where sorting and the removal of duplicates have applications is 
-in databases \cite{REMOVEDUPS}. 
+in databases \citecsort{REMOVEDUPS}. 
 
 %% Sorting on the GPU is interesting both for computer graphics
-%% applications \cite{SINTORN} and for using the GPU to offload the
-%% processor, for example in database applications \cite{REMOVEDUPS}.
+%% applications \citecsort{SINTORN} and for using the GPU to offload the
+%% processor, for example in database applications \citecsort{REMOVEDUPS}.
 
-The paper \cite{CSORT} implements counting sort in CUDA, and also optimisations 
+The paper \citecsort{CSORT} implements counting sort in CUDA, and also optimisations 
 that overlap computations with transferring data to and from the GPU.
 Our work differs by being implemented in a high-level embedded
 language and also by implementation of the occurrence sort variant of counting sort. We have not been concerned with
@@ -62,11 +62,11 @@ focused solely on computations within the GPU.
 
 Obsidian is a high-level embedded language for GPU
 programming. Other such approaches include Accelerate
-\cite{ACCELERATEDAMP11} and Nikola \cite{NIKOLA}. Accelerate and Nikola both take an even
+\citecsort{ACCELERATEDAMP11} and Nikola \citecsort{NIKOLA}. Accelerate and Nikola both take an even
 higher level approach compared to Obsidian and abstract more from GPU
 details. Another example of providing a high-level interface to
-programming the GPU is the C++ library Thrust \cite{THRUST}.
-%\cite{FELDSPAR} 
+programming the GPU is the C++ library Thrust \citecsort{THRUST}.
+%\citecsort{FELDSPAR} 
 
 %% With the Obsidian language we raise the level of abstraction for 
 %% GPU kernel implementation. In order to generate CUDA code that performs well, 
@@ -78,7 +78,7 @@ programming the GPU is the C++ library Thrust \cite{THRUST}.
 %% that can be given a nice purely functional description and lends itself well 
 %% to parallelisation. The experimental results in section \ref{sec:Benchmarks} 
 %% compares the performance of the counting sort algorithm we implement here to 
-%% the NVIDIA Thrust \cite{THRUST} library. The Obsidian generated kernels perform
+%% the NVIDIA Thrust \citecsort{THRUST} library. The Obsidian generated kernels perform
 %% very well at relatively light work effort. 
 
 %% Counting sort places new demands on Obsidian and points out areas of 
@@ -100,5 +100,5 @@ programming the GPU is the C++ library Thrust \cite{THRUST}.
 %  
 %\end{itemize} 
 
-%\cite{CSORT} 
-%\cite{FELDSPAR}
+%\citecsort{CSORT} 
+%\citecsort{FELDSPAR}

@@ -6,7 +6,7 @@ way forward, rather than the improvement of single thread performance.
 Graphics processing units (GPUs) have moved from being specialised graphics
 engines to being suitable to tackle applications with high computational
 demands. For a recent survey of the hardware, programming methods and tools,
-and successful applications, the reader is referred to~\cite{GPUComputing}.
+and successful applications, the reader is referred to~\citeifl{GPUComputing}.
 Figure~\ref{fig:image}, taken from that paper, and due to NVIDIA, shows the
 architecture of a modern GPU from NVIDIA. It contains 16 multiprocessors, 
 grouped in pairs that share a texture fetch unit (TF in the figure). The 
@@ -14,11 +14,11 @@ texture fetch unit is of little importance when using the GPU for general
 purpose computations. Each multiprocessor has 8 stream processors (marked 
 SP in the figure). These stream processors has access to 16kB of shared memory.  
 
-See reference~\cite{GPUComputing} for information about
+See reference~\citeifl{GPUComputing} for information about
 the very similar AMD GPU architecture. We have used the NVIDIA architecture,
 but developments are similar at AMD. Intel's Larrabee processor points to a
 future in which each individual core is considerably more powerful than in
-today's GPUs~\cite{larrabee}.
+today's GPUs~\citeifl{larrabee}.
 
 %along with shared data and instruction caches, and 16kB of shared memory. 
 
@@ -28,7 +28,7 @@ the question here is how to keep a large number of small processors
 productively occupied. NVIDIA's solution has been to develop the
 architecture and the programming model in parallel. The result is called
 CUDA -- an extension of C designed to allow developers to exploit the power
-of GPUs. Reference~\cite{GPUCudaLuebke} gives a very brief but illuminating
+of GPUs. Reference~\citeifl{GPUCudaLuebke} gives a very brief but illuminating
 introduction to CUDA for potential new users. The idea is that the user
 writes small blocks of straightforward C code, which should then run in
 thousands or millions of threads. We borrow the example from the above

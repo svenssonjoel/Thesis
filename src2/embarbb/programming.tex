@@ -16,7 +16,7 @@ to ordinary arrays.
 %or nested vectors that allow the programmer to utilise nested data parallelism. 
 %A nested vector is represented by an array of elements and an array holding a 
 %nesting descriptor. 
-% BJS: I have seen this elsewhere but cannot find it! (wanted to \cite something)
+% BJS: I have seen this elsewhere but cannot find it! (wanted to \citeemb something)
 %The ArBB system offers the programmer {\em dense} and {\em nested} vectors 
 %and operations on these. A dense vector (or simply put, an array) can 
 %be one, two or three dimensional. A nested vector is represented by an 
@@ -97,7 +97,7 @@ For example, if the function being captured contains a normal C++ {\em for loop}
 Haskell embedded DSL results in unrolled code. After the function is captured, 
 the IR is further optimised and finally executed. Compilation and capture 
 only occur the first time a function is called. The compilation procedure
-is outlined in~\cite{ARBB2011}.
+is outlined in~\citeemb{ARBB2011}.
 
 Nested vectors in ArBB allow the creation of an array of dense vectors of varying length -- giving the ability to express less regular parallelism. There is a limit, though, in that only one level of such nesting is allowed. Section~\ref{sec:smvm} shows a small example that uses this nestedness in EmbArBB to implement sparse matrix vector multiplication. The program in ArBB itself is very similar. We note, though, that one of the samples distributed with ArBB is also sparse matrix vector multiplication, but implemented using dense vectors and a function that can take sections of a vector. We will need to experiment further with nestedness and when it should be used.
 
@@ -693,7 +693,7 @@ of the rows (or segments) in that array, producing the non-zero elements
 of the result vector. Note that there is irregular data parallelism
 here because the rows may have different lengths. We would hope
 to get parallelism both in the individual summations and between summations.
-This is a well known algorithm that can be traced back to Blelloch~\cite{NESL}.
+This is a well known algorithm that can be traced back to Blelloch~\citeemb{NESL}.
 
 %% NOTE ** I took out the 0 in the parameters to gather1D. How about
 %% we just assume it is forward for now (and put in the zero in the call

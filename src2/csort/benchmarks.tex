@@ -6,7 +6,7 @@
 
 This section presents the experimental results. Our implementations of
 counting sort are compared to the implementation of sorting from the
-Thrust library \cite{THRUST}. Thrust is a C++ library, developed by
+Thrust library \citecsort{THRUST}. Thrust is a C++ library, developed by
 NVIDIA, which provides abstractions similar to the standard template
 library, but targets the GPU. The reason we have chosen to compare with
 Thrust is that it has similar goals to Obsidian: to provide high-level 
@@ -36,7 +36,7 @@ sequential.
 
 We compare occurrence sort to sort followed by unique from
 the Thrust library because that seems to be the current best practice
-\cite{REMOVEDUPS}. Our implementation is always at least twice as fast
+\citecsort{REMOVEDUPS}. Our implementation is always at least twice as fast
 but in many cases it outperforms Thrust by more than a factor of four.
 Our method is clearly beneficial for removing duplicates.
 

@@ -21,7 +21,7 @@ Obsidian program, NVIDIA CUDA code is generated.
 In the Obsidian project we experiment with combinators and language 
 features for GPU kernel implementation. We seek to strike a balance 
 between low-level control and useful high-level abstractions. Over time, this 
-has led to a number of different versions of Obsidian. In reference \cite{JSLIC}, 
+has led to a number of different versions of Obsidian. In reference \citecsort{JSLIC}, 
 two versions of Obsidian differing by having a {\em monadic} or a limited {\em arrow} 
 like interface are described. We have settled on using the monadic style. 
 
@@ -31,10 +31,10 @@ a complementary array representation, that we call push arrays, that the traditi
 array was renamed to pull. 
 
 The Obsidian implementation of pull arrays was influenced by Pan's representation 
-of images as functions from coordinates to colour values \cite{PAN}. A pull array 
+of images as functions from coordinates to colour values \citecsort{PAN}. A pull array 
 is a function from index to value and an associated length.  
 
-Push arrays were added to Obsidian first in reference \cite{Obsidian-Expressive}. A push array
+Push arrays were added to Obsidian first in reference \citecsort{Obsidian-Expressive}. A push array
 specifies where elements are to end up in a result array, rather than where 
 they come from (as in a pull array). In essence, a push array is a
 computation which writes an array to memory, but is parameterised on
@@ -46,7 +46,7 @@ Push arrays were added to Obsidian with the purpose of solving some performance
 issues that we had been struggling with for a long time. These problems were 
 mainly concerned with concatenating or combining arrays in an efficient way.
 Push arrays have also been adopted by others and are used in the implementation 
-of filters in reference~\cite{FPCDSL} and in the new Nikola\footnote{github.com/mainland/nikola/blob/master/src/Data/Array/Nikola/Repr/Push.hs}.
+of filters in reference~\citecsort{FPCDSL} and in the new Nikola\footnote{github.com/mainland/nikola/blob/master/src/Data/Array/Nikola/Repr/Push.hs}.
 
 Both push and pull arrays are virtual, in the sense that they do not directly 
 correspond to any data in a region of memory. This virtual nature of the array 
@@ -135,7 +135,7 @@ better integrate the atomic operations\footnote{github.com/svenssonjoel/Obsidian
 %% Push arrays allow thread $i$ to compute array elements at indices other 
 %% than $i$; this enables efficient array concatenation as well 
 %% as the data scattering operations used later. For more information about 
-%% push arrays, see reference \cite{PUSH}. 
+%% push arrays, see reference \citecsort{PUSH}. 
 
 %Both push and pull arrays are easy to parallelise. 
  
@@ -143,8 +143,8 @@ better integrate the atomic operations\footnote{github.com/svenssonjoel/Obsidian
 %we are exploring ways to increase the scope of what kinds of compute kernels 
 %we can describe and obtain efficient code for. One aspect of this exploration 
 %is the addition of a new kind of array representation that we call 
-%{\em push} arrays \cite{PUSH}. Previous versions of Obsidian 
-%(described in \cite{JSLIC}) represented arrays as functions 
+%{\em push} arrays \citecsort{PUSH}. Previous versions of Obsidian 
+%(described in \citecsort{JSLIC}) represented arrays as functions 
 %from indices to values,we call these {\em pull} arrays. Another addition 
 %is global arrays. Earlier versions of Obsidian has been focused on 
 %expressing the kind of computations that takes place locally, in a block.  
@@ -193,7 +193,7 @@ written.
 We need to operate on arrays that are too long to fit in a single block.
 %This large prefix sum is implemented as shown in
 The resulting prefix sum is implemented as shown in reference 
-\cite{ScanCUDA}, see figure \ref{fig:prefixsum}. There are three steps 
+\citecsort{ScanCUDA}, see figure \ref{fig:prefixsum}. There are three steps 
 involved. First local prefix sums are computed; the rightmost elements elements are also stored in a separate, auxiliary, array. Following this, 
 the prefix sum of the auxiliary array is  computed. The prefix sums used 
 in phase A and B of the 
@@ -223,7 +223,7 @@ forming a large prefix sum over the entire array.
 The figure also shows what kernels we need to produce. First, something that 
 performs a number of local prefix sums in parallel over the full length 
 of an array is needed. The prefix sum algorithm that we implement here is 
-based on divide and conquer and originates from Sklansky \cite{Sklansky}. 
+based on divide and conquer and originates from Sklansky \citecsort{Sklansky}. 
 % A kernel that performs the distribution (part C in the figure) is also needed. 
 
 The code below can be thought of as a program generator. Given an integer, $n$,
@@ -281,7 +281,7 @@ parts. In this case the {\tt fan} operation implemented below is used.
 %Obsidian description. In order to be able to implement a large prefix sum 
 %the local kernel is also designed to output its maximal element to 
 %a separate array. This separate array can be used to compute values to adjust 
-%the local sums by. This follows the schema developed in \cite{LargeScan}.
+%the local sums by. This follows the schema developed in \citecsort{LargeScan}.
 
 %The local prefix sum is executed in parallel over the large array. 
 %The large array is thus some multiple of the number of elements that the 

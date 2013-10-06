@@ -184,16 +184,16 @@ and their accelerators.
 Are radical new parallel architectures market-feasible if they require
 significant changes for programmers?  The jury is out.  In recent
 years we have seen difficult-to-program chips suffer 
-% \cite{cell} 
+% \citearbb{cell} 
 (e.g. Cell)
 and
 GPU vendors strive to enable more traditional programming features
-\cite{fermi} (e.g. C++).  There is an increasing
+\citearbb{fermi} (e.g. C++).  There is an increasing
 tension between ease of programming and efficiency.
 
 The tension  shows  across diverse chip markets.  For example,
 small embedded devices are most power efficient if their processors and operating systems
-omit programming features such as virtual memory and threads \cite{tinyos}.  
+omit programming features such as virtual memory and threads \citearbb{tinyos}.  
 At the other end of the power spectrum, GPU's
 graphics performance may suffer due to inclusion of hardware to ease
 GPGPU programming.  In short, there is an opportunity cost to
@@ -216,12 +216,12 @@ phase and therefore do not reach the parallel hardware itself.
 In pursuit of this vision, we offer a
 % 
  new EDSL implementation, called \accarbb{}, that combines
-existing systems, Accelerate \cite{ACCELERATEDAMP11} and ArBB \cite{ArBB}, to produce a unified
+existing systems, Accelerate \citearbb{ACCELERATEDAMP11} and ArBB \citearbb{ArBB}, to produce a unified
 high-level programming environment equally suited to multicore,
-vectorized CPUs, as to GPUs and other accelerators (such as Intel MIC chips \cite{larrabee}).
+vectorized CPUs, as to GPUs and other accelerators (such as Intel MIC chips \citearbb{larrabee}).
 %
 \if{0}
-ArBB is based on the RapidMind \cite{RapidMind} system which was an embedded 
+ArBB is based on the RapidMind \citearbb{RapidMind} system which was an embedded 
 DSL targeting multicore CPUs as well as GPUs. ArBB does not \new{yet} include a GPU 
 backend like RapidMind, targeting multicore CPUs and their vector 
 units. 
@@ -252,14 +252,14 @@ purposes, domain-specific languages (DSLs) that target a narrow domain and expos
 patterns to the compiler 
  have achieved performance-portability across a wide range of parallel
 architectures.  
-StreamIt\cite{streamit} is a good example.
-% (for example, StreamIt\cite{streamit})
-% The high-water mark in this area is perhaps  StreamIt\cite{streamit}.
+StreamIt\citearbb{streamit} is a good example.
+% (for example, StreamIt\citearbb{streamit})
+% The high-water mark in this area is perhaps  StreamIt\citearbb{streamit}.
 % 
 
-% It has been noted \cite{not-sure} that 
-% Yet the few DSLs that gain popularity lose simplicity\cite{not-sure}.  
-% Yet popular DSLs rarely remain simple \cite{not-sure}.  
+% It has been noted \citearbb{not-sure} that 
+% Yet the few DSLs that gain popularity lose simplicity\citearbb{not-sure}.  
+% Yet popular DSLs rarely remain simple \citearbb{not-sure}.  
 DSLs may start out simple and focused, but if they gain popularity
 they quickly grow in complexity to rival full-blown languages.
 Feature creep
@@ -302,7 +302,7 @@ A common arrangement is for the host language program to execute at
 runtime but to generate ASTs that are executed by a just-in-time
 (DSL) compiler.  This use of metaprogramming (program generation)
 differs from the more common usage of preprocessors and 
-% Lisp/Scheme macros \cite{scheme-macros}
+% Lisp/Scheme macros \citearbb{scheme-macros}
 macros, which typically add extra
 phases of computation {\em before}  compile time---increasing
 the number of compile-time rather than runtime phases.
@@ -320,18 +320,18 @@ gains the software engineering benefits of the host language
 paying the cost at runtime for additional layers of abstraction or
 indirection.  Indeed, the embedded languages for 
 performance-oriented EDSLs are often simple, first-order
-languages without pointers \cite{wavescript, ACCELERATEDAMP11}.
+languages without pointers \citearbb{wavescript, ACCELERATEDAMP11}.
 
 % , paul-lius-thingy
 
 % regiment,
 As a research area, EDSLs and two-stage DSLs have been actively pursued for at least a
-decade \cite{VERTIGO, wavescript} but are gaining steam
+decade \citearbb{VERTIGO, wavescript} but are gaining steam
 recently 
-%\cite{sejits, stanford-ppl} 
-\cite{copperhead, stanford-ppl} 
+%\citearbb{sejits, stanford-ppl} 
+\citearbb{copperhead, stanford-ppl} 
 and are beginning to appear in
-commercial products \cite{ArBB}.
+commercial products \citearbb{ArBB}.
 %
 Further, EDSL techniques have spread beyond their origin in 
  the programming languages community.
@@ -339,10 +339,10 @@ Further, EDSL techniques have spread beyond their origin in
 For example, both Stanford's Parallel Programming Laboratory (PPL) and
 the Berkeley Parlab are creating EDSLs as their flagship parallel
 programming solutions for domains such as machine learning and
-rendering \cite{stanford-ppl}.
+rendering \citearbb{stanford-ppl}.
   Moreover, EDSLs need not be hosted by esoteric research languages---Intel's
  ArBB embeds an array language in C++ and Berkeley's
-Copperhead \cite{copperhead} generates CUDA from simple Python code.
+Copperhead \citearbb{copperhead} generates CUDA from simple Python code.
 
 %\rnote{Is there a good motivating example program?  What are some of
 %  the Metaocaml motivating examples?}
@@ -387,7 +387,7 @@ Haskell computation and ArBB VM computation.
 
 
 %% {\em Accelerate} (Data.Array.Accelerate) is an existing EDSL for 
-%% high-level data-parallel programming in Haskell~\cite{Accelerate}. 
+%% high-level data-parallel programming in Haskell~\citearbb{Accelerate}. 
 The Accelerate programming model consists of collective 
 operations that can be performed over arrays, together with a simple 
 language of scalar expressions\new{---in the current release, the Haskell type system enforces that parallelism not be nested.}
@@ -564,7 +564,7 @@ The
 bottom layer of the ArBB backend consists of a direct mapping of the ArBB virtual machine
 API (VMAPI) into Haskell including one-to-one bindings for each C 
 function. 
-To [partially] automate the creation of these bindings we used the C2HS system \cite{C2HS}. The 
+To [partially] automate the creation of these bindings we used the C2HS system \citearbb{C2HS}. The 
 \arbbvmH{} bindings are very low-level.
 %and make little use of the high-level programming methods that
 % Haskell programmers want. 
@@ -611,7 +611,7 @@ the ArBB backend by a two-fold strategy:
   primitive such as \cde{add\_reduce}.
 \item Apply a general reduction technique based on $log(N)$ map
   operations over successively halving array sizes.  Essentially, cut
-  the array in half, combine the halves, repeat. In ~\cite{reduction}
+  the array in half, combine the halves, repeat. In ~\citearbb{reduction}
   this approach is explained in the context of CUDA. 
 \end{enumerate}
 
@@ -712,7 +712,7 @@ but we leave that as future work.
 %  dismiss those that make no effort on the CPU side.}
 
 Black-Scholes option pricing is a finance-related benchmark that has been used in similar
-DSLs targeting GPUs \cite{ACCELERATEDAMP11, NIKOLA}. Since we are re-using the 
+DSLs targeting GPUs \citearbb{ACCELERATEDAMP11, NIKOLA}. Since we are re-using the 
 Accelerate front-end, we can directly use the Black-Scholes benchmark that 
 is shipped with that system.  Figure \ref{fig:blackscholes} shows the
 complete code listing for an Accelerate Black-Scholes function which
@@ -831,7 +831,7 @@ These early results demonstrates the principle that even when a kernel
 executes with higher throughput on a GPU, in a particular program it
 is difficult to decide whether a computation is worth moving to a GPU,
 incurring extra data-movement and possibly extra JIT compilation
-\cite{wheres-the-data-paper}.  Specifically, we see that the
+\citearbb{wheres-the-data-paper}.  Specifically, we see that the
 Accelerate Black-Scholes program from Figure~\ref{fig:blackscholes}
 performs better on the CPU if it executes once (even on a large window
 of data) whereas the GPU would yield better performance in a sustained
@@ -848,7 +848,7 @@ that is portable across both.
 % ====================================================================================================
 
 
-OpenCL~\cite{opencl08} is a programming model very similar to CUDA but with the aspiration 
+OpenCL~\citearbb{opencl08} is a programming model very similar to CUDA but with the aspiration 
 to offer both acceleration of computations on GPUs or to multicore CPUs. 
 OpenCL JIT compiles the kernels for the particular hardware available and is
 in that sense similar to ArBB.  
@@ -856,7 +856,7 @@ OpenCL programs are relatively low-level and require a large amount of
 boilerplate to create and invoke.  In this sense they occupy a very
 different niche than Accelerate.
 
-Microsoft Accelerator~\cite{ACCELERATOR} is an embedded language with similar 
+Microsoft Accelerator~\citearbb{ACCELERATOR} is an embedded language with similar 
 aspirations as ArBB, that is, to target a diverse range of architectures using the 
 same source code. Accelerate can be used from the C\# language or the 
 functional F\# language and targets GPUs or of CPUs and their
@@ -867,15 +867,15 @@ vector units.
 \rn{What's the comparison with our stuff?}
 
 %Most work on partitioning workloads between 
-Many CPU and GPU comparisons, and some CPU/GPU workload partitioners \cite{merge}, rely on
+Many CPU and GPU comparisons, and some CPU/GPU workload partitioners \citearbb{merge}, rely on
 redundant hand-written versions of all kernels
-% \cite{cpu-gpu-partitioning} 
-(though some systems like Qilin \cite{qilin} allow a single source code).
+% \citearbb{cpu-gpu-partitioning} 
+(though some systems like Qilin \citearbb{qilin} allow a single source code).
 It is difficult in this kind of scenario
 to make fair comparisons, controlling for the
 amount of effort put into the respective implementations.
 For example, comparing unoptimized serial CPU implementations vs. GPU
-ones is not informative \cite{debunking-dubey}.
+ones is not informative \citearbb{debunking-dubey}.
 In \systemname{} controlling for effort
 need happen only once---both CUDA and ArBB are
 independently optimized by their respective teams of engineers---not for each benchmark.
@@ -945,8 +945,8 @@ of parallel architectures available now and in the near future.
 This is a compiler backend research challenge.
 The {\em skeletons} method mentioned in
 Section~\ref{sec:accelerate-arbb} is one approach to this problem, as
-are the optimizations studied in the Copperhead \cite{copperhead} and
-Obsidian \cite{JSLIC} projects.
+are the optimizations studied in the Copperhead \citearbb{copperhead} and
+Obsidian \citearbb{JSLIC} projects.
 %
 On the other hand, systems that rely on advanced optimizations
 typically suffer to some extent from performance-predictability
@@ -956,9 +956,8 @@ be the subject of much future work.
 
 %{
 %\small
-% \bibliographystyle{plainnat}
-%\bibliographystyle{IEEEtran}
-%\bibliography{IEEEabrv,haskell_arbb}
+\bibliographystylearbb{alpha}
+\bibliographyarbb{thesis}
 %}
 
 

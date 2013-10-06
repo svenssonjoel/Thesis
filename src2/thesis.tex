@@ -34,6 +34,43 @@
 \usetikzlibrary{shapes,snakes,positioning}
 \usepackage{pgfplots}
 \usepackage{booktabs}
+
+\usepackage{multibib} 
+\newcites{bb}{Bibliography} 
+\newcites{ifl}{Bibliography}
+\newcites{papp}{Bibliography}
+\newcites{exp}{Bibliography}
+\newcites{hl}{Bibliography}
+\newcites{csort}{Bibliography}
+\newcites{emb}{Bibliography}
+\newcites{arbb}{Bibliography}
+%\newcites[ifl}{Bibliography}
+
+
+\let\stdbibliography\thebibliography
+\makeatletter
+\renewenvironment{thebibliography}[1]
+     {\section*{\bibname}%
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
+
+
 %%
 
 %% \newcommand{\bequ}{\begin{quote}}
@@ -389,7 +426,29 @@ Bo Joel Svensson, Mary Sheeran
 \cleardoublepage
 
 
-\bibliographystyle{plain}
+\makeatletter
+\renewenvironment{thebibliography}[1]
+     {\chapter*{\bibname}%
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+       \endlist}
+\makeatother
+
+\bibliographystyle{alpha}
 \bibliography{thesis}
 \addcontentsline{toc}{chapter}{Bibliography}
 

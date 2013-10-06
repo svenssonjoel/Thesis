@@ -96,7 +96,7 @@ type P a = (a -> Program) -> Program
 
 \noindent
 For another example of using continuations and a more complete
-description of their meaning and application, see~\cite{POORKOEN}. 
+description of their meaning and application, see~\citeexp{POORKOEN}. 
 
 The {\tt Program} datatype has now been adopted as Obsidian's internal 
 representation of CUDA programs.
@@ -127,7 +127,7 @@ any nesting in the library functions provided. Some of the
 simpler cases of nestedness should be possible to take care of quite easily. 
 For example, one extra level of nesting could be done by sequential execution 
 in each thread of the GPU; using sequential computations per thread has 
-been shown to be beneficial~\cite{OLAMARCUS}. But for the general case 
+been shown to be beneficial~\citeexp{OLAMARCUS}. But for the general case 
 of arbitrary nesting, some method of flattening is needed. 
 We also assume that both {\tt Allocate} and {\tt Synchronize} occur only at the top level in objects of type {\tt Program}. 
 

@@ -1,7 +1,7 @@
 
 \subsection{Related Work} 
 \subsubsection{Data.Array.Accelerate} 
-Accelerate~\cite{ACCELERATEDAMP11} is an embedded language for general purpose, 
+Accelerate~\citeemb{ACCELERATEDAMP11} is an embedded language for general purpose, 
 flat data parallel computations on GPUs. 
 
 The Accelerate programmer expresses algorithms using collective operations 
@@ -31,14 +31,14 @@ these well known functions.
 
 DPH relies on a technique called flattening to transform its nested data parallelism 
 into flat data parallelism. 
-A recent article about DPH is reference~\cite{DPH}. 
+A recent article about DPH is reference~\citeemb{DPH}. 
   
  
 
 \subsubsection{Feldspar} 
 Feldspar is a language for Digital Signal Processing (DSP) programming
 developed at Chalmers, ELTE University and Ericsson 
-(the telecom company)~\cite{FELDSPAR2010}. The functional {\tt while} loop 
+(the telecom company)~\citeemb{FELDSPAR2010}. The functional {\tt while} loop 
 of EmbArBB is inspired by the same concept in Feldspar. 
 
 Feldspar is based on a deeply embedded core language and implements 
@@ -47,7 +47,7 @@ This means that there are no vector specific
 constructs in the core abstract syntax. 
 
 %The most recent release of Feldspar uses the {\em Syntactic} library
-%for manipulating abstract syntax~\cite{SyntacticICFP12,FELDSYNTACTIC}. 
+%for manipulating abstract syntax~\citeemb{SyntacticICFP12,FELDSYNTACTIC}. 
 %We will consider switching to using the Syntactic library in the continued
 %implementation of EmbArbb.
 %Initial discussions with our colleague Emil Axelsson, the implementor of Syntactic, indicate that
@@ -56,13 +56,13 @@ constructs in the core abstract syntax.
 
 
 \subsubsection{Nikola} 
-Nikola is an embedded language for GPU programming\cite{NIKOLA}, also
+Nikola is an embedded language for GPU programming\citeemb{NIKOLA}, also
 in Haskell.  
 During the early phases of implementation of EmbArBB, the source code of 
 Nikola was often studied for inspiration.
 
 The embedding used in Nikola makes use of an untyped expression 
-data structure wrapped up in phantom types, in the style of Pan~\cite{COMPILEEDSL}.
+data structure wrapped up in phantom types, in the style of Pan~\citeemb{COMPILEEDSL}.
 The EmbArBB embedding works in the same way. 
 One of the listed strengths of Nikola is the ability to generate GPU functions 
 from Haskell functions, which enables function reuse and the ability to 
@@ -74,7 +74,7 @@ Nikola, like Accelerate, provides a set of higher-order functions with
 general {\tt map}, {\tt reduce} and {\tt zipWith} functionality.
 
 \subsubsection{Repa} 
-Repa is a library for regular, shape polymorphic parallel arrays~\cite{REPA}. Repa 
+Repa is a library for regular, shape polymorphic parallel arrays~\citeemb{REPA}. Repa 
 uses a concept of {\tt delayed} arrays to obtain fusion of operations, such as the 
 typical map fusion:
 \begin{verbatim}
@@ -97,7 +97,7 @@ that EmbArBB gets for free.
 Repa is compared to EmbArBB in the benchmarks in section~\ref{sec:EmbArBBBenchmarks}.
 
 %\subsection{Obsidian}
-%Really ? \cite{Obsidian}
+%Really ? \citeemb{Obsidian}
 
 \subsection{Motivation}
 
@@ -106,17 +106,17 @@ We have two main motivations for implementing EmbArBB.
 Firstly, we are interested in exploring programming idioms for
 data parallel programming in a functional setting. Embedding ArBB gives
 a quick route to a platform for such exploration, without too much implementation effort. This is what the ``almost for free'' in the title is intended to refer to.
-We wish to explore ways to make use of the fact that we have an array programming library embedded in a sophisticated, strongly typed host language. In our earlier work on the embedded hardware description language Lava, we investigated various approaches to exploiting the host language during netlist synthesis~\cite{LavaMultipliers}, and we have also experimented with the use of search and dynamic programming in generating parallel prefix (or scan) networks~\cite{SheeranJFP}. We intend to apply similar methods to the development of data parallel programs once the EmbArBB implementation is more complete and stable.
+We wish to explore ways to make use of the fact that we have an array programming library embedded in a sophisticated, strongly typed host language. In our earlier work on the embedded hardware description language Lava, we investigated various approaches to exploiting the host language during netlist synthesis~\citeemb{LavaMultipliers}, and we have also experimented with the use of search and dynamic programming in generating parallel prefix (or scan) networks~\citeemb{SheeranJFP}. We intend to apply similar methods to the development of data parallel programs once the EmbArBB implementation is more complete and stable.
 
 
 
-%It would be interesting to explore ways of using the host language in more sophisticated ways, rather as we have done for hardware generation in Lava~\cite{LavaMultipliers}.
+%It would be interesting to explore ways of using the host language in more sophisticated ways, rather as we have done for hardware generation in Lava~\citeemb{LavaMultipliers}.
 
 A second motivation is the desire to teach NESL-style data parallel programming
 in a Masters course on parallel functional programming that has recently been
-introduced at Chalmers~\cite{TFPIEPFP}. The first instance of the course (in Spring 2012)
+introduced at Chalmers~\citeemb{TFPIEPFP}. The first instance of the course (in Spring 2012)
 covered Blelloch's NESL language, with its
-associated cost model~\cite{NESL}, but did not provide any satisfactory way for the students
+associated cost model~\citeemb{NESL}, but did not provide any satisfactory way for the students
 to experience real, nested data parallel programming. This was due not only to a lack of suitable hardware, but also to deficiencies in the available tools.
 We used the Repa library to get flat data parallelism, but then suffered from
 the lack of a built-in scan primitive (as many of Blelloch's NESL examples use scan). Perhaps as a result

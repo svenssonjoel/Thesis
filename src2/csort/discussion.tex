@@ -15,16 +15,16 @@ not know of any other algorithms which could benefit from a similar
 trick.
 
 If the desired effect is to sort and remove duplicates 
-(for an example of this see \cite{REMOVEDUPS}) then 
+(for an example of this see \citecsort{REMOVEDUPS}) then 
 there is a clear benefit to using occurrence sort
 over the {\tt sort} combined with {\tt unique} method. 
 
 In this paper, we are entirely focused on the implementation and
-performance of kernels. Reference \cite{CSORT} goes into the details
+performance of kernels. Reference \citecsort{CSORT} goes into the details
 of performing data transfers in parallel with ongoing computations. We
 have not addressed this issue at all in our implementations. This is
 also the reason why we haven't performed any benchmarks against the algorithm in
-\cite{CSORT}, because it would compare very different things. As a
+\citecsort{CSORT}, because it would compare very different things. As a
 piece of future work, it would be interesting to add the capability of
 streaming data from the main memory to the GPU to our algorithms.
 
@@ -34,7 +34,7 @@ The size of this array is
 based on the range of elements occurring in the input. This means that 
 more memory is needed for larger ranges and may imply that counting sort 
 is suitable only up to some point. A related algorithm, known as radix 
-sort \cite{Knuth}, addresses this issue by using multiple counting sort 
+sort \citecsort{Knuth}, addresses this issue by using multiple counting sort 
 like passes, one for each digit position and thus limits this auxiliary 
 memory usage to an array of size related to the radix (number of unique 
 digits) used in the representation of the values being sorted. During 
@@ -82,7 +82,7 @@ Haskell.
 
 %% There is already an example of using Obsidian as the code 
 %% generating back end of such an EDSL. This EDSL is called PEGGY and 
-%% is described in \cite{cole2012beauty}. 
+%% is described in \citecsort{cole2012beauty}. 
 
 %% This case study turned out an interesting exercise in very low-level 
 %% programming in Obsidian. Having the ability to drop down to a CUDA-like 

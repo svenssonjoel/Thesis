@@ -8,45 +8,45 @@ As mentioned above, our earlier work on Lava has provided the inspiration for
 the combinator-oriented or hardware-like style of programming that we are exploring in Obsidian.
 On the other hand, the {\em implementation} of Obsidian has been much influenced by
 {Pan}, an embedded language for image synthesis developed by 
-Conal Elliot~\cite{PAN}. Because of the computational complexity of image generation, C 
+Conal Elliot~\citeifl{PAN}. Because of the computational complexity of image generation, C 
 code is generated. This C code can then be compiled by an optimising compiler. 
 Many ideas from the paper 
 ``Compiling Embedded Languages'', describing the implementation of Pan have been 
-used in the implementation of Obsidian~\cite{COMPILEEDSL}. 
+used in the implementation of Obsidian~\citeifl{COMPILEEDSL}. 
 
 \subsubsection{Related work on GPU and GPGPU programming languages}
-We cannot attempt an exhaustive description of GPU programming languages here, but refer the reader to a recent PhD thesis by Philipp Lucas, which contains an enlightening survey~\cite{Lucas08}. Lucas distinguishes carefully between languages (such as CG and HLSL) that aim to raise the level of abstraction at which graphics-oriented GPU programs are written, and those that attempt to abstract the entire GPU, and so must also provide a means to express the placing of programs on the GPU, feeding such programs with data, reading the results back to the CPU, and so on, as well as deciding to what extent the programmer should be involved
+We cannot attempt an exhaustive description of GPU programming languages here, but refer the reader to a recent PhD thesis by Philipp Lucas, which contains an enlightening survey~\citeifl{Lucas08}. Lucas distinguishes carefully between languages (such as CG and HLSL) that aim to raise the level of abstraction at which graphics-oriented GPU programs are written, and those that attempt to abstract the entire GPU, and so must also provide a means to express the placing of programs on the GPU, feeding such programs with data, reading the results back to the CPU, and so on, as well as deciding to what extent the programmer should be involved
 in stipulating those tasks.
 In the first group of graphics-oriented languages, we include PyGPU and Vertigo.
-PyGPU is a language for image processing embedded in Python~\cite{PyGPU}. 
+PyGPU is a language for image processing embedded in Python~\citeifl{PyGPU}. 
 PyGPU uses the introspective abilities of Python and thus bypasses
 the need to implement new loop structures and conditionals for the embedded 
 language. In Python it is possible to access the bytecode of a function and 
 from that extract information about loops and conditionals. 
 Programs written in PyGPU can be compiled and run on a GPU. 
-Vertigo is another embedded language by Conal Elliot~\cite{VERTIGO}. It
+Vertigo is another embedded language by Conal Elliot~\citeifl{VERTIGO}. It
 is a language for 3D graphics that targets the DirectX 8.1 shader model, and
 can be used to describe geometry, shaders and to generate textures. 
-%Each sublanguage is given formal semantics \cite{VERTIGO}. From programs 
+%Each sublanguage is given formal semantics \citeifl{VERTIGO}. From programs 
 %written in Vertigo, assembly language programs are generated for execution on a 
 %GPU.   
 
 The more general purpose languages aim to abstract away from the graphics heritage of GPUs, and target a larger group of programmers.
 The thesis by Lucas presents CGiS, an imperative data-parallel programming
 language that targets both GPUs and SIMD capable CPUs -- with the aim being
-a combination of a high degree of abstraction and a close resemblance to traditional programming languages~\cite{Lucas08}.
-BrookGPU (which is usually just called Brook) is a classic example of a language~\cite{Brook} designed to raise the level of abstraction at which GPGPU programming is done. It is an extension of C with embedded kernels, aimed at arithmetic-intense data parallel computations. C is used to declare streams\footnote{Brook is referred to as a ``stream processing'' language, but this means something different from what the reader might expect: a stream in this context is
+a combination of a high degree of abstraction and a close resemblance to traditional programming languages~\citeifl{Lucas08}.
+BrookGPU (which is usually just called Brook) is a classic example of a language~\citeifl{Brook} designed to raise the level of abstraction at which GPGPU programming is done. It is an extension of C with embedded kernels, aimed at arithmetic-intense data parallel computations. C is used to declare streams\footnote{Brook is referred to as a ``stream processing'' language, but this means something different from what the reader might expect: a stream in this context is
 a possibly multi-dimensional array of elements, each of which can be processed separately, in parallel.}, CG/HLSL (the lower level GPU languages) to declare kernels, while
 function calls to a runtime library direct the execution of the program.
-Brook had significant impact in that it raised the level of abstraction at which GPGPU programming can be done. The language Sh also aimed to raise the level of abstraction at which GPUs were programmed~\cite{Sh}. Sh was an embedded language in C++, so our work is close in spirit to it. Sh has since evolved into the RapidMind development platform~\cite{RapidMind}, which now supports multicores and Cell processors as well as GPUs. 
+Brook had significant impact in that it raised the level of abstraction at which GPGPU programming can be done. The language Sh also aimed to raise the level of abstraction at which GPUs were programmed~\citeifl{Sh}. Sh was an embedded language in C++, so our work is close in spirit to it. Sh has since evolved into the RapidMind development platform~\citeifl{RapidMind}, which now supports multicores and Cell processors as well as GPUs. 
 The RapidMind programming model has arrays as first class types. It
 has been influenced by functional languages like NESL and SETL, and its program objects are pure functions. Thus it supports both functional and imperative styles of programming.
 A recent PhD thesis by Jansen asserts that there are some problems with RapidMind's use of macros to embed the GPU programming language in C++, including the inability to pass
-kernels (or shader programs) as classes~\cite{JansenThesis}; the thesis proposes GPU++ and claims improvement over previous approaches, particularly through the exploitation of automatic partitioning of the programs onto the available GPU hardware, and through compiler optimisations that improve runtime performance.
+kernels (or shader programs) as classes~\citeifl{JansenThesis}; the thesis proposes GPU++ and claims improvement over previous approaches, particularly through the exploitation of automatic partitioning of the programs onto the available GPU hardware, and through compiler optimisations that improve runtime performance.
 
-Microsoft's Accelerator project moves even closer to general purpose programming by doing away with the kernel notion and simply expressing programs in a data parallel style, using functions on arrays~\cite{ACCELERATOR}.
-Data Parallel Haskell~\cite{DPH} incorporates Nested Data Parallelism in the style of NESL~\cite{NESL} into Haskell. GPUGen, like Obsidian, aims
-to support GPGPU programming from Haskell~\cite{GPUGenTalk}. It works by translating Haskell's intermediate language, Core, into CUDA, for collective data operations such as scan, fold and map. The intention is to plug GPUGen into the Nested Data Parallel framework of the Glasgow Haskell Compiler. Our impression is that we wish to expose considerably more detail about the GPU to the programmer, but we do not yet have sufficient information about GPUGen to be able to do a more complete comparison. Finally, we mention the Spiral project, which develops methods and tools for automatically generating high performance libraries for a variety of platforms, in domains such a signal processing, multiplication and sorting~\cite{Spiral}.
+Microsoft's Accelerator project moves even closer to general purpose programming by doing away with the kernel notion and simply expressing programs in a data parallel style, using functions on arrays~\citeifl{ACCELERATOR}.
+Data Parallel Haskell~\citeifl{DPH} incorporates Nested Data Parallelism in the style of NESL~\citeifl{NESL} into Haskell. GPUGen, like Obsidian, aims
+to support GPGPU programming from Haskell~\citeifl{GPUGenTalk}. It works by translating Haskell's intermediate language, Core, into CUDA, for collective data operations such as scan, fold and map. The intention is to plug GPUGen into the Nested Data Parallel framework of the Glasgow Haskell Compiler. Our impression is that we wish to expose considerably more detail about the GPU to the programmer, but we do not yet have sufficient information about GPUGen to be able to do a more complete comparison. Finally, we mention the Spiral project, which develops methods and tools for automatically generating high performance libraries for a variety of platforms, in domains such a signal processing, multiplication and sorting~\citeifl{Spiral}.
 The tuning of an algorithm for a given platform is expressed as an optimisation problem, and the domain specific mathematical structure of the algorithm is used
 to create a feedback-driven optimiser. The results are indeed impressive, and we feel that the approach based on an algebra of what we would call combinators
 will interest functional programmers. We hope to experiment with similar
@@ -63,7 +63,7 @@ a memory hierarchy in a parallel system seems to be a central problem that must 
 A typical example of a generic approach to this problem is
 the language Sequoia, which aims to provide programmers with a means
 to express how the memory hierarchy is to be used, where a relatively abstract description of
-the platform, viewed as a tree of processing nodes and memories, is a parameter~\cite{Sequoia}. Thus, programmers should write very generic code, which can be compiled for many different platforms. This kind of platform independence is not our aim here, and we would like to experiment with programming idioms for control of memory access for the particular case of a CPU plus some form of highly parallel co-processor that accelerates some computations.
+the platform, viewed as a tree of processing nodes and memories, is a parameter~\citeifl{Sequoia}. Thus, programmers should write very generic code, which can be compiled for many different platforms. This kind of platform independence is not our aim here, and we would like to experiment with programming idioms for control of memory access for the particular case of a CPU plus some form of highly parallel co-processor that accelerates some computations.
 
 A second lesson concerns ways to think about synchronisation on the GPU. We naively assumed that {\tt sync} would have nice compositional behaviour, but we have found that in reality one can really only sync at the top level.
 The reason why the CUDA code generated from the {\tt sklanky} example works poorly on the GPU is that it uses {\tt syncs} in a way that leads to unwanted

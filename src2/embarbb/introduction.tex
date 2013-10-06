@@ -12,10 +12,10 @@ It should also be possible to easily retarget the code to new architectures.
 As processor architectures develop and are combined at an ever increasing pace, these requirements place considerable demands on programming languages
 and libraries for parallel programming.
 
-Intel's Array Building Blocks (ArBB) is one approach to the problem of how to increase productivity for programmers who need to exploit hardware parallelism, but for whom very low level parallel programming (as typically found in High Performance Computing) is too difficult or time consuming~\cite{ARBB2011}. ArBB is a retargettable dynamic compilation framework that is provided as an embedded language in C++. It aims to give the programmer access to data and thread parallelism, while protecting him from common pitfalls such as race conditions and deadlock.
+Intel's Array Building Blocks (ArBB) is one approach to the problem of how to increase productivity for programmers who need to exploit hardware parallelism, but for whom very low level parallel programming (as typically found in High Performance Computing) is too difficult or time consuming~\citeemb{ARBB2011}. ArBB is a retargettable dynamic compilation framework that is provided as an embedded language in C++. It aims to give the programmer access to data and thread parallelism, while protecting him from common pitfalls such as race conditions and deadlock.
 
 Many of the ideas in ArBB feel familiar to functional programmers.
-For example, when referring to collection data types, reference~\cite{ARBB2011} states that ``Expressions over collections always act as if a completely new collection were created and assignment between collections always behaves as if the entire input collection were copied.''
+For example, when referring to collection data types, reference~\citeemb{ARBB2011} states that ``Expressions over collections always act as if a completely new collection were created and assignment between collections always behaves as if the entire input collection were copied.''
 This rather functional view of data is accompanied by extensive optimisation that (as the paper states) removes almost all copying.
 A key to the approach is the use of standard patterns of computation such as scan and reduce -- familiar as higher order functions in a functional setting.
 The system tries to fuse away intermediate data-structures
@@ -60,19 +60,19 @@ statically typed.
 %Amongst these operations are scans (prefix sums)  
 %and reductions over vectors, elementwise operations and more. 
 %The compilation 
-%process also tries to fuse away intermediate datastructures~\cite{ARBB2011}. 
+%process also tries to fuse away intermediate datastructures~\citeemb{ARBB2011}. 
 
  
 
 ArBB is an embedded language, implemented
 as a library in the host language C++. The embedding makes 
 heavy use of the C++ template machinery. There is also a lower level 
-interface to ArBB, the ArBB Virtual Machine C API~\cite{arbbvm}. The low level C API is not
+interface to ArBB, the ArBB Virtual Machine C API~\citeemb{arbbvm}. The low level C API is not
 intended for use directly by applications programmers, but rather as a base 
-for implementations of alternative ArBB frontends (embeddings)~\cite{ARBB2011}.
+for implementations of alternative ArBB frontends (embeddings)~\citeemb{ARBB2011}.
 The ArBB VM implements the compilation and parallelisation.
-Reference~\cite{joelryan} presents Haskell bindings to the ArBB C API as well as initial 
-steps towards using ArBB as a backend to the embedded language Accelerate~\cite{ACCELERATEDAMP11}. 
+Reference~\citeemb{joelryan} presents Haskell bindings to the ArBB C API as well as initial 
+steps towards using ArBB as a backend to the embedded language Accelerate~\citeemb{ACCELERATEDAMP11}. 
 
 The design of ArBB seems particularly well suited to a functional setting.
 In this paper, we present work in progress on embedding ArBB in Haskell. We call the embedding EmbArBB.

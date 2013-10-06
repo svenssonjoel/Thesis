@@ -21,7 +21,7 @@
 %The prefix sums computation consists of 2 different kernels while the 
 %two other phases are performed by a single kernel. The prefix sums are computed
 %in parallel following a scheme originally designed by 
-%J. Sklansky \cite{Sklansky}.  
+%J. Sklansky \citecsort{Sklansky}.  
 
 %Initially, we assumed that in order to tweak the performance of this algorithm 
 %we would substitute various prefix sums networks in the place of the Sklansky 
@@ -520,7 +520,7 @@ __global__ void reconstruct(uint32_t *input0,
 %kernel the number of threads limits it to operate on a maximum of 512 or 
 %1024 elements depending on generation of GPU.  
 %In order to build a large parallel prefix from these small ones an approach 
-%similar to the one taken in \cite{LargeScan} is implemented. This requires 
+%similar to the one taken in \citecsort{LargeScan} is implemented. This requires 
 %that the {\tt sklansky} kernel also outputs the maximum element from each 
 %small block into a separate array of ``block maximums''. On the 
 %block maximums a second prefix sum is computed and the result of that is then 
@@ -605,4 +605,4 @@ __global__ void reconstruct(uint32_t *input0,
 %maybe Mary wants to tweak the above slightly ? 
 
 %For space reasons we omit all examples of generated code. For many examples 
-%of the kind of code Obsidian generates see references \cite{JSLIC,PUSH}. 
+%of the kind of code Obsidian generates see references \citecsort{JSLIC,PUSH}. 
