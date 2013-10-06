@@ -9,6 +9,7 @@ all:
 	bibtex csort
 	bibtex emb
 	bibtex arbb
+	bibtex thesis 
 	pdflatex thesis
 	pdflatex thesis
 
