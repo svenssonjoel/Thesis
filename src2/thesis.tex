@@ -34,6 +34,8 @@
 \usetikzlibrary{shapes,snakes,positioning}
 \usepackage{pgfplots}
 \usepackage{booktabs}
+%\usepackage{etoolbox}
+
 
 \usepackage{multibib} 
 \newcites{bb}{Bibliography} 
@@ -47,12 +49,12 @@
 % \newcites{t}{Bibliography}
 %\newcites[ifl}{Bibliography}
 
+%\patchcmd{\thebibliography}{\section*}{\section}{}{}
 
-\let\stdbibliography\thebibliography
 \makeatletter
 \renewenvironment{thebibliography}[1]
      {\section*{\bibname}%
-      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      %\@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
       \list{\@biblabel{\@arabic\c@enumiv}}%
            {\settowidth\labelwidth{\@biblabel{#1}}%
             \leftmargin\labelwidth
@@ -431,6 +433,8 @@ Bo Joel Svensson, Mary Sheeran
 % nocites 
 % ---------------------------------------------------------------------------
 \nocite{*}
+
+
 
 \makeatletter
 \renewenvironment{thebibliography}[1]
