@@ -184,6 +184,9 @@ Abstract abstract
 
 \clearpage
 
+% ---------------------------------------------------------------------------
+%  ACKS !!! 
+% ---------------------------------------------------------------------------
 \section*{Acknowledgments}
 
 
@@ -191,6 +194,112 @@ Abstract abstract
 This research has been funded by the Swedish Foundation for
 Strategic Research (which funds the Resource Aware Functional 
 Programming (RAW FP) Project) and by the Swedish Research Council.
+
+\clearpage
+
+% ---------------------------------------------------------------------------
+%  Guide for Oponent, grading committee
+% ---------------------------------------------------------------------------
+\section*{About this thesis} 
+
+This thesis contains an introduction and a selection of papers. The introduction 
+gives background and context to the papers. 
+
+The papers contained in this thesis falls in three categories. 
+\begin{itemize} 
+\item General EDSL methodology in chapter~\ref{chap:EDSLImplementation}. 
+\item GPU Programming using an EDSL in chapter~\ref{chap:GPUProgramming}. 
+\item Retargetable parallel programming in chapter~\ref{chap:ArBB}. 
+\end{itemize} 
+%In the following sections, each paper is given a short description. Hopefully 
+%there is enough information to wet the apetite. 
+
+\subsection*{EDSL implementation papers} 
+
+\subsubsection*{\paperBB} 
+
+Authors: Josef Svenningsson and Bo Joel Svensson 
+
+\vspace{5mm}
+
+\noindent We present a simple and compositional method for refication 
+of monads (or compilation of a monadic embedded language). I implemented 
+Obsidian using the method described here. The novelty and 
+usefulness of this simple way to reify monads was recognised by Josef
+and lead to the writing of this paper.  
+
+\subsection*{GPU Programming papers} 
+
+\subsubsection{\paperIFL}
+
+Authors: Bo Joel Svensson, Mary Sheeran and Koen Claessen \newline
+
+\vspace{5mm}
+
+\subsubsection{\paperPAPP}
+
+Authors: Bo Joel Svensson, Koen Claessen and Mary Sheeran \newline
+
+\vspace{5mm}
+
+
+\subsubsection{\paperEXPRESSIVE}
+
+Authors: Koen Claessen, Mary Sheeran and  Bo Joel Svensson \newline
+
+\vspace{5mm}
+
+
+\subsubsection{\paperCSORT} 
+
+Authors: Josef Svenningsson, Bo Joel Svensson and Mary Sheeran \newline
+
+\vspace{5mm}
+
+\subsubsection{\paperHL}
+
+Authors: Bo Joel Svensson and Mary Sheeran \newline
+\noindent \emph{This work has not been published.}
+\vspace{5mm} 
+
+\noindent 
+
+In this paper the most recent additions and improvements of Obsidian are 
+described. 
+
+\subsubsection{Retargetable parallel programming} 
+
+\subsubsection{\paperARBB}
+
+Authors: Bo Joel Svensson and Ryan R. Newton
+
+\vspace{5mm}
+
+\noindent This position paper describes the work I did while on a 3 month internship at 
+Intel. The main part of this work was implementation of Haskell bindings 
+for the now retired Intel ArBB system. 
+
+The paper also describes work we did towards implementing a backend for the 
+Accelerate system using ArBB. We reached a proof-of-concept implementation 
+capable of running some simple Accelerate programs using the ArBB backend.
+However, much work would remain to be able to run the full scope of Accelerate 
+programs on ArBB.  
+
+\subsubsection{\paperEMBARBB}
+
+Authors: Bo Joel Svensson and Mary Sheeran 
+
+\vspace{5mm}
+
+\noindent Here we explore another way to provide the capabilities of ArBB to the 
+Haskell programmer. Rather than trying to use ArBB as a backend to Accelerate 
+we provide a more direct mapping of ArBB's functionality to Haskell idioms. 
+Simply put, this means providing a more Haskell-programmer-friendly interface compared
+to the raw ArBB bindings (which are a collection of functions in the IO monad). 
+
+\subsection*{Guide} 
+
+
 
 
 \tableofcontents
@@ -207,76 +316,73 @@ Programming (RAW FP) Project) and by the Swedish Research Council.
 \renewcommand{\headrulewidth}{0.0pt}
 \fancyhead[LE,RO]{\thepage}
 
-\chapter{About this thesis} 
-
-This thesis contains an introduction and a selection of papers. The introduction 
-gives background and context to the papers. 
-
-\section{Papers} 
-
-The papers contained in this thesis falls in three different categories. 
-\begin{itemize} 
-\item General EDSL methodology in chapter~\ref{chap:EDSLImplementation}. 
-\item GPU Programming using an EDSL in chapter~\ref{chap:GPUProgramming}. 
-\item Retargetable parallel programming in chapter~\ref{chap:ArBB}. 
-\end{itemize} 
-
-\subsection{EDSL implementation papers} 
-
-\subsubsection{\paperBB} 
-
-apa apa apa bepa cepa apa 
-
-\subsection{GPU Programming papers} 
-
-\subsubsection{\paperIFL}
-
-\subsubsection{\paperPAPP}
-
-\subsubsection{\paperEXPRESSIVE}
-
-\subsubsection{\paperCSORT} 
-
-\subsubsection{\paperHL}
-
-\subsubsection{Retargetable parallel programming} 
-
-\subsubsection{\paperARBB}
-
-\subsubsection{\paperEMBARBB}
-
-
-
+% --------------------------------------------------------------------------- %
+% --------------------------------------------------------------------------- %
+%
+%  INTRODUCTION 
+%
+% --------------------------------------------------------------------------- %
+% --------------------------------------------------------------------------- %
 \chapter{Introduction}
 
-\section{Plan} 
-\begin{itemize} 
-  \item The Scope
-  \item The Problem 
-  \item The Methods
-  \item The Results 
-\end{itemize}
+\section{The scope} 
 
-\begin{itemize} 
-  \item The Context
-  \item Lift head from details 
-  \item Why are there interesting questions around parallelism and GPUs
-  \item The Story
-  \item Reflect on leassons learnt along the way 
-  \item Tell a story around the papers 
-  \item Future Work
-\end{itemize} 
+\noindent\emph{Data-Parallelism, Structured-Compositional programming} 
 
+\noindent\emph{GPUs} 
+
+\noindent\emph{The context, Lift head from details}
+
+\subsection{Related work} 
+
+\noindent\emph{GPU Programmming languages}
+
+\noindent\emph{data-parallel programming languages} 
+
+\noindent\emph{Embedded languages} 
+
+\noindent\emph{Monad reification methods} 
+
+\section{The problem}
+
+\emph{what is so interesting about Parallelism and GPUs}
+
+\section{The method}
+
+\noindent\emph{Obsidian, Embedded languages} 
+
+\noindent\emph{Array representations} 
+
+\noindent\emph{Compositionality} 
+
+\noindent\emph{Hierarchies} 
+
+\section{The results} 
+
+\emph{ How well did we do?} 
+
+\section{Future work} 
+
+\noindent\emph{Find a niche for Obsidian} 
+
+\noindent\emph{Improve on Warp level capabilities} 
+
+\noindent\emph{Improve expressivity, code performance} 
+
+\section{Discussion} 
 
 
 
 \clearpage{}
-%\section*{Additional Publications}
 
-%Papers not included in thesis
+% --------------------------------------------------------------------------- %
+% --------------------------------------------------------------------------- %
+%
+%  PAPERS 
+%
+% --------------------------------------------------------------------------- %
+% --------------------------------------------------------------------------- %
 
-%\bibliographystyle{plain}
-%\bibliography{intro}
 
 \chapter{EDSL implementation papers}
 \label{chap:EDSLImplementation}
