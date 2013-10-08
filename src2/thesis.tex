@@ -236,11 +236,22 @@ Authors: Bo Joel Svensson, Mary Sheeran and Koen Claessen \newline
 
 \vspace{5mm}
 
+The first real paper about Obsidian, our embedded language for GPU 
+programming. In this paper we identify similarities between 
+conenction patterns in hardware and parallel computations on GPUs. 
+We introduce a structured and compositional way to write data-parallel 
+programs on a GPU.
+
+Basic parallel building blocks are implemented in a monadic style and 
+composed using a sequential composition operator {\tt ->-}. 
+
 \subsubsection{\paperPAPP}
 
 Authors: Bo Joel Svensson, Koen Claessen and Mary Sheeran \newline
 
 \vspace{5mm}
+
+\emph{a new program representation, based vaguely on Arrows} 
 
 
 \subsubsection{\paperEXPRESSIVE}
@@ -248,6 +259,10 @@ Authors: Bo Joel Svensson, Koen Claessen and Mary Sheeran \newline
 Authors: Koen Claessen, Mary Sheeran and  Bo Joel Svensson \newline
 
 \vspace{5mm}
+
+This paper introduces {\em Push} arrays, invented by Koen Claessen. This 
+array representation target specific performance problems that we want 
+to solve with Obsidian. 
 
 
 \subsubsection{\paperCSORT} 
@@ -323,31 +338,45 @@ to the raw ArBB bindings (which are a collection of functions in the IO monad).
 %
 % --------------------------------------------------------------------------- %
 % --------------------------------------------------------------------------- %
-\chapter{Introduction}
+\chapter{\thesistitle}
 
-\section{The scope} 
+\section{Introduction} 
+
+Computers today are increasingly parallel. With each new generation of 
+general purpose processor or GPU we get more parallel resources. To 
+fully make use of modern CPUs and GPUs we need to fully exploit their 
+parallelism. 
+
+Modern CPUs are parallel in a number of different ways. They discover instruction
+level parallelism(ILP), they have multiple processor cores and vector units for 
+Single Instruction Multiple Data parallelism. The exact configurations, number
+of cores and number of vector units, vary over available processors. 
+
+\noindent\emph{More text, lead into something about ArBB and forward ref to ArBB papers}
 
 \noindent\emph{Data-Parallelism, Structured-Compositional programming} 
 
-\noindent\emph{GPUs} 
+Graphics Processors (GPUs), trade programmer convenience for increased parallelism. 
+For example, where CPUs dedicate much chip real estate for caches, branch prediction and 
+ILP, GPUs put additional cores. This comes at a price of increased programmer effort.
+GPUs have programmer managed shared memories, conditionals are troublesome from a performance 
+perspective and memory access patterns can make or break the performance of an 
+application.  
 
-\noindent\emph{The context, Lift head from details}
+\noindent\emph{More text, lead into something about compositional, high-level, but 
+expressive enough programming models for GPU programming and ref to Obsidian Chapter} 
 
-\subsection{Related work} 
+%\noindent\emph{GPUs} 
 
-\noindent\emph{GPU Programmming languages}
+%\subsection{Data-parallel programming on GPUs} 
 
-\noindent\emph{data-parallel programming languages} 
-
-\noindent\emph{Embedded languages} 
-
-\noindent\emph{Monad reification methods} 
+%\subsection{Data-parallel programming on CPUs}
 
 \section{The problem}
 
 \emph{what is so interesting about Parallelism and GPUs}
 
-\section{The method}
+\section{An embedded languages approach to data-parallelism}
 
 \noindent\emph{Obsidian, Embedded languages} 
 
@@ -361,6 +390,17 @@ to the raw ArBB bindings (which are a collection of functions in the IO monad).
 
 \emph{ How well did we do?} 
 
+\subsection{Related work} 
+
+\noindent\emph{GPU Programmming languages}
+
+\noindent\emph{data-parallel programming languages} 
+
+\noindent\emph{Embedded languages} 
+
+\noindent\emph{Monad reification methods} 
+
+
 \section{Future work} 
 
 \noindent\emph{Find a niche for Obsidian} 
@@ -370,6 +410,7 @@ to the raw ArBB bindings (which are a collection of functions in the IO monad).
 \noindent\emph{Improve expressivity, code performance} 
 
 \section{Discussion} 
+
 
 
 
