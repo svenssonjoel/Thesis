@@ -228,7 +228,7 @@ Obsidian using the method described here. The novelty and
 usefulness of this simple way to reify monads was recognised by Josef
 and lead to the writing of this paper.  
 
-\subsection*{GPU Programming papers} 
+\subsection*{GPU programming papers} 
 
 \subsubsection{\paperIFL}
 
@@ -342,15 +342,23 @@ to the raw ArBB bindings (which are a collection of functions in the IO monad).
 
 \section{Introduction} 
 
-Computers today are increasingly parallel. With each new generation of 
-general purpose processor or GPU we get more parallel resources. To 
-fully make use of modern CPUs and GPUs we need to fully exploit their 
-parallelism. 
+This thesis is about applying embedded language techniques to programming 
+multi- and many-core computers. Computers today are becoming more and more  
+parallel. With each new generation of 
+general purpose processor (CPU) or graphics processor (GPU) we get more 
+parallel resources. To fully make use of modern CPUs and GPUs we need to fully 
+exploit their parallelism. 
 
 Modern CPUs are parallel in a number of different ways. They discover instruction
-level parallelism(ILP), they have multiple processor cores and vector units for 
-Single Instruction Multiple Data parallelism. The exact configurations, number
-of cores and number of vector units, vary over available processors. 
+level parallelism (ILP), they have multiple processor cores and vector units for 
+Single Instruction Multiple Data parallelism. The exact configuration, number
+of cores and number of vector units, vary over available processor models. 
+To obtain maximum performance, with a specific target processor in mind, the programmer
+would use low-level intrinsics in order to get SIMD parallelism and some threading library
+for parallelism over the available cores. One problem with this is that the resulting program 
+would be specialised to a specific processor model. 
+
+In chapter~\ref{chap:ArBB}, 
 
 \noindent\emph{More text, lead into something about ArBB and forward ref to ArBB papers}
 
@@ -431,7 +439,7 @@ expressive enough programming models for GPU programming and ref to Obsidian Cha
 % --------------------------------------------------------------------------- %
 
 
-\chapter{EDSL implementation papers}
+\chapter{EDSL Implementation Papers}
 \label{chap:EDSLImplementation}
 % ---------------------------------------------------------------------------
 % 
@@ -452,7 +460,7 @@ Josef Svenningsson, Bo Joel Svensson
 
 
 
-\chapter{GPU programming papers}
+\chapter{GPU Programming Papers}
 \label{chap:GPUProgramming}
 
 % ---------------------------------------------------------------------------
@@ -542,7 +550,7 @@ Bo Joel Svensson, Mary Sheeran
 % 
 % ---------------------------------------------------------------------------
 
-\chapter{Retargetable parallel programming papers}
+\chapter{Retargetable Parallel Programming Papers}
 \label{chap:ArBB}
 % ---------------------------------------------------------------------------
 % 
