@@ -46,7 +46,7 @@
 \newcites{csort}{Bibliography}
 \newcites{emb}{Bibliography}
 \newcites{arbb}{Bibliography}
-% \newcites{t}{Bibliography}
+\newcites{t}{Bibliography}
 %\newcites[ifl}{Bibliography}
 
 %\patchcmd{\thebibliography}{\section*}{\section}{}{}
@@ -180,7 +180,7 @@ Abstract abstract
 
 \noindent
 
- \textbf{Keywords:} Keyword1, Keyword2  
+ \textbf{Keywords:} Data-parallelism, GPU, Embedded languages
 
 \clearpage
 
@@ -191,7 +191,7 @@ Abstract abstract
 
 
 \vspace{5mm}
-This research has been funded by the Swedish Foundation for
+\noindent This research has been funded by the Swedish Foundation for
 Strategic Research (which funds the Resource Aware Functional 
 Programming (RAW FP) Project) and by the Swedish Research Council.
 
@@ -354,37 +354,66 @@ level parallelism (ILP), they have multiple processor cores and vector units for
 Single Instruction Multiple Data parallelism. The exact configuration, number
 of cores and number of vector units, vary over available processor models. 
 To obtain maximum performance, with a specific target processor in mind, the programmer
-would use low-level intrinsics in order to get SIMD parallelism and some threading library
+would use low-level intrinsics in order to get SIMD parallelism and a threading library
 for parallelism over the available cores. One problem with this is that the resulting program 
-would be specialised to a specific processor model. 
-
-In chapter~\ref{chap:ArBB}, 
-
-\noindent\emph{More text, lead into something about ArBB and forward ref to ArBB papers}
-
-\noindent\emph{Data-Parallelism, Structured-Compositional programming} 
+would be specialised to a specific processor model. The Intel Array Building Blocks (ArBB) 
+system approached this problem by providing a high level programming interface~\citet{ARBB2011}
+. This interface is based on a set of parallel operations on arrays, such as map, folds 
+and scans. ArBB was implemented as an embedded language in C++ but a low-level C interface to 
+its capabilities was also offered. ArBB programs are JIT-ed (Just-In-Time compiled) to 
+target the available CPU or Accelerator (Such as the Intel Larrabee). In 
+chapter~\ref{chap:ArBB}, there are papers describing work towards embedding Intel 
+ArBB in Haskell. 
 
 Graphics Processors (GPUs), trade programmer convenience for increased parallelism. 
-For example, where CPUs dedicate much chip real estate for caches, branch prediction and 
+For example, where CPUs dedicate large portions of chip area for caches, branch prediction and 
 ILP, GPUs put additional cores. This comes at a price of increased programmer effort.
 GPUs have programmer managed shared memories, conditionals are troublesome from a performance 
 perspective and memory access patterns can make or break the performance of an 
 application.  
 
-\noindent\emph{More text, lead into something about compositional, high-level, but 
-expressive enough programming models for GPU programming and ref to Obsidian Chapter} 
+Intel ArBB is part of a movement towards thinking of structure and patterns in 
+parallel programming. Other languages and libraries with similar aspirations 
+are NVIDIA Thrust~\citet{THRUST} and Data.Array.Accelerate~\citet{ACCELERATEDAMP11}.
+In the book Structured Parallel Programming by Michael McCool et al, a case is 
+made for thinking in terms of buidling blocks for parallel programming~\citet{STRUCTURED}. 
+They emphasize the importance of collective array operations such as map, fold, scans, 
+permutations and gather/scatter operations. The book contains examples in ArBB, Cilk Plus, 
+Intel Threading Building Blocks, OpenMP and OpenCL. Not all these languages include 
+the patterns as abstractions, but most are possible to express in each of the languages. 
+The patterns, while very powerful as abstractions, also provide tools for thinking about 
+parallel algorithms. 
 
-%\noindent\emph{GPUs} 
+The patterns are powerful abstractions, but it is also important not to be locked into 
+a single implementation of each pattern. This could have negative performance impacts. 
+In ArBB for example the patterns used are specialised to the current hardware during JIT. 
+Languages like OpenCL and CUDA do not provide abstractions of these patterns. The programmer 
+needs to implement them using lower level features making CUDA and OpenCL code less composable 
+and harder to reuse. As an example, look at the slides from NVIDIA in reference~\citet{reduction} 
+where a reduction primitive is implemented in CUDA. First a naive reduction kernel is implement 
+and it is refined over many steps, taking many characteristics of the GPU into mind. What is 
+is that says that we do not need to redo this exploration with each new GPU generation 
+and discover a new optimal sollution?  
 
-%\subsection{Data-parallel programming on GPUs} 
+Obsidian is our embedded language for GPU programming. We raise the level of abstraction 
+compared to CUDA and provide a more composable interface. But we also want to keep 
+the possible for the programmer to implement patterns in different ways. A balance 
+must be struck between providing enough low-level control to get at the performance 
+and still make building blocks implemented by the programmer reusable and composable. 
+We want to give more compositional tools for the programmer to experiment with while 
+exploring the space of various ways to implement a given pattern or primitive. 
+In chapter~\ref{chap:GPUProgramming}, there are papers describing work on Obsidian. 
 
-%\subsection{Data-parallel programming on CPUs}
+% \section{The problem}
 
-\section{The problem}
-
-\emph{what is so interesting about Parallelism and GPUs}
+% \emph{what is so interesting about Parallelism and GPUs}
 
 \section{Embedded languages}
+
+This thesis applies embedded language methodology to data-parallel programming. An 
+embedded language is implemented as a library in some host language, Haskell in this case. 
+
+
 
 
 \section{Obsidian: An embedded language for GPU kernel implementation}
@@ -424,6 +453,11 @@ expressive enough programming models for GPU programming and ref to Obsidian Cha
 \noindent\emph{Improve expressivity, code performance} 
 
 \section{Discussion} 
+
+
+\bibliographystylet{alpha}
+\bibliographyt{thesis}
+\addcontentsline{toc}{section}{Bibliography}
 
 
 
