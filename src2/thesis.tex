@@ -31,9 +31,10 @@
 %stuff
 \usepackage{latexsym}
 \usepackage{tikz,pgflibraryshapes}
-\usetikzlibrary{shapes,snakes,positioning}
+\usetikzlibrary{shapes,snakes,positioning,matrix}
 \usepackage{pgfplots}
 \usepackage{booktabs}
+\usepackage{enumerate}
 %\usepackage{etoolbox}
 
 
@@ -89,7 +90,7 @@
 
 %\renewcommand*{\thesection}{\arabic{section}}
 
-\newcommand{\thesistitle}{Embedded Languages for Data Parallel Computation}
+\newcommand{\thesistitle}{Embedded Languages for Data-Parallel Computation}
 \newcommand{\dept}{Department of Computer Science and Engineering}
 \newcommand{\uni}{Chalmers University of Technology and G\"oteborg University}
 \newcommand{\group}{Functional Programming Research Group}
@@ -98,14 +99,22 @@
 % ---------------------------------------------------------------------------
 % Papers 
 % ---------------------------------------------------------------------------
-\newcommand{\paperBB}{Simple and Compositional Reification of Monadic Embedded Languages}
-\newcommand{\paperIFL}{Obsidian: A Domain Specific Embedded Language for Parallel Programming of Graphics Processors}
-\newcommand{\paperPAPP}{GPGPU Kernel Implementation and Refinement using Obsidian} 
-\newcommand{\paperEXPRESSIVE}{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
-\newcommand{\paperCSORT}{Counting and Occurrence Sort for GPUs using an Embedded Language}
-\newcommand{\paperHL}{A High-Level Embedded Language for Low-Level GPU Kernel Programming}
-\newcommand{\paperARBB}{Programming Future Parallel Architectures with Haskell and Intel ArBB}
-\newcommand{\paperEMBARBB}{Parallel Programming in Haskell Almost for Free}
+\newcommand{\paperA}{Paper A}
+\newcommand{\paperATitle}{Simple and Compositional Reification of Monadic Embedded Languages}
+\newcommand{\paperB}{Paper B}
+\newcommand{\paperBTitle}{Obsidian: A Domain Specific Embedded Language for Parallel Programming of Graphics Processors}
+\newcommand{\paperC}{Paper C} 
+\newcommand{\paperCTitle}{GPGPU Kernel Implementation and Refinement using Obsidian} 
+\newcommand{\paperD}{Paper D}
+\newcommand{\paperDTitle}{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
+\newcommand{\paperE}{Paper E}
+\newcommand{\paperETitle}{Counting and Occurrence Sort for GPUs using an Embedded Language}
+\newcommand{\paperF}{Paper F}
+\newcommand{\paperFTitle}{A High-Level Embedded Language for Low-Level GPU Kernel Programming}
+\newcommand{\paperG}{Paper G}
+\newcommand{\paperGTitle}{Programming Future Parallel Architectures with Haskell and Intel ArBB}
+\newcommand{\paperH}{Paper H}
+\newcommand{\paperHTitle}{Parallel Programming in Haskell Almost for Free}
 
 % ---------------------------------------------------------------------------
 % BEGIN ! 
@@ -180,7 +189,7 @@ Abstract abstract
 
 \noindent
 
- \textbf{Keywords:} Data-parallelism, GPU, Embedded languages
+\textbf{Keywords:} Data-parallelism, Functional Programming, Embedded languages, GPU
 
 \clearpage
 
@@ -198,124 +207,69 @@ Programming (RAW FP) Project) and by the Swedish Research Council.
 \clearpage
 
 % ---------------------------------------------------------------------------
-%  Guide for Oponent, grading committee
+%  Guide for Opponent, grading committee
 % ---------------------------------------------------------------------------
-\section*{About this thesis} 
+\section*{Publications}
 
-This thesis contains an introduction and a selection of papers. The introduction 
-gives background and context to the papers. 
+This thesis includes the following publications: 
 
-The papers contained in this thesis falls in three categories. 
-\begin{itemize} 
-\item General EDSL methodology in chapter~\ref{chap:EDSLImplementation}. 
-\item GPU Programming using an EDSL in chapter~\ref{chap:GPUProgramming}. 
-\item Retargetable parallel programming in chapter~\ref{chap:ArBB}. 
-\end{itemize} 
-%In the following sections, each paper is given a short description. Hopefully 
-%there is enough information to wet the apetite. 
+\begin{enumerate}[A.] 
+\item Josef Svenningsson and Bo Joel Svensson. Simple and Compositional Reification of Monadic Embedded Languages, 2013. \emph{18th ACM SIGPLAN International Conference of Functional Programming, ICFP 2013.}
+\item Bo Joel Svensson, Mary Sheeran and Koen Claessen. Obsidian: A Domain Specific Embedded Language for General Purpose Parallel Programming of Graphics Processors. In \emph{Proc. of Implementation and Applications of Functional Languages (IFL)}, Lecture Notes in Computer Science, Springer Verlag, March 2009.
+\item Bo Joel Svensson, Koen Claessen and Mary Sheeran. GPGPU kernel implementation and refinement using Obisidan. \emph{Practical Aspects of High-level Parallel Programming, PaPP 2010.} Procedia Computer Science.
+\item Koen Claessen, Mary Sheeran and Bo Joel Svensson. Expressive Array Constructs in an Embedded GPU Kernel Programming Language. In \emph{Proceedings of the 7th workshop of Declarative aspects and applications of multicore programming}, DAMP '12. ACM. 
+\item Josef Svenningsson, Bo Joel Svensson and Mary Sheeran. Efficient Counting Sort Implementations using an Embedded GPU Programming Language. \emph{2nd Workshop of Functional High-Performance Computing, FHPC '13.}
+\item Bo Joel Svensson and Mary Sheeran. A High-Level Embedded Language for Low-Level GPU Kernel Programming. {\bf\emph{This work has not yet been published.}} 
+\item Bo Joel Svensson and Ryan Newton. Programming Future Parallel Architectures with Haskell and ArBB. \emph{Future Architectural Support for Parallel Programming (FASPP), in conjunction with ISCA '11.}
+\item Bo Joel Svensson and Mary Sheeran. Parallel Programming in Haskell Almost for Free: an embedding of Intel's Array Building Blocks. \emph{Proceedings of the 1st ACM SIGPLAN Workshop of Functional High-Performance computing, FHPC '12.}
+\end{enumerate} 
 
-\subsection*{EDSL implementation papers} 
+\clearpage
+\subsection*{Personal contributions} 
 
-\subsubsection*{\paperBB} 
+The following describes my personal contributions to the papers included 
+in this thesis. 
 
-Authors: Josef Svenningsson and Bo Joel Svensson 
+\subsubsection{Paper A}
+I intuitively applied the monad reification method as part of the implementation 
+of Obsidian. Josef Svenningsson identified its importance and suggested we write 
+about it. The paper has two distinct parts. Sections one and two describe the 
+method as I used it. And section four makes the compositional aspect of the method 
+explicit. 
 
-\vspace{5mm}
+The code and examples in section one and two are my work. Section four we developed together 
+but is mostly Josef's expertise. For section four we also got very much and valuable help 
+from Emil Axelsson. 
 
-\noindent We present a simple and compositional method for refication 
-of monads (or compilation of a monadic embedded language). I implemented 
-Obsidian using the method described here. The novelty and 
-usefulness of this simple way to reify monads was recognised by Josef
-and lead to the writing of this paper.  
+For the rest of the paper, just substituting my name for Benny and Josef's for Bj\"orn
+will give a good indication of our contributions. 
 
-\subsection*{GPU programming papers} 
+\subsubsection{Papers B, C, D and E} 
+The Obsidian language has grown out of discussions between Mary Sheeran, Koen Claessen and me. 
+When it comes to implementation of the ideas we had in these discussions, I have been responsible. 
+Push arrays, first appearing in paper D, were invented by Koen Claessen. However, the 
+implementation of them in the setting of Obsidian was done by me. Paper D also have large 
+contributions by Mary Sheeran when it comes to examples and implementing them. 
 
-\subsubsection{\paperIFL}
+Paper E, was the first I wrote with Josef Svenningsson who had been thinking about an interesting
+variation of counting sort and wanted to try implementing it. Together we made the required changes
+to Obsidian. Me and Josef are equal partners in this paper and got much valuable advice from 
+Mary Sheeran. 
 
-Authors: Bo Joel Svensson, Mary Sheeran and Koen Claessen \newline
+\subsubsection{Papers G and H} 
+Here, again, most implementation effort was done by me. For paper G this work was performed 
+under supervision of Ryan R. Newton who is also mostly responsible for the writing of the 
+paper. Programming and running time experimentation was performed by me while getting much 
+valuable advice and guidance from Ryan. 
 
-\vspace{5mm}
+The work behind paper H was done by me as a hobby project and my aspirations were not 
+high. I just wanted to experiment with some embedded languages techniques that we had 
+been avoiding (had no need for) in Obsidian. Mary discovered what I was doing and applied 
+the right amount of pressure leading to us encompassing much more of ArBB functionality than 
+I had in mind. The paper's text is joint work; most examples as well as benchmarking is my work
+but the sparse matrix vector multiplication example is entirely Mary's. 
 
-The first real paper about Obsidian, our embedded language for GPU 
-programming. In this paper we identify similarities between 
-conenction patterns in hardware and parallel computations on GPUs. 
-We introduce a structured and compositional way to write data-parallel 
-programs on a GPU.
-
-Basic parallel building blocks are implemented in a monadic style and 
-composed using a sequential composition operator {\tt ->-}. 
-
-\subsubsection{\paperPAPP}
-
-Authors: Bo Joel Svensson, Koen Claessen and Mary Sheeran \newline
-
-\vspace{5mm}
-
-\emph{a new program representation, based vaguely on Arrows} 
-
-
-\subsubsection{\paperEXPRESSIVE}
-
-Authors: Koen Claessen, Mary Sheeran and  Bo Joel Svensson \newline
-
-\vspace{5mm}
-
-This paper introduces {\em Push} arrays, invented by Koen Claessen. This 
-array representation target specific performance problems that we want 
-to solve with Obsidian. 
-
-
-\subsubsection{\paperCSORT} 
-
-Authors: Josef Svenningsson, Bo Joel Svensson and Mary Sheeran \newline
-
-\vspace{5mm}
-
-\subsubsection{\paperHL}
-
-Authors: Bo Joel Svensson and Mary Sheeran \newline
-\noindent \emph{This work has not been published.}
-\vspace{5mm} 
-
-\noindent 
-
-In this paper the most recent additions and improvements of Obsidian are 
-described. 
-
-\subsubsection{Retargetable parallel programming} 
-
-\subsubsection{\paperARBB}
-
-Authors: Bo Joel Svensson and Ryan R. Newton
-
-\vspace{5mm}
-
-\noindent This position paper describes the work I did while on a 3 month internship at 
-Intel. The main part of this work was implementation of Haskell bindings 
-for the now retired Intel ArBB system. 
-
-The paper also describes work we did towards implementing a backend for the 
-Accelerate system using ArBB. We reached a proof-of-concept implementation 
-capable of running some simple Accelerate programs using the ArBB backend.
-However, much work would remain to be able to run the full scope of Accelerate 
-programs on ArBB.  
-
-\subsubsection{\paperEMBARBB}
-
-Authors: Bo Joel Svensson and Mary Sheeran 
-
-\vspace{5mm}
-
-\noindent Here we explore another way to provide the capabilities of ArBB to the 
-Haskell programmer. Rather than trying to use ArBB as a backend to Accelerate 
-we provide a more direct mapping of ArBB's functionality to Haskell idioms. 
-Simply put, this means providing a more Haskell-programmer-friendly interface compared
-to the raw ArBB bindings (which are a collection of functions in the IO monad). 
-
-\subsection*{Guide} 
-
-
-
+% \subsection*{Guide} 
 
 \tableofcontents
 
@@ -346,26 +300,26 @@ This thesis is about applying embedded language techniques to programming
 multi- and many-core computers. Computers today are becoming more and more  
 parallel. With each new generation of 
 general purpose processor (CPU) or graphics processor (GPU) we get more 
-parallel resources. To fully make use of modern CPUs and GPUs we need to fully 
+parallel resources. To fully make use of modern CPUs and GPUs we need to
 exploit their parallelism. 
 
 Modern CPUs are parallel in a number of different ways. They discover instruction
 level parallelism (ILP), they have multiple processor cores and vector units for 
-Single Instruction Multiple Data parallelism. The exact configuration, number
-of cores and number of vector units, vary over available processor models. 
+Single Instruction Multiple Data (SIMD)  parallelism. The exact configuration, number
+of cores and number of vector units, varies over available processor models. 
 To obtain maximum performance, with a specific target processor in mind, the programmer
-would use low-level intrinsics in order to get SIMD parallelism and a threading library
+can use low-level intrinsics in order to get SIMD parallelism and a threading library
 for parallelism over the available cores. One problem with this is that the resulting program 
 would be specialised to a specific processor model. The Intel Array Building Blocks (ArBB) 
-system approached this problem by providing a high level programming interface~\citet{ARBB2011}
-. This interface is based on a set of parallel operations on arrays, such as map, folds 
+system approached this problem by providing a high level programming interface~\citet{ARBB2011}.
+This interface is based on a set of parallel operations on arrays, such as map, folds 
 and scans. ArBB was implemented as an embedded language in C++ but a low-level C interface to 
 its capabilities was also offered. ArBB programs are JIT-ed (Just-In-Time compiled) to 
-target the available CPU or Accelerator (Such as the Intel Larrabee). In 
+target the available CPU or accelerator (Such as the Intel Larrabee). In 
 chapter~\ref{chap:ArBB}, there are papers describing work towards embedding Intel 
 ArBB in Haskell. 
 
-Graphics Processors (GPUs), trade programmer convenience for increased parallelism. 
+Graphics Processors (GPUs) trade programmer convenience for increased parallelism. 
 For example, where CPUs dedicate large portions of chip area for caches, branch prediction and 
 ILP, GPUs put additional cores. This comes at a price of increased programmer effort.
 GPUs have programmer managed shared memories, conditionals are troublesome from a performance 
@@ -375,9 +329,9 @@ application.
 Intel ArBB is part of a movement towards thinking of structure and patterns in 
 parallel programming. Other languages and libraries with similar aspirations 
 are NVIDIA Thrust~\citet{THRUST} and Data.Array.Accelerate~\citet{ACCELERATEDAMP11}.
-In the book Structured Parallel Programming by Michael McCool et al, a case is 
-made for thinking in terms of buidling blocks for parallel programming~\citet{STRUCTURED}. 
-They emphasize the importance of collective array operations such as map, fold, scans, 
+In the book ``Structured Parallel Programming'' by Michael McCool et al, a case is 
+made for thinking in terms of building blocks for parallel programming~\citet{STRUCTURED}. 
+They emphasise the importance of collective array operations such as map, fold, scans, 
 permutations and gather/scatter operations. The book contains examples in ArBB, Cilk Plus, 
 Intel Threading Building Blocks, OpenMP and OpenCL. Not all these languages include 
 the patterns as abstractions, but most are possible to express in each of the languages. 
@@ -386,18 +340,18 @@ parallel algorithms.
 
 The patterns are powerful abstractions, but it is also important not to be locked into 
 a single implementation of each pattern. This could have negative performance impacts. 
-In ArBB for example the patterns used are specialised to the current hardware during JIT. 
+In ArBB, for example, the patterns used are specialised to the current hardware during JIT. 
 Languages like OpenCL and CUDA do not provide abstractions of these patterns. The programmer 
 needs to implement them using lower level features making CUDA and OpenCL code less composable 
 and harder to reuse. As an example, look at the slides from NVIDIA in reference~\citet{reduction} 
 where a reduction primitive is implemented in CUDA. First a naive reduction kernel is implement 
 and it is refined over many steps, taking many characteristics of the GPU into mind. What is 
 is that says that we do not need to redo this exploration with each new GPU generation 
-and discover a new optimal sollution?  
+and discover a new optimal solution?  
 
 Obsidian is our embedded language for GPU programming. We raise the level of abstraction 
 compared to CUDA and provide a more composable interface. But we also want to keep 
-the possible for the programmer to implement patterns in different ways. A balance 
+the possibility for the programmer to implement patterns in different ways. A balance 
 must be struck between providing enough low-level control to get at the performance 
 and still make building blocks implemented by the programmer reusable and composable. 
 We want to give more compositional tools for the programmer to experiment with while 
@@ -411,38 +365,250 @@ In chapter~\ref{chap:GPUProgramming}, there are papers describing work on Obsidi
 \section{Embedded languages}
 
 This thesis applies embedded language methodology to data-parallel programming. An 
-embedded language is implemented as a library in some host language, Haskell in this case. 
+embedded language is implemented as a library in a host language, Haskell in this case. 
+The embedded language approach is beneficial since we are not entirely sure how 
+to program current and future highly parallel computers. Being embedded allows 
+us more rapid prototyping of ideas. Other benefits of being embedded often listed 
+are: making use of the host language's type system, parser and libraries (to some extent) 
+and to have the host language as a power macro language for your embedded language. 
+
+A very good paper, and highly relevant to our approach, is ``Compiling Embedded Languages''
+by Conal Elliott et al~\citet{COMPILEEDSL}. This paper describes how to embedd a compiler 
+backend and generate efficient code in some target language. One key aspect of this 
+approach is that the embedded language is a library of functions that creates and 
+composes Abstract Syntax Trees (ASTs). Obsidian (chapter \ref{chap:GPUProgramming}) as 
+well as EmbArBB (chapter \ref{chap:ArBB}) are implemented in a similar way. An 
+embedding that builds ASTs is called a deep embedding. Shallow embeddings on the 
+other hand do not build ASTs. In ``Combining Deep and Shallow Embedding for EDSL'' 
+Josef Svenningsson and Emil Axelsson combines the two methods, shallow and deep, 
+in order to simplify the AST data type (less constructors) and make more extensible 
+embedded languages \citet{DEEPSHALLOW}. Obsidian also uses a combination of shallow 
+and deep embeddings while EmbArBB is a more traditional deep embedding. 
+
+The embedded language approach has become popular to use as a way of raising the 
+level of abstraction in fields where the default is to use low-level languages. 
+For example, there is Lava and Wired in the fields of hardware design and 
+verification and Feldspar for digital signal processing\citet{LAVA,Wired,FELDSPAR2010}. For GPU 
+programming there are numerous embedded approaches using various host languages. 
+But to mention two that use Haskell we have Accelerate and Nikola 
+\citet{ACCELERATEDAMP11, NIKOLA}. And there is Intel ArBB, embedded in C++, with the 
+goal of being parallel across platforms \citet{ARBB2011}.
+
+\section{Wider context}
+\FloatBarrier
+
+In figure~\ref{fig:researchmatrix} I place our work in relation to other languages,
+embedded languages and libraries for parallel programming. The systems are roughly divided 
+into three groups based on their level of abstraction. There are low-level languages, here 
+I place languages that are imperative and C-like. In the middle layer I place languages 
+that go a bit further, they have higher level abstractions and are more easily composable. 
+In the highest level I place languages that completely abstract away from details of the 
+hardware they run on. The division is not free from personal bias and the placement of languages
+in boxes was not always easy. 
+
+The figure also divides the languages according to what hardware they support. There 
+are CPU specific languages, GPU specific languages and languages that support or aspire 
+to support CPU,GPU and accelerator (Larrabee) execution. 
+
+With Obsidian we try to target the sparsely occupied area of mid-level GPU programming. With 
+CUDA the programmer has full controll of how to divide the computation amongst threads and 
+blocks. While with Accelerate, Nikola and Thrust the programmer would use high-level patterns
+without direct insight into how the application would be mapped onto threads and blocks of the 
+GPU. Using Obsidian we want to bridge that gap by both being more composable than CUDA 
+but give the programmer more control of what the computation will look like on the GPU. This 
+is done by allowing the programmer to specify and compose thread-level and block-level code. 
+Recently the CUB library arrived that has a similar idea, that GPU programmers need to 
+have block/thread level control to get maximum performance, while maintaining a higher level 
+and more Thrust-like programmer interface~\citet{CUB}. Before CUB, and as far as I am aware, 
+we were alone at targetting this level.  
+
+The ArBB and EmbArBB systems also provide a set of parallel primitives that the programmer
+compose to build his application. I place the ArBB/EmbArBB box slightly lower than 
+Accelerate since while ArBB/EmbArBB also have built in reduction primitives, just like Accelerate, 
+they are not general primitives. Where Accelerate have a single higher order reduction 
+operation, ArBB/EmbArBB have {\tt reduce\_add, reduce\_mul} and so on. I will go into 
+what benefits there are to having ArBB embedded in Haskell compared to C++ in 
+section~\ref{sec:EmbArBB}.
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[align=center, scale=2.5]
+% \draw[help lines] (0,0) grid (3,3);
 
 
+\draw[->] (-0.5,0) -- (-0.5,3) node[anchor=east] {Abstraction level};
+
+\draw (0,3) node[anchor=south west] {CPUs};
+\draw (1,3) node[anchor=south west] {GPUs};
+%\draw (2,3) node[anchor=south west] {Accelerator};
+\draw (2,3) node[anchor=south west] {CPUs, GPUs\\ Accelerators};
+
+\node[anchor=west] (acc) at (1,2.7) {Accelerate\\Nikola\\Thrust};
+\node[anchor=west] (acc) at (1,1.7) {CUB};
+\node[anchor=west] (repa) at (0,2.6) {DPH\\Nesl\\Repa\\Meta-repa};
+\node[anchor=west] (mixed) at (0,1.7) {Cilk+\\ TBB};
+\node[anchor=west] (accelerator) at (2,1.7) {Accelerator};
+
+\node[anchor=west] (cuda) at (1,0.3) {CUDA};
+\node[anchor=west] (opencl) at (2,0.3) {OpenCL};
+
+\node[anchor=west] (OpenMP) at (0,0.3) {OpenMP\\PThreads};
+
+\foreach \x in {0,...,2} { 
+  \foreach \y in {0,...,2} { 
+    \draw (\x,\y) rectangle (\x+1,\y+1);
+  }
+}
+
+\draw[red!75,rounded corners,ultra thick] (1,0.4) rectangle (2,2.4);
+\node[red!75,rotate=45,thick] (obs) at (1.5,1.5) {Obsidian};
+
+\draw[orange!90,rounded corners,ultra thick] (2,1.4) rectangle (3,2.6);
+\node[orange!90,thick] (arbb) at (2.5,2) {EmbArBB\\ArBB};
 
 
+\end{tikzpicture}
+\end{center}
+\caption{Placing our work in the landscape of languages and libraries for parallel 
+general purpose programming of CPUs, GPUs or both. }
+\label{fig:researchmatrix} 
+\end{figure}
+
+\FloatBarrier
 \section{Obsidian: An embedded language for GPU kernel implementation}
 
-\noindent\emph{Obsidian, Embedded languages} 
+Obsidian is aspiring to raise the level of abstraction of GPU kernel implementation 
+while maintaining enough control over details that influence performance on a GPU. 
+We try to reach these goals by offering abstractions to the programmer that are 
+compositional and parallel. We also ensure that these can easily be compiled 
+to NVIDIA CUDA code. We have two different array representations, each with 
+its strengths and weaknesses. We also feel that it is important that the programmer 
+is able to use local shared memory in computations and has the ability to influence 
+memory access patterns. What these array representations and abstractions are 
+will be explained in the following sections with references to the papers 
+that introduce them or explains them the best. 
 
-\noindent\emph{Array representations} 
 
-\noindent\emph{Compositionality} 
+\subsection{Deep embedding: The {\tt Program} data type}
 
-\noindent\emph{Hierarchies} 
+Obsidian uses a deeply embedded {\tt Program} data type that represents GPU Kernels. 
+A CUDA GPU has a hierarchy of parallel resources. At the bottom there are threads, each 
+executing sequential programs. There are groups of threads (of 32) called {\em Warps} that 
+execute in lock-step. Warps are the scheduled unit of work on a GPU. There are {\em Blocks} 
+of threads, a set of threads that run as a group and share local (shared) memory. And 
+lastly there is a {\em Grid} of blocks that specifies the total number of threads involved 
+in a computation (Number\_of\_Blocks * Number\_of\_Threads). The deeply embedded program 
+data type of Obsidian models this hierarchy by parameterising programs on a hierarchy 
+level type parameter (the  {\tt t} parameter below).
+
+\begin{verbatim} 
+data Program t a where
+\end{verbatim}
+
+The {\tt t} parameter can be either {\tt Thread}, {\tt Warp}, {\tt Block} or {\tt Grid}.
+These types are related to each other via a {\tt Step} type constructor that represents 
+going upward one step in the hierarchy. 
+
+\begin{verbatim} 
+data Step a -- A step in the hierarchy
+data Zero
+\end{verbatim} 
+
+The {\tt Thread} type is level {\tt Zero} ({\tt type Thread = Zero}). Then {\tt Block} is 
+{\tt Step Thread} and {\tt Grid} is {\tt Step Block}. Currently {\tt Warp} is not included 
+in the hierarchy leading to warp programming being a special case. 
+
+As an example of how the hierarchy level parameter is used I show the {\tt ForAll} constructor 
+from the {\tt Program} data type.  This constructor represents parallelism either over threads 
+or blocks. 
+
+\begin{verbatim}
+ForAll :: EWord32 
+            -> (EWord32 -> Program t ())
+            -> Program (Step t) ()
+\end{verbatim}
+
+{\tt ForAll} takes a number of parallel iterations, a body representation by higher order 
+syntax. The body is a {\tt Program} at a some level {\tt t} while the resulting program 
+is at a level step above. This means a thread program can be turned into a block program 
+by using{\tt ForAll} or that a block program can be turned into a grid program. 
+
+Information about the {\tt Program} data type can be found in paper F, \paperFTitle, in 
+section \ref{sec:paperF}. 
+
+%\noindent\emph{Obsidian, Embedded languages} 
+
+\subsection{Scalar language}
+
+\subsection{Array representation}
+
+\subsubsection{Pull arrays}
+ 
+\subsubsection{Push arrays}
+
+%\subsubsection{Fusion for free}
+
+\subsection{Compositionality} 
+
+\subsection{Results}
+
+\subsection{Examples} 
+\noindent\emph{Example program, use something from latest paper} 
+
+
+\subsection{Compilation to CUDA}
+
 
 \section{Embedding Intel Array Building Blocks} 
 
+\subsection{Background} 
+\noindent\emph{What does ArBB do, what are the operations and datastructures it support} 
+
+\noindent\emph{What does EmbArBB do} 
+
+
+\subsection{EmbArBB: Embedding ArBB in Haskell}
+\label{sec:EmbArBB} 
+
 \noindent\emph{Short section about the approach taken with EmbArBB}
 
-\section{The results} 
+
+\subsection{The results} 
 
 \emph{ How well did we do?} 
 
-\subsection{Related work} 
 
-\noindent\emph{GPU Programmming languages}
+\section{Related work} 
 
-\noindent\emph{data-parallel programming languages} 
+\subsection{Parallelism} 
 
-\noindent\emph{Embedded languages} 
+\noindent\emph{DPH}\citet{DPH} \newline
+\noindent\emph{D.A.Accelerate}\citet{ACCELERATEDAMP11} \newline
+\noindent\emph{Nikola}\citet{NIKOLA}\newline
+\noindent\emph{Repa}\citet{REPA}\newline
+\noindent\emph{Meta-Repa}\citet{METAREPA}\newline
+\noindent\emph{ArBB}\citet{ARBB2011}\newline
+\noindent\emph{OpenCL}\citet{OpenCL}\newline
+\noindent\emph{CUDA}\citet{CUDA}\newline
+\noindent\emph{Microsoft Accelerator}\citet{ACCELERATOR}\newline
+\noindent\emph{Copperhead}\citet{copperhead}\newline
+\noindent\emph{Delite}\citet{DELITE}\newline
+\noindent\emph{A monad for deterministic parallelism (R. Newton)} \citet{MonadPar} \newline
+\noindent\emph{Nesl}\citet{NESL} \newline
 
-\noindent\emph{Monad reification methods} 
+\subsection{Embedded domain specific languages} 
+
+\noindent\emph{Feldspar}\citet{FELDSPAR2010} \newline
+\noindent\emph{Lava}\citet{lavaICFP} \newline
+\noindent\emph{Vertigo}\citet{VERTIGO}  \newline
+
+
+\subsection{Compiling Embedded Languages}
+
+\noindent\emph{Generic monad constructs (josef + emil + anders}\citet{Generic} \newline
+\noindent\emph{The Constrained Monad Problem (Gill)}\citet{sculthorpe2013constrained} \newline
+\noindent\emph{Compiling Embedded Languages}\citet{COMPILEEDSL} \newline
+
 
 \section{Future work} 
 
@@ -454,10 +620,151 @@ embedded language is implemented as a library in some host language, Haskell in 
 
 \section{Discussion} 
 
+\noindent\emph{What contributions are made by Obsidian} 
+
+\noindent\emph{What works well with Obsidian}
+
+\noindent\emph{EmbArBB contributions} 
+
+% ---------------------------------------------------------------------------
+% Guide 
+\section{Thesis overview} 
+
+%This thesis contains an introduction and a selection of papers. The introduction 
+%gives background and context to the papers. 
+
+The papers contained in this thesis fall in three categories. 
+\begin{itemize} 
+\item General EDSL methodology in chapter~\ref{chap:EDSLImplementation}. 
+\item GPU Programming using an EDSL in chapter~\ref{chap:GPUProgramming}. 
+\item Retargetable parallel programming in chapter~\ref{chap:ArBB}. 
+\end{itemize} 
+%In the following sections, each paper is given a short description. Hopefully 
+%there is enough information to wet the appetite. 
+
+\subsection{EDSL implementation papers} 
+
+\subsubsection{\paperA: \\ \paperATitle} 
+
+Authors: Josef Svenningsson and Bo Joel Svensson 
+
+\vspace{5mm}
+
+\noindent This paper describes a simple and compositional method for 
+reification of monads. This is useful for compilation of 
+monadic embedded languages. We use a simple robot control language 
+as the example. Robot programs can be expressed using Haskell do notation 
+and is compiled down to a simple first order program representation. 
+There is also a graphical simulator available that runs the compiled 
+code. Robot language and simulator is available at github: \url{github.com/svenssonjoel/Robot}.
+
+\subsection{GPU programming papers} 
+
+\subsubsection{\paperB: \\ \paperBTitle}
+
+Authors: Bo Joel Svensson, Mary Sheeran and Koen Claessen \newline
+
+\vspace{5mm}
+
+The first real paper about Obsidian, our embedded language for GPU 
+programming. In this paper we identify similarities between 
+connection patterns in hardware and parallel computations on GPUs. 
+We introduce a structured and compositional way to write data-parallel 
+programs on a GPU.
+
+Basic parallel building blocks are implemented in a monadic style and 
+composed using a sequential composition operator {\tt ->-}. 
+
+\subsubsection{\paperC: \\ \paperCTitle}
+
+Authors: Bo Joel Svensson, Koen Claessen and Mary Sheeran \newline
+
+\vspace{5mm}
+
+In this paper we describe a version of Obsidian implemented with a 
+a different internal representation of GPU programs. We realised that 
+most of our kernels have similar shape, they are parallel operations 
+composed in sequence interspersed with barrier synchronisations. The 
+internal representation used here captures this case exactly. Programming 
+is now done is a style resembling arrows. 
+
+
+\subsubsection{\paperD: \\ \paperDTitle}
+
+Authors: Koen Claessen, Mary Sheeran and  Bo Joel Svensson \newline
+
+\vspace{5mm}
+
+This paper introduces {\em Push} arrays, invented by Koen Claessen. This 
+array representation target specific performance problems that we want 
+to solve with Obsidian. Here we have also gone back to using monadic 
+style for programming in Obsidian. 
+
+
+\subsubsection{\paperE: \\ \paperETitle} 
+
+Authors: Josef Svenningsson, Bo Joel Svensson and Mary Sheeran \newline
+
+\vspace{5mm}
+
+This paper contains a sorting case study performed in Obsidian. It 
+is however the algorithms that are in focus here. We describe 
+an interesting variation on Counting sort that removes duplicate 
+elements and is a nice fit for GPUs because of its little need for 
+synchronisation. 
+
+In order to implement these sorting algorithms we added atomic operations 
+to Obsidian. 
+
+\subsubsection{\paperF: \\ \paperFTitle}
+
+Authors: Bo Joel Svensson and Mary Sheeran \newline
+\noindent \emph{This work has not yet been published.}
+\vspace{5mm} 
+
+\noindent 
+
+In this paper the most recent additions and improvements of Obsidian are 
+described. Obsidian Programs are now parameterised on Hierarchy level. This forces 
+the programmer into writing programs that we know how to compile to a GPU easily 
+(by limiting how parallel operations can be nested). The paper also gives a detailed  
+optimisation story using Obsidian for implementing reduction kernels. 
+
+
+\subsubsection{Retargetable parallel programming} 
+
+\subsubsection{\paperG: \\ \paperGTitle}
+
+Authors: Bo Joel Svensson and Ryan R. Newton
+
+\vspace{5mm}
+
+\noindent This position paper describes the work I did while on a 3 month internship at 
+Intel. The main part of this work was implementation of Haskell bindings 
+for the now retired Intel ArBB system. 
+
+The paper also describes work we did towards implementing a backend for the 
+Accelerate system using ArBB. We reached a proof-of-concept implementation 
+capable of running some simple Accelerate programs using the ArBB backend.
+However, much work would remain to be able to run the full scope of Accelerate 
+programs on ArBB.  
+
+\subsubsection{\paperH: \\ \paperHTitle}
+
+Authors: Bo Joel Svensson and Mary Sheeran 
+
+\vspace{5mm}
+
+\noindent Here we explore another way to provide the capabilities of ArBB to the 
+Haskell programmer. Rather than trying to use ArBB as a backend to Accelerate 
+we provide a more direct mapping of ArBB's functionality to Haskell idioms. 
+Simply put, this means providing a more Haskell-programmer-friendly interface compared
+to the raw ArBB bindings (which are a collection of functions in the IO monad). 
+
 
 \bibliographystylet{alpha}
 \bibliographyt{thesis}
-\addcontentsline{toc}{section}{Bibliography}
+%\addcontentsline{toc}{section}{Bibliography}
 
 
 
@@ -481,9 +788,11 @@ embedded language is implemented as a library in some host language, Haskell in 
 \cleardoublepage 
 
 
-\section{\paperBB}
-\label{sec:paperBB}
+\section[\paperATitle]{\paperA: \\ \paperATitle}
+\label{sec:paperA}
 %\addcontentsline{toc}{chapter}{Simple and Compositional Reification of Monadic Embedded Languages}
+
+% \paperATitle
 
 \begin{center} 
 Josef Svenningsson, Bo Joel Svensson
@@ -502,10 +811,12 @@ Josef Svenningsson, Bo Joel Svensson
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
-\section{\paperIFL}
-\label{sec:paperIFL}
+\section[\paperBTitle]{\paperB: \\ \paperBTitle}
+\label{sec:paperB}
 %\addcontentsline{toc}{chapter}{Obsidian: A Domain Specific Embedded Language for
 %Parallel Programming of Graphics Processors}
+
+%\paperBTitle
 
 \begin{center} 
 Bo Joel Svensson, Mary Sheeran, Koen Claessen
@@ -518,9 +829,11 @@ Bo Joel Svensson, Mary Sheeran, Koen Claessen
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
-\section{\paperPAPP}
-\label{sec:paperPAPP}
+\section[\paperCTitle]{\paperC: \\ \paperCTitle}
+\label{sec:paperC}
 %\addcontentsline{toc}{chapter}{Obsidian: GPU Computing Using Haskell}
+
+%\paperCTitle
 
 \begin{center} 
 Bo Joel Svensson, Koen Claessen, Mary Sheeran
@@ -534,9 +847,11 @@ Bo Joel Svensson, Koen Claessen, Mary Sheeran
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
-\section{\paperEXPRESSIVE}
-\label{sec:paperEXPRESSIVE}
+\section[\paperDTitle]{\paperD: \\ \paperDTitle}
+\label{sec:paperD}
 %\addcontentsline{toc}{chapter}{Expressive Array Constructs in an Embedded GPU Kernel Programming Language}
+
+%\paperDTitle
 
 \begin{center} 
 Koen Claessen, Mary Sheeran, Bo Joel Svensson
@@ -549,9 +864,11 @@ Koen Claessen, Mary Sheeran, Bo Joel Svensson
 % ---------------------------------------------------------------------------
 \cleardoublepage 
 
-\section{\paperCSORT}
-\label{sec:paperCSORT}
+\section[\paperETitle]{\paperE: \\ \paperETitle}
+\label{sec:paperE}
 %\addcontentsline{toc}{chapter}{Counting and Occurrence Sort for GPUs using an Embedded Language}
+
+% \paperETitle
 
 \begin{center} 
 Josef Svenningsson, Bo Joel Svensson, Mary Sheeran 
@@ -567,9 +884,11 @@ Josef Svenningsson, Bo Joel Svensson, Mary Sheeran
 \cleardoublepage 
 
 
-\section{\paperHL}
-\label{sec:paperHL}
+\section[\paperFTitle]{\paperF: \\ \paperFTitle}
+\label{sec:paperF}
 %\addcontentsline{toc}{chapter}{Simple and Compositional Reification of Monadic Embedded Languages}
+
+% \paperFTitle
 
 \begin{center} 
 Bo Joel Svensson, Mary Sheeran
@@ -592,9 +911,11 @@ Bo Joel Svensson, Mary Sheeran
 \cleardoublepage 
 
 
-\section{\paperARBB}
-\label{sec:paperARBB}
+\section[\paperGTitle]{\paperG: \\ \paperGTitle}
+\label{sec:paperG}
 %\addcontentsline{toc}{chapter}{Parallel Programming in Haskell Almost for Free}
+
+% \paperGTitle 
 
 \begin{center} 
 Bo Joel Svensson, Ryan R. Newton
@@ -609,9 +930,11 @@ Bo Joel Svensson, Ryan R. Newton
 \cleardoublepage 
 
 
-\section{\paperEMBARBB}
-\label{sec:paperEMBARBB}
+\section[\paperHTitle]{\paperH: \\ \paperHTitle}
+\label{sec:paperH}
 %\addcontentsline{toc}{chapter}{Parallel Programming in Haskell Almost for Free}
+
+% \paperHTitle
 
 \begin{center} 
 Bo Joel Svensson, Mary Sheeran

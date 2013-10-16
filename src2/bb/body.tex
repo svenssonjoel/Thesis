@@ -182,7 +182,8 @@ data Program a where
   Sensor    :: Program BoolE
   Cond      :: Program BoolE 
                -> Program () 
-               -> Program () 
+               -> Program ()
+               -> Program ()  
   While     :: Program BoolE 
                -> Program () 
                -> Program () 
