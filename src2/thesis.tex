@@ -252,9 +252,12 @@ implementation of them in the setting of Obsidian was done by me. Paper D also h
 contributions by Mary Sheeran when it comes to examples and implementing them. 
 
 Paper E, was the first I wrote with Josef Svenningsson who had been thinking about an interesting
-variation of counting sort and wanted to try implementing it. Together we made the required changes
-to Obsidian. Me and Josef are equal partners in this paper and got much valuable advice from 
-Mary Sheeran. 
+variation of counting sort and wanted to implement it. Together we added atomic operations to 
+the deep embedding and I modified the Obsidian code generator to accomodate them. Sections 
+1 and 2 in the paper are written by Josef. Sections 3 through 7 are mostly my work, including 
+the benchmarking. Section 8 is joint work.
+%Me and Josef are equal partners in this paper and got much valuable advice from 
+%Mary Sheeran. 
 
 \subsubsection{Papers G and H} 
 Here, again, most implementation effort was done by me. For paper G this work was performed 
@@ -268,6 +271,9 @@ been avoiding (had no need for) in Obsidian. Mary discovered what I was doing an
 the right amount of pressure leading to us encompassing much more of ArBB functionality than 
 I had in mind. The paper's text is joint work; most examples as well as benchmarking is my work
 but the sparse matrix vector multiplication example is entirely Mary's. 
+
+%Intel has unfortunately retired the ArBB project. This leaves EmbArBB without a fuctioning 
+%code generating backend u
 
 % \subsection*{Guide} 
 
@@ -340,14 +346,17 @@ parallel algorithms.
 
 The patterns are powerful abstractions, but it is also important not to be locked into 
 a single implementation of each pattern. This could have negative performance impacts. 
-In ArBB, for example, the patterns used are specialised to the current hardware during JIT. 
-Languages like OpenCL and CUDA do not provide abstractions of these patterns. The programmer 
-needs to implement them using lower level features making CUDA and OpenCL code less composable 
-and harder to reuse. As an example, look at the slides from NVIDIA in reference~\citet{reduction} 
-where a reduction primitive is implemented in CUDA. First a naive reduction kernel is implement 
-and it is refined over many steps, taking many characteristics of the GPU into mind. What is 
-is that says that we do not need to redo this exploration with each new GPU generation 
-and discover a new optimal solution?  
+In ArBB, for example, the patterns used are specialised to the current hardware during JIT 
+compilation. Languages like OpenCL and CUDA do not provide abstractions of these patterns. 
+The programmer needs to implement them using lower level features making CUDA and OpenCL 
+code less composable and harder to reuse. As an example, look at the slides from NVIDIA in 
+reference~\citet{reduction} where a reduction primitive is implemented in CUDA. First a 
+naive reduction kernel is implement and it is refined over many steps, taking many 
+characteristics of the GPU into mind. The end result is a reduction kernel that performs 
+very well on the chosen GPU. But as GPUs evolve the design space may need to be explored again. 
+%What is 
+%is that says that we do not need to redo this exploration with each new GPU generation 
+%and discover a new optimal solution?  
 
 Obsidian is our embedded language for GPU programming. We raise the level of abstraction 
 compared to CUDA and provide a more composable interface. But we also want to keep 
@@ -536,17 +545,15 @@ by using{\tt ForAll} or that a block program can be turned into a grid program.
 Information about the {\tt Program} data type can be found in paper F, \paperFTitle, in 
 section \ref{sec:paperF}. 
 
-%\noindent\emph{Obsidian, Embedded languages} 
-
 \subsection{Scalar language}
 
 \subsection{Array representation}
 
 \subsubsection{Pull arrays}
+\emph{fusion for free}
  
 \subsubsection{Push arrays}
-
-%\subsubsection{Fusion for free}
+\emph{fusion for free}
 
 \subsection{Compositionality} 
 
@@ -561,22 +568,79 @@ section \ref{sec:paperF}.
 
 \section{Embedding Intel Array Building Blocks} 
 
-\subsection{Background} 
-\noindent\emph{What does ArBB do, what are the operations and datastructures it support} 
+Intel ArBB~\citet{ARBB2011} is a system for high-level data-parallel programming with the 
+ability to generate code for a variety of different hardware confgurations. It is implemented 
+as an embedded language in C++. One motivation for ArBB that is mentioned in~\citet{ARBB2011} is 
+that while high-performance computing specialist are highly competent at implementing 
+kernels using low-level programming techniques, mainstream developers are not. ArBB offers 
+a more composable way to write programs that make use of core and vector (SIMD) parallelism and 
+doing this while using a familiar language, C++.  
 
-\noindent\emph{What does EmbArBB do} 
+One of the greatest strengths of ArBB, as I see it, is that it also comes with a low-level C 
+interface. The main purpose of this C interface is to make it easier to use the ArBB system 
+from other languages. Many languages have foreign function interfaces that are geared towards C.
+This gives ArBB a level of language independence on top of its cross platform abilities.  
 
+
+ArBB is based on a set of parallel primitives (or structures) on dense 1,2 and 3 dimensional 
+arrays and nested arrays: 
+\begin{itemize} 
+\item {\bf Reductions}   {\tt add\_reduce}, {\tt mul\_reduce}, {\tt max\_reduce} ... 
+\item {\bf Scans}        {\tt add\_scan}, {\tt mul\_scan}, {\tt max\_scan} ... 
+\item {\bf Sorting}      {\tt sort} 
+\item {\bf Permutations} {\tt gather}, {\tt scatter}, {\tt reverse} ...
+\item {\bf Sequential controlflow} {\tt \_for}, {\tt \_while} 
+\item {\bf Map, zipWith, stencil}  {\tt map} 
+\end{itemize}
+
+These operations (and many more, there are about 120 operations in total) can be used 
+by the programmer when writing programs using ArBB. Note that there are sequential control 
+operations with special names, {\tt \_for} and {\tt \_while}. ArBB is a deeply embedded 
+language and calling the ArBB functions does not actually execute them, it just ads a node to 
+some internal representation. Therefore, the use of normal C++ for loops leads to unrolled 
+ArBB programs and a special {\tt \_for} loop is needed to get a loop in the generated program. 
+This is exactly the way these things work in Haskell but it may be even more surprising to a
+C++ programmer. Before an ArBB function can be computed it needs to be captured. For this 
+ArBB has a {\tt call} function that is used to run functions using ArBB functionality. The 
+first time {\tt call} is used on a function pointer that function is executed and the ArBB 
+functions used in it builds an AST (we say the function has been captured). The AST is then 
+compiled and specialised for the hardware available. Any subsequent calls of a function using 
+ArBB functionality does not lead to a recompilation, the first call caches this code. 
+
+The first step of our work with embedding Intel ArBB functionality was to implement very direct 
+and low-level bindings to the C interface. This provides a Haskell function (in the IO Monad) 
+for each of the functions in the ArBB C interface. More details and results of this work 
+can be found in paper G in section~\ref{sec:paperG}.
+
+%\noindent\emph{What does ArBB do, what are the operations and datastructures it support} 
+
+%\noindent\emph{What does EmbArBB do} 
 
 \subsection{EmbArBB: Embedding ArBB in Haskell}
 \label{sec:EmbArBB} 
 
+The ArBB Haskell bindings provide a very rudimentary interface to ArBB functionality and 
+is not useful for application implementation. A higher-level interface to ArBB to offer 
+the Haskell programmer is needed. Our first attempt was to implement an Accelerate backend 
+using the ArBB bindings. However, this had some hard problems to solve. Accelerate is a 
+more general language and there was an API missmatch between them. These problems 
+are mentioned in in paper G, section~\ref{sec:paperG}. As a way to offer ArBB functionality 
+to the Haskell in a way that is useful and simpler to implement, we start working on EmbArBB. 
+
+With EmbArBB we improve the interfacing with Haskell by implementing a deeply embedded language. 
+Now, programs in EmbArBB create ASTs. These ASTs are compiled via the ArBB bindings creating 
+function objects that be run. 
+
 \noindent\emph{Short section about the approach taken with EmbArBB}
-
-
-\subsection{The results} 
 
 \emph{ How well did we do?} 
 
+%\subsection{The results} 
+
+\subsection{Current status of ArBB and EmbArBB} 
+
+Since our work with ArBB, Intel has unfortunately retired the ArBB system. This 
+leaves EmbArBB without a functioning code generating backend. 
 
 \section{Related work} 
 
@@ -731,7 +795,7 @@ the programmer into writing programs that we know how to compile to a GPU easily
 optimisation story using Obsidian for implementing reduction kernels. 
 
 
-\subsubsection{Retargetable parallel programming} 
+\subsection{Retargetable parallel programming} 
 
 \subsubsection{\paperG: \\ \paperGTitle}
 
@@ -760,6 +824,26 @@ Haskell programmer. Rather than trying to use ArBB as a backend to Accelerate
 we provide a more direct mapping of ArBB's functionality to Haskell idioms. 
 Simply put, this means providing a more Haskell-programmer-friendly interface compared
 to the raw ArBB bindings (which are a collection of functions in the IO monad). 
+
+\subsection{Contributions}
+
+This thesis contributes to the follwoing areas: 
+
+\begin{itemize} 
+\item Embedded language design and implementation. 
+\item General Purpose programming using a GPU (GPGPU).
+\item High level data-parallel programming across devices.
+\end{itemize} 
+
+\subsubsection{Embedded language design and implementation} 
+
+
+\subsubsection{General Purpose programming using a GPU} 
+
+
+\subsubsection{High level data-parallel programming across devices}
+
+
 
 
 \bibliographystylet{alpha}
