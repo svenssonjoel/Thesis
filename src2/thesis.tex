@@ -253,7 +253,7 @@ contributions by Mary Sheeran when it comes to examples and implementing them.
 
 Paper E, was the first I wrote with Josef Svenningsson who had been thinking about an interesting
 variation of counting sort and wanted to implement it. Together we added atomic operations to 
-the deep embedding and I modified the Obsidian code generator to accomodate them. Sections 
+Obsidian and I modified the code generator to accomodate them. Sections 
 1 and 2 in the paper are written by Josef. Sections 3 through 7 are mostly my work, including 
 the benchmarking. Section 8 is joint work.
 %Me and Josef are equal partners in this paper and got much valuable advice from 
@@ -309,6 +309,11 @@ general purpose processor (CPU) or graphics processor (GPU) we get more
 parallel resources. To fully make use of modern CPUs and GPUs we need to
 exploit their parallelism. 
 
+While it is sometimes possible to automatically parallelise programs originally 
+written for serial execution, it is becoming clear that explicitly parallel 
+programming models are needed for making use of all parallel resources~\cite{STRUCTURED}. 
+This also means that it is becoming important to think in parallel from the beginning. 
+
 Modern CPUs are parallel in a number of different ways. They discover instruction
 level parallelism (ILP), they have multiple processor cores and vector units for 
 Single Instruction Multiple Data (SIMD)  parallelism. The exact configuration, number
@@ -317,7 +322,7 @@ To obtain maximum performance, with a specific target processor in mind, the pro
 can use low-level intrinsics in order to get SIMD parallelism and a threading library
 for parallelism over the available cores. One problem with this is that the resulting program 
 would be specialised to a specific processor model. The Intel Array Building Blocks (ArBB) 
-system approached this problem by providing a high level programming interface~\citet{ARBB2011}.
+system approach this problem by providing a high level programming interface~\citet{ARBB2011}.
 This interface is based on a set of parallel operations on arrays, such as map, folds 
 and scans. ArBB was implemented as an embedded language in C++ but a low-level C interface to 
 its capabilities was also offered. ArBB programs are JIT-ed (Just-In-Time compiled) to 
@@ -629,13 +634,49 @@ to the Haskell in a way that is useful and simpler to implement, we start workin
 
 With EmbArBB we improve the interfacing with Haskell by implementing a deeply embedded language. 
 Now, programs in EmbArBB create ASTs. These ASTs are compiled via the ArBB bindings creating 
-function objects that be run. 
+function objects that can then be run. 
 
-\noindent\emph{Short section about the approach taken with EmbArBB}
+\subsubsection{Dense and nested arrays}
+
+ArBB supports one, two and three dimensional arrays, called dense vectors. In EmbArBB we 
+represent these with a data type, {\tt DVector}, parameterised by dimensionality and 
+element type. The dimension parameter can be either {\tt Dim1}, {\tt Dim2} or {\tt Dim3}. 
+There are also nested vectors, in EmbArBB called {\tt NVector}, parameterised on element type. 
+
+\subsubsection{Deep embedding}
+
+\begin{verbatim}
+data Expr = Lit Literal
+          | Var Variable 
+            
+          | Index0 Expr 
+          | ResIndex Expr Int 
+            
+          | Map (R GenRecord) [Expr]  
+          | Call (R GenRecord) [Expr]
+
+          | While ([Expr] -> Expr)  ([Expr] -> [Expr])  [Expr] 
+
+          | While2 ([Expr] -> Expr)  
+                   ([Expr] -> [Expr])  
+                   [Expr} 
+
+          | If Expr Expr Expr 
+
+          | Op Op [Expr]   
+\end{verbatim}
+
+\subsubsection{compilation}
+
+\emph{Sharing detection} 
+
+\emph{let ArBB do the optimisations} 
+
+\emph{having deep embedding means we could compile to something else} 
+
+\subsubsection{Evaluation} 
 
 \emph{ How well did we do?} 
-
-%\subsection{The results} 
 
 \subsection{Current status of ArBB and EmbArBB} 
 
