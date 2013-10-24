@@ -429,19 +429,24 @@ Below is a very simple CUDA example to give some indication of what a kernel and
 the code to launch that kernel looks like. 
 
 \begin{small}
-\begin{verbatim} 
+\begin{Verbatim}[samepage=true]
 __global__ void kernel(int32_t *i1, int32_t *i2, int32_t *r) {
   
-  r[threadIdx.x] = i1[threadIdx.x] + i2[threadIdx.x]; 
+  unsigned int gid = blockIdx.x * 
+                     blockDim.x + 
+                     threadIdx.x;
+
+  r[gid] = i1[gid] + i2[gid]; 
 
 } 
-\end{verbatim}
+
+\end{Verbatim}
 \end{small}
 
 This kernel takes two input arrays, {\tt i1} and {\tt i2}, and computes 
-elementwise sums into the result array, {\tt r}. {\tt threadIdx} identifies 
+elementwise sums into the result array, {\tt r}. The {\tt threadIdx} variable identifies 
 a thread within a block. There is also a {\tt blockIdx} variable that identifies 
-the block a thread belongs to but that is not used in this case. 
+the block a thread and {\tt blockDim.x} specifies the number of threads per block. 
 
 
 In CUDA there is a notion of {\em host} and {\em device}, the device is the GPU and 
@@ -451,7 +456,7 @@ needs to be allocated in the device to hold the inputs and outputs. Then data is
 the host systems memory into device memory. 
 
 \begin{small}
-\begin{verbatim} 
+\begin{Verbatim}[samepage=true]
 int main(void) {
   
   int32_t h_i1[32], h_i2[32], h_r[32]; 
@@ -494,19 +499,49 @@ int main(void) {
 
   return 0;
 }
-\end{verbatim} 
+\end{Verbatim} 
 \end{small}
 
 The syntax for launching a kernel is:
 
 \begin{small}
-\begin{verbatim}
-name<<<#Blocks, #Threads/Block, #BytesShared>>>(arg1,..,argN);
-\end{verbatim}
+\begin{Verbatim}[samepage=true]
+name<<<Blocks, Threads/Block, BytesShared>>>(arg1,..,argN);
+\end{Verbatim}
 \end{small}
 
-In this case one block of 32 threads using no shared memory, is launched. 
+\noindent In this example above one block of 32 threads using no shared memory, is launched. 
 
+A kernel that uses shared memory takes a form similar to whats shown below. 
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+__global__ void kernel2(int32_t *i, int32_t *r) {
+
+  extern __shared__ int32_t sm[]; 
+
+  unsigned int tid = threadIdx.x; 
+  unsigned int gid = blockIdx.x * 
+                     blockDim.x + 
+                     threadIdx.x;
+
+  sm[tid] = i[gid]; 
+  __syncthreads();
+
+  /* Compute on sm */ 
+     
+  __syncthreads();
+  r[gid] = sm[tid]; 
+  
+}
+\end{Verbatim} 
+\end{small} 
+
+\noindent A portion of the input array is stored into shared memory. A 
+barrier synchronisation is used to ensure that all threads within the block 
+has stored its value into shared memory (only necessary if threads will 
+communicate across warp boundaries). After computing on the data locally 
+it is written back into global memory. 
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
