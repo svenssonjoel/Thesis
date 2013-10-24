@@ -384,6 +384,133 @@ In chapter~\ref{chap:GPUProgramming}, there are papers describing work on Obsidi
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
 %
+% GPU Programming 
+%
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+\section{GPUs and CUDA} 
+
+In 2006 NVIDIA released their first Compute Unified Device Architechture (CUDA) 
+GPU. With CUDA, NVIDIA also made it a lot easier for programmers to use GPUs 
+for general purpose workloads. A dialect of C, called CUDA C, was released specifically 
+to simplify implementation of general purpose algorithms on GPUs. 
+
+A CUDA GPU is built around a single kind of processor (opposed to the different 
+kinds of processors found in earlier GPUs). The processors in the GPU (called MPs, 
+MultiProcessors), all contain a number of function units called SPs (Streaming Processors). 
+Each MP also contains local memory, called shared memory since it can be accessed 
+by all of the SPs in that MP. The number of MPs vary over the available GPUs; cheaper 
+GPUs have as few as one MP, and as you go up in price the number of MPs increase.
+
+Each MP of the GPU can manage a large number of threads; on today's GPUs up to 
+2048 threads can run on a single MP. The GPU schedules threads in groups of 32, called 
+a {\em Warp}, that are executed in lock-step (SIMD style execution). Threads are 
+also divided into {\em Blocks}; the threads within a block can communicate using the 
+local shared memory. The maximum block size is currently 1024 threads. Since 
+the number of threads in a block can be higher than the warp size, a barrier 
+synchronisation mechanism exists to ensure that threads within a block 
+can communicate safely via the shared memory. 
+
+
+Papers B, C, E and F (sections~\ref{sec:paperB},~\ref{sec:paperC},~\ref{sec:paperE},
+~\ref{sec:paperF}) contain more information about GPUs, and the assumptions we make 
+about them ,in relation to Obsdian. 
+
+\subsection{CUDA programming} 
+
+The CUDA programming model reflects the hierarchical architecture of GPUs. The programmer 
+writes what is called {\em kernels}, in CUDA jargon a kernel refers to a sequential C program 
+that is parameterised on a threads identity. The kernel program is executed in parallel across 
+all the threads of a block and many such blocks of threads can execute in parallel on the 
+available MPs. The programmer needs to decompose the algorithm and data in such a way what 
+communication will be local to the blocks. 
+
+Below is a very simple CUDA example to give some indication of what a kernel and 
+the code to launch that kernel looks like. 
+
+\begin{small}
+\begin{verbatim} 
+__global__ void kernel(int32_t *i1, int32_t *i2, int32_t *r) {
+  
+  r[threadIdx.x] = i1[threadIdx.x] + i2[threadIdx.x]; 
+
+} 
+\end{verbatim}
+\end{small}
+
+This kernel takes two input arrays, {\tt i1} and {\tt i2}, and computes 
+elementwise sums into the result array, {\tt r}. {\tt threadIdx} identifies 
+a thread within a block. There is also a {\tt blockIdx} variable that identifies 
+the block a thread belongs to but that is not used in this case. 
+
+
+In CUDA there is a notion of {\em host} and {\em device}, the device is the GPU and 
+its memory (Global memory, usually a few Gigabytes). The host refers to the system housing 
+the GPU. The host runs a control program that launches kernels on the GPU. First memory 
+needs to be allocated in the device to hold the inputs and outputs. Then data is copied from 
+the host systems memory into device memory. 
+
+\begin{small}
+\begin{verbatim} 
+int main(void) {
+  
+  int32_t h_i1[32], h_i2[32], h_r[32]; 
+
+  int32_t *d_i1, *d_i2, *d_r;
+
+  
+  for (int i = 0; i < 32; ++i) { 
+    h_i1[i] = i;
+    h_i2[i] = 32 - i;
+  }
+
+  // Allocate device memory
+  cudaMalloc((void**)&d_i1,32*sizeof(int32_t));
+  cudaMalloc((void**)&d_i2,32*sizeof(int32_t));
+  cudaMalloc((void**)&d_r,32*sizeof(int32_t));
+  
+  // Copy inputs to device
+  cudaMemcpy(d_i1,
+             h_i1,
+             32*sizeof(int32_t),
+             cudaMemcpyHostToDevice);
+  cudaMemcpy(d_i2,
+             h_i2,
+             32*sizeof(int32_t),
+             cudaMemcpyHostToDevice);
+  
+  // Launch the kernel
+  kernel<<<1,32,0>>>(d_i1,d_i2,d_r); 
+
+  // Copy result to host
+  cudaMemcpy(h_r,
+             d_r,
+             32*sizeof(int32_t),
+             cudaMemcpyDeviceToHost);
+
+  for (int i = 0; i < 32; ++i) { 
+    printf("%d ",h_r[i]);
+  }
+
+  return 0;
+}
+\end{verbatim} 
+\end{small}
+
+The syntax for launching a kernel is:
+
+\begin{small}
+\begin{verbatim}
+name<<<#Blocks, #Threads/Block, #BytesShared>>>(arg1,..,argN);
+\end{verbatim}
+\end{small}
+
+In this case one block of 32 threads using no shared memory, is launched. 
+
+
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+%
 % Embedded languages
 %
 % ---------------------------------------------------------------------------
@@ -508,7 +635,8 @@ Haskell's type class system allows us to overload arithmetic operations such as 
 Obsidian arithmetic expressions to look exactly like corresponding native Haskell arithmetic. 
 
 The approach taken to embedd the scalar language is very similar to what is described 
-in~\citet{COMPILEEDSL}; but we use a GADT to obtained typed expressions rather than phantom types. 
+in~\citet{COMPILEEDSL}; but we use a Generalised Algebraic Datatype (GADT) to obtained 
+typed expressions rather than phantom types. 
 
 
 \subsection{Arrays} 
@@ -997,8 +1125,9 @@ Authors: Bo Joel Svensson and Mary Sheeran
 \noindent Here we explore another way to provide the capabilities of ArBB to the 
 Haskell programmer. Rather than trying to use ArBB as a backend to Accelerate 
 we provide a more direct mapping of ArBB's functionality to Haskell idioms. 
-Simply put, this means providing a more Haskell-programmer-friendly interface compared
-to the raw ArBB bindings (which are a collection of functions in the IO monad). 
+We call this embedded language EmbArBB and it provides a more Haskell-programmer-friendly 
+interface compared to the raw ArBB bindings (which are a collection of functions 
+in the IO monad). 
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------

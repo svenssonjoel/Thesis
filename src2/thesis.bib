@@ -1791,7 +1791,7 @@ inproceedings{SORTER
  }
 
 
-@inproceedings{ACCELERATOR,
+inproceedings{ACCELERATOR,
    author = "David Tarditi and Sidd Puri and Jose Oglesby",
    title = "Accelerator: {U}sing {D}ata {P}arallelism to {P}rogram {GPU}s for {G}eneral-{P}urpose {U}ses",
    booktitle = "Proceedings of the 12th international conference on Architectural support for programming languages and operating systems",
@@ -1833,12 +1833,11 @@ inproceedings{SORTER
   }
 
 
-@mastersthesis{JMT,
+@misc{JMT,
    author = "Joel Svensson",
    title = "An embedded language for data-parallel programming",
-   school = {G\"{o}teborg University},
-   year = "2008",
-   note = "www.cs.chalmers.se/$\sim$ms/JoelMScThesis.pdf"
+   note = "Master's thesis, G{\"o}teborg University, \url{http://www.cse.chalmers.se/~joels/writing/joelmscthesis.pdf}",
+   year = "2008"
 }
 
 
@@ -1915,6 +1914,7 @@ and P. Hanrahan",
 @misc{ STRUCTURED, 
   author = {Michael MCCool, Arch D. Robinson, James Reinders}, 
   title  = {{S}tructured {P}arallel {P}rogramming: {P}atterns for {E}fficient {C}omputation},
+  note   = {Morgan Kaufmann}, 
   year   = {2012} 
 }
 
@@ -1958,7 +1958,7 @@ pages={21-36}
  keywords = {haskell, parallel},
 } 
 
-@article{DELITE,
+@inproceedings{DELITE,
  author = {Brown, Kevin J. and Sujeeth, Arvind K. and Lee, Hyouk Joong and Rompf, Tiark and Chafi, Hassan and Odersky, Martin and Olukotun, Kunle},
  title = {{A} {H}eterogeneous {P}arallel {F}ramework for {D}omain-{S}pecific {L}anguages},
  booktitle = {Proceedings of the 2011 International Conference on Parallel Architectures and Compilation Techniques},
@@ -1967,12 +1967,12 @@ pages={21-36}
  isbn = {978-0-7695-4566-0},
  pages = {89--100},
  numpages = {12},
- publisher = {IEEE Computer Society},
+ note = {IEEE Computer Society},
  address = {Washington, DC, USA},
  keywords = {parallel programming, multicore processing, computer languages},
 } 
 
-@article{METAREPA,
+@inproceedings{METAREPA,
  author = {Ankner, Johan and Svenningsson, Josef David},
  title = {{A}n {EDSL} approach to high performance {H}askell programming},
  booktitle = {Proceedings of the 2013 ACM SIGPLAN symposium on Haskell},
@@ -1987,30 +1987,13 @@ pages={21-36}
  keywords = {array programming, edsl, meta programming, optimization},
 } 
 
-article{REPA,
- author = {Keller, Gabriele and Chakravarty, Manuel M.T. and Leshchinskiy, Roman and Peyton Jones, Simon and Lippmeier, Ben},
- title = {Regular, shape-polymorphic, parallel arrays in Haskell},
- journal = {SIGPLAN Not.},
- issue_date = {September 2010},
- volume = {45},
- number = {9},
- month = sep,
- year = {2010},
- issn = {0362-1340},
- pages = {261--272},
- numpages = {12},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {arrays, data parallelism, haskell},
-} 
-
 @article{Wired,
   title={{W}ired: {W}ire-aware circuit design},
   author={Axelsson, Emil and Claessen, Koen and Sheeran, Mary},
   journal={Correct Hardware Design and Verification Methods},
   pages={5--19},
   year={2005},
-  publisher={Springer}
+  note = {Springer},
 }
 
 @misc{CUB, 
@@ -2054,4 +2037,21 @@ author = "Joel Svensson and Koen Claessen and Mary Sheeran",
  numpages = {14},
  publisher = {ACM},
  address = {New York, NY, USA},
+} 
+
+@inproceedings{ACCELERATOR,
+ author = {Tarditi, David and Puri, Sidd and Oglesby, Jose},
+ title = {Accelerator: using data parallelism to program {GPU}s for general-purpose uses},
+ journal = {SIGARCH Comput. Archit. News},
+ issue_date = {December 2006},
+ volume = {34},
+ number = {5},
+ month = oct,
+ year = {2006},
+ issn = {0163-5964},
+ pages = {325--335},
+ numpages = {11},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {data parallelism, graphics processing units, just-in time compilation},
 } 
