@@ -390,7 +390,7 @@ In chapter~\ref{chap:GPUProgramming}, there are papers describing work on Obsidi
 % ---------------------------------------------------------------------------
 \section{GPUs and CUDA} 
 
-In 2006 NVIDIA released their first Compute Unified Device Architechture (CUDA) 
+In 2006 NVIDIA released their first Compute Unified Device Architecture (CUDA) 
 GPU. With CUDA, NVIDIA also made it a lot easier for programmers to use GPUs 
 for general purpose workloads. A dialect of C, called CUDA C, was released specifically 
 to simplify implementation of general purpose algorithms on GPUs. 
@@ -414,7 +414,7 @@ can communicate safely via the shared memory.
 
 Papers B, C, E and F (sections~\ref{sec:paperB},~\ref{sec:paperC},~\ref{sec:paperE},
 ~\ref{sec:paperF}) contain more information about GPUs, and the assumptions we make 
-about them in relation to Obsdian. 
+about them in relation to Obsidian. 
 
 \subsection{CUDA programming} 
 
@@ -444,7 +444,7 @@ __global__ void kernel(int32_t *i1, int32_t *i2, int32_t *r) {
 \end{small}
 
 This kernel takes two input arrays, {\tt i1} and {\tt i2}, and computes 
-elementwise sums into the result array, {\tt r}. The {\tt threadIdx} variable identifies 
+element wise sums into the result array, {\tt r}. The {\tt threadIdx} variable identifies 
 a thread within a block. There is also a {\tt blockIdx} variable that identifies 
 the block a thread and {\tt blockDim.x} specifies the number of threads per block. 
 
@@ -542,6 +542,70 @@ barrier synchronisation is used to ensure that all threads within the block
 has stored its value into shared memory (only necessary if threads will 
 communicate across warp boundaries). After computing on the data locally 
 it is written back into global memory. 
+
+
+\subsection{Writing efficient GPU kernels} 
+
+Writing efficient GPU kernels is hard. There are many details that the CUDA 
+programmer must be aware of in order to make optimal use of the GPU. 
+the NVIDIA ``CUDA C Best Practices Guide''~\citet{BestPrac}, is a good source 
+to learn more about these details. Here is a list with explanations of some 
+of the practices that the guide deem most important. 
+
+\begin{itemize} 
+
+\item {\bf Minimise data transfers between host and device:} The bandwidth between device memory 
+and GPU is over 20 times of the bandwidth between host memory and the GPU device via the PCIe bus.
+This means that, first of all one must evaluate if the computation to be perform is significant 
+enough to warrant a transfer to the GPU. If it computation is not arithmetic intensive it may be 
+better to do the work on the CPU. However, if the data is already in device memory and 
+the operation you are about to perform on it is more efficiently handled by the CPU, it may still 
+be better to let the GPU do the work. In other words, compute near the data unless transferring it 
+pays off. 
+
+\item {\bf Ensure that global memory accesses are coalesced:} Certain access patterns into 
+GPU device memory can be {\em coalesced} (combined into few memory transactions). Unfortunately 
+what these access patterns are very some depending on the GPU. For a representative model of 
+GPU the rule is that concurrent memory accesses (by threads within a warp) will be coalesced 
+to as many transactions as cache lines touched (128b l1 cache lines). This means that strided 
+accesses from within a warp are not favoured. 
+
+\item {\bf Minimise use of global memory:} Accessing global device memory can take as 
+many 400 to 600 clock cycles if the data is not cached. The programmer should 
+use shared memory as much as possible to avoid redundant loading from global memory.
+Shared memory could also be used to coalesce reads from global memory. Shared memory is 
+a limited resource in the MP, so if a kernel uses very much shared memory it means 
+fewer such blocks can be active on the MP. 
+
+\item {\bf Use a multiple of 32 threads per block:} Groups of 32 threads, warps, are the 
+scheduled unit on a GPU. If a warp accesses memory (and will be waiting for it arrive during 
+600 cycles) it will be swapped out and another warp will take its place. This means that 
+the number of available warps decides how well latency can be hidden. A block that is not a 
+multiple of 32 leads to wasting GPU resources, some processing elements will stand idle during 
+the execution of the not full warps. 
+
+\item {\bf Avoid different execution paths within a block:} Any branching instructions that 
+causes the execution path diverge within a warp will affect performance. When the execution 
+paths within a warp diverges the computation is serialised. 
+
+\item {\bf Do not use {\tt \_\_synchthreads()} in diverging code:} Extreme care must be taken 
+when synchronising within any conditionally executed code; every thread must reach this barrier.
+Failing to ensure this will likely lead to the kernel producing incorrect answers. Note that 
+this is a major limitation to the composability of CUDA functions. If it is safe or 
+not to call some function at a certain place in your code, can only be decided by inspecting 
+that functions implementation. 
+\end{itemize} 
+
+The list above provides some very general guide lines of what to think about when 
+writing GPU kernels. The lesson is that fast memory near the processing element 
+should be preferred over slow memory far away. However, this comes at the effort 
+of decomposing computation and data in a way that makes this possible. 
+ 
+
+%\citet{FERMIOPT}
+%\citet{BestPrac} 
+%\citet{merrill}
+
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
