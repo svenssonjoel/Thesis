@@ -217,11 +217,11 @@ This thesis includes the following publications:
 \item Josef Svenningsson and Bo Joel Svensson. Simple and Compositional Reification of Monadic Embedded Languages, 2013. \emph{18th ACM SIGPLAN International Conference of Functional Programming, ICFP 2013.}
 \item Bo Joel Svensson, Mary Sheeran and Koen Claessen. Obsidian: A Domain Specific Embedded Language for General Purpose Parallel Programming of Graphics Processors. In \emph{Proc. of Implementation and Applications of Functional Languages (IFL)}, Lecture Notes in Computer Science, Springer Verlag, March 2009.
 \item Bo Joel Svensson, Koen Claessen and Mary Sheeran. GPGPU kernel implementation and refinement using Obsidian. \emph{Practical Aspects of High-level Parallel Programming, PaPP 2010.} Procedia Computer Science.
-\item Koen Claessen, Mary Sheeran and Bo Joel Svensson. Expressive Array Constructs in an Embedded GPU Kernel Programming Language. In \emph{Proceedings of the 7th workshop of Declarative aspects and applications of multicore programming}, DAMP '12. ACM. 
-\item Josef Svenningsson, Bo Joel Svensson and Mary Sheeran. Efficient Counting Sort Implementations using an Embedded GPU Programming Language. \emph{2nd Workshop of Functional High-Performance Computing, FHPC '13.}
+\item Koen Claessen, Mary Sheeran and Bo Joel Svensson. Expressive Array Constructs in an Embedded GPU Kernel Programming Language. In \emph{Proceedings of the 7th workshop on Declarative aspects and applications of multicore programming}, DAMP '12. ACM. 
+\item Josef Svenningsson, Bo Joel Svensson and Mary Sheeran. Efficient Counting Sort Implementations using an Embedded GPU Programming Language. \emph{2nd Workshop on Functional High-Performance Computing, FHPC '13.}
 \item Bo Joel Svensson and Mary Sheeran. A High-Level Embedded Language for Low-Level GPU Kernel Programming. {\bf\emph{This work has not yet been published.}} 
 \item Bo Joel Svensson and Ryan Newton. Programming Future Parallel Architectures with Haskell and ArBB. \emph{Future Architectural Support for Parallel Programming (FASPP), in conjunction with ISCA '11.}
-\item Bo Joel Svensson and Mary Sheeran. Parallel Programming in Haskell Almost for Free: an embedding of Intel's Array Building Blocks. \emph{Proceedings of the 1st ACM SIGPLAN Workshop of Functional High-Performance computing, FHPC '12.}
+\item Bo Joel Svensson and Mary Sheeran. Parallel Programming in Haskell Almost for Free: an embedding of Intel's Array Building Blocks. \emph{Proceedings of the 1st ACM SIGPLAN Workshop on Functional High-Performance computing, FHPC '12.}
 \end{enumerate} 
 
 \clearpage
@@ -237,8 +237,8 @@ about it. The paper has two distinct parts. Sections one and two describe the
 method as I used it. And section four makes the compositional aspect of the method 
 explicit. 
 
-The code and examples in section one and two are my work. Section four we developed together 
-but is mostly Josef's expertise. For section four we also got very much and valuable help 
+The code and examples in section one and two are my work. The contents of section four was 
+developed by Josef Svenningsson and me. For section four we also got very much and valuable help 
 from Emil Axelsson. 
 
 For the rest of the paper, just substituting my name for Benny and Josef's for Bj\"orn
@@ -260,7 +260,7 @@ the benchmarking. Section 8 is joint work.
 %Mary Sheeran. 
 
 \subsubsection{Papers G and H} 
-Here, again, most implementation effort was done by me. For paper G, this work was performed 
+The work behind paper G, work was performed by me 
 under supervision of Ryan R. Newton who is also mostly responsible for the writing of the 
 paper. Programming and running time experimentation was performed by me, while getting much 
 valuable advice and guidance from Ryan. 
@@ -373,7 +373,7 @@ compared to CUDA and provide a more composable interface. But we also want to ke
 the possibility for the programmer to implement patterns in different ways. A balance 
 must be struck between providing enough low-level control to get at the performance 
 and still making building blocks implemented by the programmer reusable and composable. 
-We want to give more compositional tools for the programmer to experiment with while 
+We want to provide more compositional tools for the programmer to experiment with while 
 exploring the space of various ways to implement a given pattern or primitive. 
 In chapter~\ref{chap:GPUProgramming}, there are papers describing work on Obsidian. 
 
@@ -395,16 +395,16 @@ GPU. With CUDA, NVIDIA also made it a lot easier for programmers to use GPUs
 for general purpose workloads. A dialect of C, called CUDA C, was released specifically 
 to simplify implementation of general purpose algorithms on GPUs. 
 
-A CUDA GPU is built around a single kind of processor (opposed to the different 
+A CUDA GPU is built around a single kind of processor (as opposed to the different 
 kinds of processors found in earlier GPUs). The processors in the GPU (called MPs, 
-MultiProcessors), all contain a number of function units called SPs (Streaming Processors). 
+MultiProcessors) all contain a number of function units called SPs (Streaming Processors). 
 Each MP also contains local memory, called shared memory since it can be accessed 
-by all of the SPs in that MP. The number of MPs vary over the available GPUs; cheaper 
-GPUs have as few as one MP, and as you go up in price the number of MPs increase.
+by all of the SPs in that MP. The number of MPs varies over the available GPUs; cheaper 
+GPUs have as few as one MP, and as you go up in price the number of MPs increases.
 
 Each MP of the GPU can manage a large number of threads; on today's GPUs up to 
 2048 threads can run on a single MP. The GPU schedules threads in groups of 32, called 
-a {\em Warp}, that are executed in lock-step (SIMD style execution). Threads are 
+{\em Warps}, that are executed in lock-step (SIMD style execution). Threads are 
 also divided into {\em Blocks}; the threads within a block can communicate using the 
 local shared memory. The maximum block size is currently 1024 threads. Since 
 the number of threads in a block can be higher than the warp size, a barrier 
@@ -414,15 +414,15 @@ can communicate safely via the shared memory.
 
 Papers B, C, E and F (sections~\ref{sec:paperB},~\ref{sec:paperC},~\ref{sec:paperE},
 ~\ref{sec:paperF}) contain more information about GPUs, and the assumptions we make 
-about them ,in relation to Obsdian. 
+about them in relation to Obsdian. 
 
 \subsection{CUDA programming} 
 
 The CUDA programming model reflects the hierarchical architecture of GPUs. The programmer 
-writes what is called {\em kernels}, in CUDA jargon a kernel refers to a sequential C program 
-that is parameterised on a threads identity. The kernel program is executed in parallel across 
+writes what are called {\em kernels}; in CUDA jargon a kernel refers to a sequential C program 
+that is parameterised on a thread's identity. The kernel program is executed in parallel across 
 all the threads of a block and many such blocks of threads can execute in parallel on the 
-available MPs. The programmer needs to decompose the algorithm and data in such a way what 
+available MPs. The programmer needs to decompose the algorithm and data in such a way that 
 communication will be local to the blocks. 
 
 Below is a very simple CUDA example to give some indication of what a kernel and 
@@ -555,19 +555,20 @@ it is written back into global memory.
 This thesis applies embedded language methodology to data-parallel programming. An 
 embedded language is implemented as a library in a host language, Haskell in this case. 
 The embedded language approach is beneficial since we are not entirely sure how 
-to program current and future highly parallel computers. Being embedded allows 
-us more rapid prototyping of ideas. Other benefits of being embedded often listed 
-are: making use of the host language's type system, parser and libraries (to some extent) 
+to program current and future highly parallel computers. Implementing embedded languages allows 
+us more rapid prototyping of ideas. Other benefits of embedded languages often listed 
+are: making use of the host language's type system for guaranteeing generating correctly typed 
+target code, parser and libraries (to some extent) 
 and to have the host language as a powerful macro language for your embedded language. 
 
 A very good paper, and highly relevant to our approach, is ``Compiling Embedded Languages''
-by Conal Elliott et al~\citet{COMPILEEDSL}. This paper describes how to embedd a compiler 
+by Conal Elliott et al~\citet{COMPILEEDSL}. This paper describes how to embed a compiler 
 backend and generate efficient code in some target language. One key aspect of this 
 approach is that the embedded language is a library of functions that create and 
 compose Abstract Syntax Trees (ASTs). Obsidian (chapter \ref{chap:GPUProgramming}) as 
 well as EmbArBB (chapter \ref{chap:ArBB}) are implemented in a similar way. An 
-embedding that builds ASTs is called a deep embedding. Shallow embeddings on the 
-other hand do not build ASTs. In ``Combining Deep and Shallow Embedding for EDSL'' 
+embedding that builds ASTs is called a deep embedding. Shallow embeddings, on the 
+other hand, do not build ASTs. In ``Combining Deep and Shallow Embedding for EDSL'' 
 Josef Svenningsson and Emil Axelsson combine the two methods, shallow and deep, 
 in order to simplify the AST data type (fewer constructors) and make more extensible 
 embedded languages \citet{DEEPSHALLOW}. Obsidian also uses a combination of shallow 
@@ -575,14 +576,14 @@ and deep embeddings, while EmbArBB is a more traditional deep embedding.
 
 The embedded language approach has become popular to use as a way of raising the 
 level of abstraction in fields where the default is to use low-level languages. 
-For example, there is Lava and Wired in the fields of hardware design and 
+For example, Lava and Wired in the fields of hardware design and 
 verification and Feldspar for digital signal processing~\citet{LAVA,Wired,FELDSPAR2010}. For GPU 
-programming there are numerous embedded approaches using various host languages. 
-But to mention two that use Haskell we have Accelerate and Nikola 
+programming, there are numerous embedded approaches using various host languages. 
+Two languages for GPU programming embedded in Haskell are  Accelerate and Nikola 
 \citet{ACCELERATEDAMP11, NIKOLA}. And there is Intel ArBB, embedded in C++, with the 
 goal of being parallel across platforms \citet{ARBB2011}.
 Related work and information about the tools, libraries and language that make the 
-wider context surrounding Obsidian is described in section~\ref{sec:relatedwork}. 
+wider context surrounding Obsidian can be found in section~\ref{sec:relatedwork}. 
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
@@ -593,13 +594,13 @@ wider context surrounding Obsidian is described in section~\ref{sec:relatedwork}
 % ---------------------------------------------------------------------------
 \section{Obsidian: An embedded language for GPU kernel implementation}
 
-Obsidian aspires to raise the level of abstraction of GPU kernel implementation 
+Obsidian aspires to raise the level of abstraction of GPU kernel implementation, 
 while maintaining enough control over details that influence performance on a GPU. 
 We try to reach these goals by offering abstractions to the programmer that are 
 compositional and parallel. We also ensure that these can easily be compiled 
 to NVIDIA CUDA code. We have two different array representations, each with 
 its strengths and weaknesses. We also feel that it is important that the programmer 
-be able to use local shared memory in computations and has the ability to influence 
+be able to use local shared memory in computations and have the ability to influence 
 memory access patterns. What these array representations and abstractions are 
 will be explained in the following sections, with references to the papers 
 that introduce them or explain them the best. 
@@ -636,12 +637,12 @@ in the hierarchy leading to warp programming being a special case. One benefit a
 that threads can communicate via shared memory without using synchronisation primitives. There 
 is no programmer support for warp level programming in CUDA (as there is for block level 
 programs). The programmer needs to take care to ensure that the communication patterns are 
-within a warp and is then free to remove synchronisations. If warps where to be put in the 
+within a warp and is then free to remove synchronisations. If warps were to be put in the 
 program level hierarchy of Obsidian, its place would be between the thread and block level. 
-This forces the programmer to go via warps when putting together a block computation even 
+This would force the programmer to go via warps when putting together a block computation even 
 if the communication pattern is not suited for that, leading to inconvenience with no gain. 
 
-As an example of how the hierarchy level parameter is used I show the {\tt ForAll} constructor 
+As an example of how the hierarchy level parameter is used, I show the {\tt ForAll} constructor 
 from the {\tt Program} data type.  This constructor represents parallelism either over threads 
 or blocks. 
 
@@ -669,9 +670,10 @@ Haskell's type class system allows us to overload arithmetic operations such as 
 {\tt (-)} and {\tt (*)} by making expressions an instance of {\tt Num}. This allows the 
 Obsidian arithmetic expressions to look exactly like corresponding native Haskell arithmetic. 
 
-The approach taken to embedd the scalar language is very similar to what is described 
-in~\citet{COMPILEEDSL}; but we use a Generalised Algebraic Datatype (GADT) to obtained 
-typed expressions rather than phantom types. 
+The approach taken to embed the scalar language is very similar to what is described 
+in ``Compiling Embedded Languages''~\citet{COMPILEEDSL}; but we use a Generalised Algebraic 
+Datatype (GADT) to obtain typed expressions. An alternative to the GADT, is to use phantom 
+types. Earlier versions of Obsidian (section~\ref{sec:paperB} used phantom types. 
 
 
 \subsection{Arrays} 
@@ -719,7 +721,7 @@ will have computed an element of the array and can store that to memory.
  
 \subsubsection{Push arrays}
 
-Push arrays where added to Obsidian as a complement to pull arrays. Pull arrays are 
+Push arrays were added to Obsidian as a complement to pull arrays. Pull arrays are 
 good because they are so simple to understand and easy to parallelise. However certain
 operations on pull arrays yield code that is not suitable for GPU execution. Concatenation 
 or interleaving of pull arrays result in conditionals in the indexing function. The 
@@ -1127,7 +1129,7 @@ Authors: Bo Joel Svensson and Mary Sheeran \newline
 \noindent 
 
 In this paper the most recent additions and improvements of Obsidian are 
-described. Obsidian Programs are now parameterised on Hierarchy level. This forces 
+described. Obsidian Programs are now parameterised on Hierarchy level. This forces
 the programmer into writing programs that we know how to compile to a GPU easily 
 (by limiting how parallel operations can be nested). The paper also gives a detailed  
 optimisation story using Obsidian for implementing reduction kernels. 
