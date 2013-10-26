@@ -799,13 +799,15 @@ data Push p s a =
   Push s ((a -> EWord32 -> TProgram ()) -> Program p ())
 \end{verbatim} 
 
+\subsection{Compilation to CUDA}
+
 \subsection{Results}
 
 \emph{point to results in each paper} 
 
 \emph{provide information around the results in papers}
 
-\subsection{Compilation to CUDA}
+
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
@@ -947,8 +949,13 @@ a new code generating backend.
 \label{sec:relatedwork}
 \FloatBarrier
 
-In figure~\ref{fig:researchmatrix} I our work is placed in relation to other languages,
-embedded languages and libraries for parallel programming. The systems are roughly divided 
+
+\subsection{Languages for data-parallel programming}
+
+In figure~\ref{fig:researchmatrix} our work is placed in relation to other languages,
+embedded languages and libraries for parallel programming. The languages and libraries consider 
+are data-parallel; languages for control parallelism or distributed message passing system are 
+not considered. The systems are roughly divided 
 into three groups, based on their level of abstraction. There are low-level languages, here 
 I place languages that are imperative and C-like. In the middle layer I place languages 
 that go a bit further, they have higher level abstractions and are more easily composable. 
@@ -958,20 +965,29 @@ in boxes was not always easy.
 
 The figure also divides the languages according to what hardware they support. There 
 are CPU specific languages, GPU specific languages and languages that support or aspire 
-to support CPU,GPU and accelerator (Larrabee) execution. 
+to support CPU,GPU and accelerator (Larrabee, Xeon Phi) execution. 
 
+% ---------------------------------------------------------------------------
+% Obsidian, Accelerate, Nikola, Thrust, CUB 
+% ---------------------------------------------------------------------------
 With Obsidian we try to target the sparsely occupied area of mid-level GPU programming. With 
-CUDA, the programmer has full control of how to divide the computation amongst threads and 
-blocks. Using Accelerate, Nikola and Thrust the programmer would use high-level patterns
-without direct insight into how the application would be mapped onto threads and blocks of the 
-GPU. Using Obsidian we want to bridge that gap by both being more composable than CUDA 
-but give the programmer more control of what the computation will look like on the GPU. This 
-is done by allowing the programmer to specify and compose thread-level and block-level code. 
-Recently, the CUB library arrived that is built on a similar idea, that GPU programmers need to 
-have block/thread level control to get maximum performance, while maintaining a higher level 
-and more Thrust-like programmer interface~\citet{CUB}. Before CUB, and as far as I am aware, 
-we were alone at targeting this level.  
+CUDA~\citet{wwwcuda} and OpenCL~\citet{OpenCL}, the programmer has full control of how to divide 
+the computation amongst threads and blocks. Using Accelerate~\citet{ACCELERATEDAMP11}, 
+Nikola~\citet{NIKOLA} 
+and Thrust~\citet{THRUST} the programmer would use 
+high-level patterns without direct insight into how the application would be mapped onto 
+threads and blocks of the GPU. Using Obsidian we want to bridge that gap by both being 
+more composable than CUDA but give the programmer more control of what the computation will 
+look like on the GPU. This is done by allowing the programmer to specify and compose 
+thread-level and block-level code. Recently, the CUB library arrived that is built on a 
+similar idea, that GPU programmers need to have block/thread level control to get maximum 
+performance, while maintaining a higher level and more Thrust-like programmer 
+interface~\citet{CUB}. Before CUB, and as far as I am aware, we were alone at targeting 
+this level.  
 
+% ---------------------------------------------------------------------------
+% ArBB EmbArBB
+% ---------------------------------------------------------------------------
 The ArBB and EmbArBB systems also provide a set of parallel primitives that the programmer
 composes to build his application. I place the ArBB and EmbArBB in a box slightly lower than 
 Accelerate since while ArBB/EmbArBB also have built in reduction primitives, just like Accelerate, 
@@ -980,6 +996,77 @@ operation, ArBB/EmbArBB have {\tt reduce\_add, reduce\_mul} and so on. Benefits 
 having ArBB embedded in Haskell compared to C++ are discussed in section~\ref{sec:EmbArBB}.
 %I will go into 
 %what benefits there are to having ArBB embedded in Haskell compared to C++ in 
+
+% ---------------------------------------------------------------------------
+% Microsoft Accelerator
+% ---------------------------------------------------------------------------
+Microsoft Accelerator~\citet{ACCELERATOR}, is a language embedded in C\#. Accelerator has
+a data-parallel arrays and a set of aggregate operations (operations on entire arrays). The 
+operations on data-parallel arrays are JIT-compiled to GPU code. Accelerator can also 
+compile to multithreaded CPU code and make use of SIMD units of modern 
+CPUs~\citet{ACCELERATORCPU}; this makes the Accelerator system related to ArBB. 
+
+% ---------------------------------------------------------------------------
+% Python systems
+% ---------------------------------------------------------------------------
+There are many embedded languages implemented in Python that makes use of GPUs 
+to improve performance. One example is Copperhead~\citet{copperhead}. Copperhead 
+supports flat and nested data-parallelism via primitives such as {\tt map} and 
+{\tt reduce}.  
+
+% ---------------------------------------------------------------------------
+% Repa, Meta-Repa 
+% --------------------------------------------------------------------------- 
+
+Repa (Regular Shape-polymorphic Arrays)~\citet{REPA}, is a Haskell library for 
+data-parallel programming. 
+Repa uses the same array representation as Obsidian, in Repa called a delayed
+array, which is a function from index to element. However, in Repa arrays have shape, 
+they can be of any dimensionality and there shape-polymorphic functions on these. 
+For example {\tt map} can be applied to an array of any shape. 
+
+Meta-Repa is a reimplementation of the Repa library using deep embedded language 
+techniques. Meta-Repa programs build ASTs that are then compiled (using template 
+Haskell) to Haskell code using low-level parts of the Repa library for its parallelism.
+The Meta-Repa approach to implementing the Repa library 
+gives inlining of operations for free, where Repa programs needs to be annotated 
+with pragmas to ensure inlining. On the other hand, in Meta-Repa the programmer 
+needs to explicitly state when something should not be inlined (using a {\tt force} primitive).
+This is related to our work on EmbArBB that also uses an existing library (ArBB) 
+for its parallelism. In reference~\citet{FPCDSL}, a case is made for this style 
+of embedding prexisting DSLs. 
+
+
+% ---------------------------------------------------------------------------
+% DPH, NESL 
+% ---------------------------------------------------------------------------
+Data-Parallel Haskell~\citet{DPH} and Nesl~\citet{NESL} are languages for 
+nested data-parallelism. Both run on CPUs, but there is also work towards 
+a GPU version of Nesl~\citet{NestedGPU}. 
+
+% ---------------------------------------------------------------------------
+% Delite, Vertigo 
+% ---------------------------------------------------------------------------
+
+Delite~\citet{DELITE} is an infrastructure for implementation of domain 
+specific embedded languages. There is an extensible internal representation (IR,AST); 
+the programmer extends some base IR with domain specific constructs. The Delite system 
+has been used to implement domain specific embedded languages for machine learning, rendering, 
+physics and other domains. Delite, being a framework and the languages implemented using it 
+very domains specific, was impossible to place in the matrix (figure~\ref{fig:researchmatrix}). 
+
+\subsection{Embedded domain specific languages} 
+
+\noindent\emph{Feldspar}\citet{FELDSPAR2010} \newline
+\noindent\emph{Lava}\citet{lavaICFP} \newline
+\noindent\emph{Vertigo}\citet{VERTIGO}  \newline
+
+\subsection{Compiling Embedded Languages}
+
+\noindent\emph{Generic monad constructs (josef + emil + anders}\citet{Generic} \newline
+\noindent\emph{The Constrained Monad Problem (Gill)}\citet{sculthorpe2013constrained} \newline
+\noindent\emph{Compiling Embedded Languages}\citet{COMPILEEDSL} \newline
+
 
 
 \begin{figure}
@@ -1028,34 +1115,25 @@ general purpose programming of CPUs, GPUs or both. }
 
 
 
-\subsection{Parallelism} 
+%\subsection{Parallelism} 
 
-\noindent\emph{DPH}\citet{DPH} \newline
-\noindent\emph{D.A.Accelerate}\citet{ACCELERATEDAMP11} \newline
-\noindent\emph{Nikola}\citet{NIKOLA}\newline
-\noindent\emph{Repa}\citet{REPA}\newline
-\noindent\emph{Meta-Repa}\citet{METAREPA}\newline
-\noindent\emph{ArBB}\citet{ARBB2011}\newline
-\noindent\emph{OpenCL}\citet{OpenCL}\newline
-\noindent\emph{CUDA}\citet{CUDA}\newline
-\noindent\emph{Microsoft Accelerator}\citet{ACCELERATOR}\newline
-\noindent\emph{Copperhead}\citet{copperhead}\newline
-\noindent\emph{Delite}\citet{DELITE}\newline
-\noindent\emph{A monad for deterministic parallelism (R. Newton)} \citet{MonadPar} \newline
-\noindent\emph{Nesl}\citet{NESL} \newline
+%\noindent\emph{DPH}\citet{DPH} \newline
+%\noindent\emph{D.A.Accelerate}\citet{ACCELERATEDAMP11} \newline
+%\noindent\emph{Nikola}\citet{NIKOLA}\newline
+%\noindent\emph{Repa}\citet{REPA}\newline
+%\noindent\emph{Meta-Repa}\citet{METAREPA}\newline
+%\noindent\emph{ArBB}\citet{ARBB2011}\newline
+%\noindent\emph{OpenCL}\citet{OpenCL}\newline
+%\noindent\emph{CUDA}\citet{CUDA}\newline
+%\noindent\emph{Microsoft Accelerator}\citet{ACCELERATOR}\newline
+%\noindent\emph{Copperhead}\citet{copperhead}\newline
+%\noindent\emph{Delite}\citet{DELITE}\newline
+%\noindent\emph{A monad for deterministic parallelism (R. Newton)} \citet{MonadPar} \newline
+%\noindent\emph{Nesl}\citet{NESL} \newline
 
-\subsection{Embedded domain specific languages} 
-
-\noindent\emph{Feldspar}\citet{FELDSPAR2010} \newline
-\noindent\emph{Lava}\citet{lavaICFP} \newline
-\noindent\emph{Vertigo}\citet{VERTIGO}  \newline
+%\subsection{Embedded domain specific languages} 
 
 
-\subsection{Compiling Embedded Languages}
-
-\noindent\emph{Generic monad constructs (josef + emil + anders}\citet{Generic} \newline
-\noindent\emph{The Constrained Monad Problem (Gill)}\citet{sculthorpe2013constrained} \newline
-\noindent\emph{Compiling Embedded Languages}\citet{COMPILEEDSL} \newline
 
 \FloatBarrier
 % ---------------------------------------------------------------------------
@@ -1084,6 +1162,10 @@ general purpose programming of CPUs, GPUs or both. }
 \section{Discussion} 
 
 \noindent\emph{What contributions are made by Obsidian} 
+Looking at the related work, we se that almost all high level GPU programming 
+languages provide abstractions of parallel primitives, aggregate operations, 
+map-folds-zipwiths, giving justification to  our investigation of GPU programming without 
+these. 
 
 \noindent\emph{What works well with Obsidian}
 
