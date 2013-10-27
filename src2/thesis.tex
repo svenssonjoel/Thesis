@@ -847,6 +847,7 @@ When compiling Obsidian programs to CUDA, we only need to be concerned with the
 we know that the AST can be quite directly translated to CUDA. We know that there will 
 be at most one level of nestedness in the parallelism (several blocks, each of several threads). 
 This means that we do not need to do any transformations on the AST before generating CUDA code. 
+Paper F (section~\ref{sec:paperF}) contains technical details of the compilation process. 
 
 \subsection{Results}
 
@@ -1251,8 +1252,8 @@ One potential use of Obsidian could be as the code generating backend of high-le
 and very domain specific embedded languages. This could be a niche for Obsidian.  
 
 Here and there in the thesis it has been hinted that Obsidian has warp level 
-capabilites and that these are not as integrated into the hierarchy as block, 
-thread and grid are. The warp abstractions offered also requires more work in 
+capabilites and that these are not as integrated into the hierarchy as the block, 
+thread and grid levels are. The warp abstractions offered also requires more work in 
 the code generating backend than the others, that correspond directly to CUDA concepts. 
 The problem is that CUDA does not have a warp abstraction. Warps needs to be 
 better integrated with the rest of Obsidian and the code generation required 
