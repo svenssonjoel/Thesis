@@ -624,9 +624,10 @@ embedded language is implemented as a library in a host language, Haskell in thi
 The embedded language approach is beneficial since we are not entirely sure how 
 to program current and future highly parallel computers. Implementing embedded languages allows 
 us more rapid prototyping of ideas. Other benefits of embedded languages often listed 
-are: making use of the host language's type system for guaranteeing generating correctly typed 
-target code, parser and libraries (to some extent) 
-and to have the host language as a powerful macro language for your embedded language. 
+are include making use of the host language's type system for guaranteeing generating correctly typed 
+target code. Already existing libraries in the host language (if they are general enough) 
+can be used in the embedded language. The host language can also be used as a powerful macro 
+language for your embedded language. 
 
 A very good paper, and highly relevant to our approach, is ``Compiling Embedded Languages''
 by Conal Elliott et al~\citet{COMPILEEDSL}. This paper describes how to embed a compiler 
