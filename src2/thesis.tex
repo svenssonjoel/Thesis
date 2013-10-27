@@ -314,9 +314,10 @@ written for serial execution, it is becoming clear that explicitly parallel
 programming models are needed for making use of all parallel resources~\cite{STRUCTURED}. 
 This also means that it is important to think in parallel from the beginning. 
 
-In this thesis the focus is on data-parallelism, as opposed to task- or 
-control-parallelism. Data parallelism is applicable where the input data can 
-be divided into chunks and operated upon independently. \emph{more, and maybe not here}
+This thesis focuses on data-parallelism, as opposed to control- or 
+task-parallelism. Data parallelism is applicable where the input data can 
+be divided into chunks and operated upon independently. Data-parallelism is scalable
+meaning that usually as problem size increase, the potential for parallelism increase. 
 
 Modern CPUs are parallel in a number of different ways. They discover instruction
 level parallelism (ILP), they have multiple processor cores and vector units for 
@@ -351,7 +352,8 @@ permutations and gather/scatter operations. The book contains examples in ArBB, 
 Intel Threading Building Blocks, OpenMP and OpenCL. Not all these languages include 
 the patterns as abstractions, but most are possible to express in each of the languages. 
 The patterns, while very powerful as abstractions, also provide tools for thinking about 
-parallel algorithms. 
+parallel algorithms. The ArBB library support flat regular data-parallelism, but also 
+irregular and to some degree nested data-parallelism. 
 
 The patterns are powerful abstractions, but it is also important not to be locked into 
 a single implementation of each pattern. This could have negative performance impacts. 
@@ -376,6 +378,7 @@ and still making building blocks implemented by the programmer reusable and comp
 We want to provide more compositional tools for the programmer to experiment with while 
 exploring the space of various ways to implement a given pattern or primitive. 
 In chapter~\ref{chap:GPUProgramming}, there are papers describing work on Obsidian. 
+Obsidian is focused on flat and regular data-parallelism. 
 
 % \section{The problem}
 
@@ -768,7 +771,7 @@ size is recommended.
 One benefit of pull arrays are that they give fusion of all operations on them for free. for example {\tt map f} is implemented on pull arrays by composing {\tt f} with the indexing function: 
 
 \begin{verbatim} 
-map   f (Pull n ixf) = Pull n (f . ixf)
+map f (Pull n ixf) = Pull n (f . ixf)
 \end{verbatim}
 
 Now, we see that {\tt map f . map g} is the same as {\tt map f . g} since both result in {\tt f}
@@ -794,20 +797,81 @@ diverge the GPU will execute turn off the processing elements taking one path an
 allow the others to progress; then turning to the other branch. The computation of the 
 branches has become serialised and compute resources are wasted. 
 
+Push arrays, like pull arrays, are functions. A Push array is a higher order 
+function, taking a function from value and index to a thread program and giving 
+as result a program at some level in the hierarchy. The function passed to the 
+push array function we call a write-function. Below is the definition of 
+push arrays that we use in Obsidian. Push arrays are parameterised on element 
+type ({\tt a}), size type ({\tt s}) and program hierarchy level ({\tt p}). 
+
 \begin{verbatim}
 data Push p s a =
   Push s ((a -> EWord32 -> TProgram ()) -> Program p ())
 \end{verbatim} 
 
+When working with pull arrays, the consumer of such an array decides how to 
+iterate over the array and what elements to compute. This is done applying the 
+push array function to those indices that are interesting to the consumer. Push 
+arrays work in the opposite way. The Push array function (the result program) contain 
+the iteration schema; the consumer of the push only decides what write function 
+to supply. The iteration schema used is decided upon when creating a push arrays. 
+The code below is an example of how to create a push array from a pull array.
+
+\begin{verbatim} 
+convertToPush :: Pull Word32 e 
+               -> Push Block Word32 e 
+convertToPush (Pull n ixf) =
+    Push n $ \wf -> 
+      forAll (fromIntegral n) $ \i -> wf (ixf i) i
+\end{verbatim} 
+
+The function above takes a pull array and creates a push array with a parallel 
+iteration schema over threads within a block. There are other iteration schemas to 
+chose from such as sequential, combinbations of sequential and paralell and parallel 
+across both threads and blocks (two level parallelism). 
+
+Push arrays give many of the same benefits that pull arrays have. Using pull 
+arrays we also get fusion of operations as default. The implementation of map 
+(shown below) illustrates how maping a function {\tt f} over a push array results 
+in an application of {\tt f} in the write-function. 
+
+\begin{verbatim} 
+map f (Push s p) = Push s $ \wf -> p (\e ix -> wf (f e) ix)
+\end{verbatim}
+
 \subsection{Compilation to CUDA}
+
+When compiling Obsidian programs to CUDA, we only need to be concerned with the 
+{\tt Program} datatype. Given the hierarchy level type parameters to the program datatype 
+we know that the AST can be quite directly translated to CUDA. We know that there will 
+be at most one level of nestedness in the parallelism (several blocks, each of several threads). 
+This means that we do not need to do any transformations on the AST before generating CUDA code. 
 
 \subsection{Results}
 
-\emph{point to results in each paper} 
+We have implemented basic algorithms such as sorting, merging, fractal generation, reductions and parallel prefix (scans). Often we have managed to get very good performance, close to that 
+of hand optimised CUDA code. However, there are also cases where we just cant seem to reach 
+the level of performance that we would want. One such example is parallel prefix, an 
+application that has been haunting us from the very beginning. Scan is problematic to us because 
+it is best implemented as an in-place algorithm while our array representations do 
+not allow for in-place updated (there is no memory associated with them to update). 
+We are trying to improve this situation by adding a third array representation to Obsidian,
+mutable arrays.   
 
-\emph{provide information around the results in papers}
+Paper F (section~\ref{sec:paperF}), tells a story about how to implement and tune 
+a reduction kernel in Obsidian. At the end the implemented reduction kernel is 
+faster than the reduction skeleton used in Accelerate. This is quite a feat, since 
+reduction in accelerate corresponds to just one single hand optimised skeleton. We would have 
+been happy just getting close.   
 
+In paper E (section~\ref{sec:paperE}), we implement counting sort and occurrance sort 
+using Obsidian. We use very low-level features of Obsidian and end up producing 
+code that performs very well. 
 
+Paper D (section~\ref{sec:paperD}), introduces push arrays and uses them in the 
+implementation of sorting networks to quite good results. With push arrays we 
+where able to experiment with more detailed decompositions (what thread computes 
+what value) of the algorithms. 
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
@@ -890,8 +954,21 @@ There are also nested vectors, in EmbArBB called {\tt NVector}, parameterised on
 
 \subsubsection{Operations on arrays} 
 
+EmbArBB provides many of the ArBB operations on Arrays butprovides a Repa like 
+shape-polymorphic interface to them. For example a reduction operation can take a two  
+dimensional vector and reduce all rows or columns and provide a one dimensional result. Or 
+it takes a one dimensional vector and returns a single value (zero dimensional vector). 
 
+\begin{verbatim} 
+addReduce :: Num a 
+           => Exp USize 
+           -> Exp (DVector (t:.Int) a) 
+           -> Exp (DVector t a) 
+\end{verbatim} 
 
+The {\tt addReduce} function takes an input vector that is atleast one dimensional 
+({\tt t:.Int}) and returns a vector that has one less dimension ({\tt t}).
+ 
 \subsubsection{Deep embedding}
 
 EmbArBB is a traditional deep embedding, there is an AST data type with constructors 
@@ -1057,17 +1134,30 @@ very domains specific, was impossible to place in the matrix (figure~\ref{fig:re
 
 \subsection{Embedded domain specific languages} 
 
-\noindent\emph{Feldspar}\citet{FELDSPAR2010} \newline
-\noindent\emph{Lava}\citet{lavaICFP} \newline
-\noindent\emph{Vertigo}\citet{VERTIGO}  \newline
+Feldspar is an embedded language for digital signal processors~\citet{FELDSPAR}. Apart 
+from using the syntactic library~\citet{SyntacticICFP12}, it is quite similar to Obsidian. 
+There is a deeply embedded core language (called Core) and vectors as a shallow embedding 
+on top of that, just like in Obsidian.
+
+When we first started working on Obsidian we used Lava~\citet{LavaICFP} as a inspiration. 
+We wanted to mimic the Lava programming style but generate GPU code. At first this worked quite 
+well and most Obsidian programs superficially looked quite like Lava programs. We have diverged 
+from this aspiration since realising that GPUs are quite a different story and performance 
+requires more control of GPU architecture specifics. 
 
 \subsection{Compiling Embedded Languages}
 
-\noindent\emph{Generic monad constructs (josef + emil + anders}\citet{Generic} \newline
-\noindent\emph{The Constrained Monad Problem (Gill)}\citet{sculthorpe2013constrained} \newline
-\noindent\emph{Compiling Embedded Languages}\citet{COMPILEEDSL} \newline
+In paper A~(\ref{sec:paperA}) we describe our method for compiling monadic embedded languages. 
+This means we need to take a monadic computation and observe its structure in order to generate
+code. This work is closely related to a method described in ``The Constrained Monad Problem''
+by Sculthorpe and Gill~\citet{sculthorpe2013constrained}. In this paper they solve a more 
+general problem than just compilation but our method is nice because it is easy to understand 
+and solves a single problem and does it well. In ``Generic monad constructs'' Persson et al 
+also solves the problem of compiling monads using a continuation monad. 
 
-
+``Compiling Embedded Languages'' by Elliott and Finne has been a constant source of information 
+and something we have refered to in almost all our work. This is, in my opinion, the paper to turn 
+to for anyone starting out with compiled embedded languages. 
 
 \begin{figure}
 \begin{center}
@@ -1145,11 +1235,31 @@ general purpose programming of CPUs, GPUs or both. }
 % ---------------------------------------------------------------------------
 \section{Future work} 
 
-\noindent\emph{Find a niche for Obsidian} 
+Obsidian is a language for GPU kernel implementation. It is not as well integrated 
+into Haskell as for example Accelerate. There are ways to execute Obsidian kernels 
+from within Haskell; the recommended workflow, however, is to generate the CUDA  
+as text and write the host code by hand. This can be seen both a shortcoming 
+and a feature. It is hard to integrate Accelerate programs in larger applications 
+written in other languages. While when using Obsidian a kernel is generated and 
+can be used as part of for example a library. 
 
-\noindent\emph{Improve on Warp level capabilities} 
+Obsidian is also a quite low-level language. The programmer needs to know GPU details 
+and is allowed to write programs at a level almost as low as CUDA, if it is desired. 
+Paper E (section~\ref{sec:paperE}) contains examples of programming at this low level. 
+One potential use of Obsidian could be as the code generating backend of high-level 
+and very domain specific embedded languages. This could be a niche for Obsidian.  
 
-\noindent\emph{Improve expressivity, code performance} 
+Here and there in the thesis it has been hinted that Obsidian has warp level 
+capabilites and that these are not as integrated into the hierarchy as block, 
+thread and grid are. The warp abstractions offered also requires more work in 
+the code generating backend than the others, that correspond directly to CUDA concepts. 
+The problem is that CUDA does not have a warp abstraction. Warps needs to be 
+better integrated with the rest of Obsidian and the code generation required 
+for warps needs more testing before being trustworthy and useful. 
+
+%\noindent\emph{Improve on Warp level capabilities} 
+
+%\noindent\emph{Improve expressivity, code performance} 
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
@@ -1161,15 +1271,42 @@ general purpose programming of CPUs, GPUs or both. }
 
 \section{Discussion} 
 
-\noindent\emph{What contributions are made by Obsidian} 
-Looking at the related work, we se that almost all high level GPU programming 
+This thesis contains two approaches to embedding a language for data-parallel programming 
+in Haskell. EmbArBB embeds a preexisting library for data-parallelism in Haskell 
+and at little effort from us, very good performance is gained. The performance of 
+EmbArBB is entirely due to all the optimisation expertice and effort that invested in 
+the ArBB system. We get all that expertice for free. What EmbArBB provide is a 
+way for Haskellers to benefit from the ArBB system. ArBB and EmbArBB is based on a 
+set of parallel primitives for the programmer to use and compose. Obsidian takes 
+a different approach. Built in primitives are very few and very low level, such as 
+sequential and parallel for loops. On top of the low-level capabilities a library 
+of high-level primitives can be built. The key is that we want the programmer to 
+be able to specify how to implement these higher level abstractions. 
+
+Looking at the related work, we see that almost all high level GPU programming 
 languages provide abstractions of parallel primitives, aggregate operations, 
-map-folds-zipwiths, giving justification to  our investigation of GPU programming without 
-these. 
+maps, folds and reductions, giving justification to our investigation of GPU 
+programming without these. We believe that the GPU architecture is still volatile 
+enough that there be no ``the right'' way of implementing these primitives. As of 
+today, the programmer still needs to explore the design space and find a sollution 
+that performs well on a particular GPU. 
 
-\noindent\emph{What works well with Obsidian}
+Performance of Obsidian kernels is often good and the Obsidian code that they 
+are generated from is often shorted than corresponding CUDA programs. Obsidian 
+programs differ from CUDA programs by describing whole programs. With this I mean 
+that a CUDA programmer needs to take a leap from the single threaded program 
+parameterised on thread Id, to what actually will happen when this program is 
+run by hundreds or thousands threads at once. The extensive indexing arithmetic 
+often present in CUDA programs can make this leap a hard one. Similar programs 
+in Obsidian could use operations on whole arrays such as {\tt map} or explicitly 
+bounded parallel loops. 
 
-\noindent\emph{EmbArBB contributions} 
+Push arrays where invented by Koen Claessen and first implemented in Obsidian 
+to provide more control over where computation takes place (which thread computes 
+which element). Push arrays has since been experimented on by others and show up 
+in Nikola~\citet{NIKOLAPUSH}, been experimented upon by the people behind Feldspar 
+and appear in StreamHS~\citet{FPCDSL}. 
+
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
