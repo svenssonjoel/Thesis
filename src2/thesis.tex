@@ -548,6 +548,7 @@ it is written back into global memory.
 
 
 \subsection{Writing efficient GPU kernels} 
+\label{sec:efficient}
 
 Writing efficient GPU kernels is hard. There are many details that the CUDA 
 programmer must be aware of in order to make optimal use of the GPU. 
@@ -859,6 +860,7 @@ This means that we do not need to do any transformations on the AST before gener
 Paper F (section~\ref{sec:paperF}) contains technical details of the compilation process. 
 
 \subsection{Results}
+\FloatBarrier 
 
 We have implemented basic algorithms such as sorting, merging, fractal generation, reductions 
 and parallel prefix (scans). Often we have managed to get very good performance, close to that 
@@ -871,7 +873,7 @@ We are trying to improve this situation by adding a third array representation t
 mutable arrays.   
 
 Paper F (section~\ref{sec:paperF}) tells a story about how to implement and tune 
-a reduction kernel in Obsidian. At the end, the implemented reduction kernel is 
+a reduction kernel in Obsidian. At the end, the implemented reduction kernel is  
 faster than the reduction skeleton used in Accelerate. This is quite a feat, since 
 reduction in Accelerate corresponds to just one single hand optimised skeleton. We would have 
 been happy just getting close.   
@@ -885,6 +887,163 @@ implementation of sorting networks to quite good results. With push arrays we
 were able to experiment with more detailed decompositions (what thread computes 
 what value) of the algorithms. 
 
+In section \ref{sec:efficient}, guidelines for writing efficient CUDA code is listed. 
+Here we revisit these guidelines and explain how they are approached by Obsidian and 
+the Obsidian programmer. 
+
+\begin{itemize} 
+
+\item {\bf Minimise data transfers between host and device:} Data transfers
+between host and device are out of Obsidian's scope. If Obsidian is used to create 
+a kernel for a computation, the programmer has already decided that a GPU should be used. 
+
+\item {\bf Ensure that global memory accesses are coalesced:} Inputs to an Obsidian 
+program are pull arrays. Pull arrays can be arbitrarily permuted; the permutation 
+used will decide the access pattern. If this method can be applied or not partly also 
+depends on the algorithm being implemented. 
+
+\item {\bf Minimise use of global memory:} Intermediate results can be computed into 
+shared memory. Arrays are stored into shared memory when the programmer uses a 
+{\tt force} primitive.   
+
+\item {\bf Use a multiple of 32 threads per block:} Obsidian requires regularity even more 
+than CUDA does. Since we focus on generating high performance kernels, we rule out generation 
+of kernels that work on different input sizes. The choise of how many threads to use per block 
+is in the hands of the Obsidian program. The method for making that choise has changed over time. 
+Earlier, the number of threads needed by kernel was decided by the size of the arrays it 
+computed. This has recently changed is now set by parameters to the code generation process. 
+
+\item {\bf Avoid different execution paths within a block:} Sometimes divergent code cannot 
+be avoided. However, It is important not to have threads diverge unnecessarily. When using pull 
+arrays alone this was often a problem; with the addition of push arrays the situation improved. 
+Using push arrays a divergent computation can be explicitly split up into phases, each with all 
+threads following the same execution path. This means that fewer threads are required to do the 
+same work. 
+
+\item {\bf Do not use {\tt \_\_synchthreads()} in diverging code:} In Obsidian it is impossible 
+for a barrier synchronisation to appear within conditional code. Conditionals can be introduced 
+either by a conditional expression or a {\tt Cond} operation in the program datatype. The Cond 
+operation chooses between two thread programs and the synchronisation operation is at the block 
+level in the hierarchy. So a synchronisation cannot occur in conditional code. 
+%f it is safe or 
+%not to call some function at a certain place in your code, can only be decided by inspecting 
+%that functions implementation. 
+\end{itemize} 
+
+%% In the book ``Structured Parallel Programming''~\citet{STRUCTURED}, there is a list showing language 
+%% support for various parallel patterns. In figure~\ref{fig:caps} this list augmented with a column for Obsidian. 
+%% This figure is added to indicate relative expressive power of the different languages. The most 
+%% interesting comparison is between Obsidian and OpenCL that both have a programming model geared towards
+%% GPUs; even though OpenCL can compile for both CPU and GPU execution. The paragraphs below 
+%% take a closer look at well Obsidian performes in the patterns. 
+
+%% \subsubsection{Map} 
+
+%% Map, to a  functional programmer is a higher order function that takes a pure 
+%% function and applies it to all elements of a collection (for example a list). 
+%% That meaning of map is easily implementable in Obsidian on both pull and push arrays. 
+%% Obsidian is also capable, via its parallel for loops, to map sequential computations 
+%% over threads in a block and block computation over many blocks. This is probably 
+%% more in the spirit of what the authors refer to in~\citet{STRUCTURED}. 
+
+%% \subsubsection{Stencil} 
+
+%% Stencil computations can be expressed in Obsidian, with some manual labour. 
+%% A stencil computation would have the form of a pull array to pull array function. 
+%% Pull arrays allow reading at position. 
+%% Stencil operations where more than one output position is touched could be 
+%% implemented as a pull array to push array function.
+%% One problem with stencil computations is the borders. If every thread needs to 
+%% execute a conditional, checking if it is at the border, performance would suffer. 
+%% Using Obsidian the programmer would likely generate more than one kernel; a fast 
+%% kernel for the internal points and one or more border kernel. 
+
+%% \subsubsection{Reduction and scan} 
+%% Reductions can easily be implemented in Obsidian and with very good performance. 
+%% Obsidian also seems particularly well suited for experimenting with the kind 
+%% of trade offs that are interesting when implementing reduction kernels. 
+
+%% Scans can also be implemented and the code is elegant. 
+
+%% \subsubsection{Pack and expand} 
+
+
+
+
+%% \begin{figure}[!ht]
+%% \begin{small} 
+%% \begin{tabular}{|l|l|l|l|l|l|l|}
+%% Parallel Pattern & TBB & Cilk Plus & OpenMP & ArBB & OpenCL & Obsidian \\
+%% \hline 
+%% Parallel Nesting & F   & F         &        &      &        &          \\
+%% Map              & F   & F         & F      & F    & F      & I        \\
+%% Stencil          & I   & I         & I      & F    & I      & I        \\ 
+%% Workpile         & F   &           &        &      & I      &          \\
+%% Reduction        & F   & F         & F      & F    & I      & I        \\ 
+%% Scan             & F   & I         & I      & F    & I      & I        \\ 
+%% Fork-Join        & F   & F         & I      &      &        &          \\ 
+%% Recurrance       &     & P         &        &      &        &          \\ 
+%% Superscalar seq. &     &           &        &      & F      &          \\
+
+%% Pack             & I   &  I        &  I     & F    & I      & I        \\ 
+%% Expand           & I   &  I        &  I     & I    & I      & *        \\
+%% Pipeline         & F   &  I        &  I     &      &        &          \\
+%% Geometric decomp. & I  &  I        &  I     & I    & I      & I        \\
+%% Search           &  I  &  I        &  I     & I    & I      & I        \\
+%% Category reduction & I &  I        &  I     & I    & I      & I        \\
+%% Gather           & I   &  F        &  I     & F    & I      & I        \\
+%% Atomic scatter   & F   &  I        &  I     &      & I      & I        \\
+%% Permutation scatter & F & F        &  F     & F    & F      & I        \\ 
+%% Merge scatter    &  I  &  I        &  I     & F    & I      & *        \\
+%% Priority scatter &     &           &        &      &        & *        \\
+
+%% \end{tabular}
+%% \end{small}
+%% \label{fig:caps}
+%% \caption{This figure lists what parallel patterns a number of languages support. The list 
+%% is copied from ``Structured Parallel Programming''~{\protect\citet{STRUCTURED}} and augmented with a 
+%% column for Obsidian. \\
+%% {\bf Key:} F - means the pattern is supported directly with an abstraction. P - indicates 
+%% that the pattern can be implemented in terms of other patterns appearing below. I - means 
+%% that the pattern can be easily implemented. Lastly, (*) indicates some patterns 
+%% that can be implemented in Obsidian but currently not efficiently so.} 
+%% \end{figure}
+
+
+%% In the technical report ``The Landscape of Parallel Computing Research: A View 
+%% from Berkeley''~\citet{dwarfs}, 13 computational kernels (called dwarfs) of importance is identified. 
+%% The paper also proposes that we use these 13 dwarfs to evaluate parallel programming 
+%% models and languages. The dwarfs are listed below, together with thoughts on how 
+%% well they can be tackled by Obsdian. 
+
+%% \begin{itemize} 
+%% \item {\bf Dense Linear Algebra:} Obsidian works well for expressing vector-vector 
+%% operations. It is also possible to express operations such as matrix multiplication, 
+%% even though Obsidians support for multidimensional arrays is limited. It is possible 
+%% to use pull arrays of pull arrays, but not push arrays of push arrays. 
+
+%% \item {\bf Sparse Linear Algebra:} 
+
+%% \item {\bf Spectral Methods (FFT):} FFTs are implemented in a way that is 
+%% similar to sorting networks. A so-called butterfly network is used. We know 
+%% that we can express these network structures in Obsidian. 
+
+%% \item {\bf N-Body Methods:}  
+
+%% \item {\bf Structured Grids:} Regular grids should not be a problem for Obsidian. 
+%% Obsidian has no built in support for stencils, the combination of pull and push array 
+%% still provides the capability to express such computations. 
+
+%% \item {\bf Unstructured Grids:} May be hard problem for GPUs in general. The paper 
+%% states that these problems have the property that ``Updates typically involve multiple 
+%% levels of memory reference indirection''. We know that the GPU thrives when memory access 
+%% patters are predictable and regular, which is the opposite scenario. 
+
+
+
+%% \end{itemize} 
+
+\FloatBarrier 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
 %
@@ -1593,12 +1752,19 @@ Josef Svenningsson, Bo Joel Svensson, Mary Sheeran
 
 \section[\paperFTitle]{\paperF: \\ \paperFTitle}
 \label{sec:paperF}
+
+
 %\addcontentsline{toc}{chapter}{Simple and Compositional Reification of Monadic Embedded Languages}
 
 % \paperFTitle
 
 \begin{center} 
 Bo Joel Svensson, Mary Sheeran
+\end{center}
+
+
+\begin{center}
+{\large \bf This paper will be revised before printing the Thesis} 
 \end{center}
 
 
