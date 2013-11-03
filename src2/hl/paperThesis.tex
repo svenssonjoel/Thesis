@@ -214,9 +214,8 @@ Our work on Obsidian makes the following contributions:
     language and to rule out programs that we cannot easily compile to a GPU (section \ref{sec:Program}).
   \item We use type directed compilation of language constructs and 
     implement some GPU hierarchy generic functions (section \ref{sec:Compile}).
-  \item A simple and compositional method for reification of monads in the 
-    setting of a compiled embedded language (section \ref{sec:Compile}).
-  
+ % \item A simple and compositional method for reification of monads in the 
+ %   setting of a compiled embedded language (section \ref{sec:Compile}).
 \end{itemize} 
 
 
@@ -241,12 +240,13 @@ consists of a number of {\em multiprocessors}; each multiprocessor has a
 number of processing elements (cores) and a local memory that is shared 
 between threads running on the cores. Figure \ref{fig:GPU} illustrates these 
 concepts. A GPU can come with as few as one of these multiprocessors.
-The two GPUs used in our measurements are the GTX 680, which has eight multiprocessors, with a total of 1536 processing cores, and the GT 650M, a laptop GPU, which has 384 such cores.
-On these cores, groups of 32 threads called {\em warps} are scheduled. There are a number 
-of warp scheduling units per multiprocessor. Within a warp, threads execute in 
-lockstep (SIMD); diverging branches, that is those that take different 
-paths on different threads within a warp, are serialised, 
-leading to performance penalties. 
+The two GPUs used in our measurements are the GTX 680, which has eight 
+multiprocessors, with a total of 1536 processing cores, and the GT 650M, a 
+laptop GPU, which has 384 such cores. On these cores, groups of 32 threads 
+called {\em warps} are scheduled. There are a number of warp scheduling units 
+per multiprocessor. Within a warp, threads execute in lockstep (SIMD); 
+diverging branches, that is those that take different paths on different 
+threads within a warp, are serialised, leading to performance penalties. 
 
 The scalable architecture design also influences the programming model. CUDA 
 programs must be able to run on all GPUs from the smallest to the largest.
@@ -257,19 +257,22 @@ of threads (groups of threads run by a multiprocessor) and finally
 the collection of all blocks, which is called the {\em grid}.
 
 The threads within a block can use the shared memory of the multiprocessor 
-to communicate with each other. A synchronisation primitive, {\tt \_\_syncthreads()}, gives all the threads within a block a coherent view
-of the shared memory. There is no similar 
-synchronisation primitive between threads of different blocks.
+to communicate with each other. A synchronisation primitive, {\tt \_\_syncthreads()}, 
+gives all the threads within a block a coherent view of the shared memory. 
+There is no similar synchronisation primitive between threads of different blocks.
 
 The prototypical CUDA kernel starts out by loading data from global memory.
 The indices into global memory for an individual thread are expressed
 in terms of the unique identifier for that block and thread.
-Some access patterns allow memory reads to be \emph{coalesced}, while others do not, giving very poor performance. The patterns that lead to good performance vary somewhat
-between different GPU generations, but regular, consecutive accesses by consecutive threads within a warp are best.
+Some access patterns allow memory reads to be \emph{coalesced}, while others 
+do not, giving very poor performance. The patterns that lead to good performance 
+vary somewhat between different GPU generations, but regular, consecutive accesses 
+by consecutive threads within a warp are best.
 
  
-A CUDA program is expressed at two levels. Kernels are data-parallel programs that run on the GPU. They are launched by the controlling 
-program, which runs on the CPU of the host machine. 
+A CUDA program is expressed at two levels. Kernels are data-parallel programs 
+that run on the GPU. They are launched by the controlling program, which runs 
+on the CPU of the host machine. 
 
 
 \begin{figure} 
@@ -413,9 +416,8 @@ __global__ void reverse'(int32_t* input0,
 
 \end{verbatim}
 \end{small}
-\caption{Code generated from the {\tt reverses} program with the local reverse instantiated with 
-{\tt reverseL} and {\tt reverseL'}. 
- {\tt reverse'} stores the array in shared memory before copying it to the global result array.} 
+\caption{Code generated from the {\tt reverses} and {\tt reverses'} programs.
+ {\tt reverses'} stores the array in shared memory before copying it to the global result array.} 
 \label{fig:rev1} 
 \end{figure} 
 
@@ -440,13 +442,18 @@ program;  the whole computation is specified, including how that computation
 is spread out over blocks, to form a {\em Grid} program. 
 
 The following Obsidian code shows how to split a large array up into 
-chunks of 256 elements ({\tt splitUp 256 arr}) and how the local reverse 
-kernel is mapped, in parallel, over blocks using {\tt pConcatMap}. 
+chunks of 256 elements ({\tt splitUp 256 arr}) and how the local {\tt reverseL} 
+and {\tt reverseL'} kernels are  mapped, in parallel, over blocks using {\tt pConcatMap}. 
 
 \begin{small} 
 \begin{verbatim} 
 reverses :: DPull a -> DPush Grid a
-reverses arr = pConcatMap reverseL $ splitUp 256 arr 
+reverses arr = pConcatMap (pJoin . reverseLocal)
+                          (splitUp 256 arr) 
+
+reverses' :: MemoryOps a => DPull a -> DPush Grid a
+reverses' arr = pConcatMap (pJoin . reverseLocal')
+                           (splitUp 256 arr) 
 \end{verbatim} 
 \end{small} 
 
@@ -456,9 +463,9 @@ The {\tt pConcatMap} combinator has the following type:
 \begin{small}
 \begin{Verbatim}[samepage=true] 
 pConcatMap :: ASize l 
-              => (a1 -> Program t (SPush t a)) 
-              -> Pull l a1 
-              -> Push (Step t) l a
+            => (a1 -> SPush t a) 
+            -> Pull l a1 
+            -> Push (Step t) l a
 \end{Verbatim}
 \end{small}
 
@@ -466,7 +473,10 @@ pConcatMap :: ASize l
 level of the GPU hierarchy, {\tt t}, and a pull array. The computation 
 is applied to each element of the pull array and the results are concatenated 
 into a push array at the level above {\tt t}. Here, this is used to apply a block 
-level computation, giving a grid computation. 
+level computation, giving a grid computation. The {\tt pJoin} function 
+has type \verb!Program t (Push t s a) -> Push t s a!; it creates a new push array 
+that computes the same results as the input computation.
+
 
 The CUDA code generated by the above \verb!reverses! function is shown in 
 Figure~\ref{fig:rev1}. Note how it uses the indices of the block 
@@ -498,10 +508,11 @@ in each block-sized chunk are reversed locally, and the order of those chunks is
 
 \begin{small} 
 \begin{verbatim} 
-largeReverse :: DPull a
-                -> Push Grid EWord32 a
+largeReverse :: DPull b
+              -> Push Grid EWord32 b
 largeReverse arr =
-  pConcat $ reverse $ pMap reverseL $ splitUp 256 arr 
+  pConcat $ reverse $ fmap (pJoin . reverseLocal)
+                      (splitUp 256 arr) 
 \end{verbatim} 
 \end{small} 
 
@@ -745,8 +756,13 @@ embedded language Pan ~\citehl{COMPILEEDSL} used a similar representation for
 images and it has been used since in Obsidian, Feldspar ~\citehl{FELDSPAR} 
 and Repa ~\citehl{REPA}. In Obsidian, there is a {\tt force} function that,
 when applied to a pull array, writes the elements of that array 
-into shared memory using as many threads as the pull array is long. Hence, 
-the {\tt force} function can be used to express parallelism in Obsidian. 
+into shared memory using as many threads as needed from those available. 
+If the array is larger than the number of threads made available, the 
+force operation is split into two or more passes. This is a change compared
+to earlier versions of Obsidian where the length of arrays we could force 
+where limited to the maximum number of threads. In this version, the 
+threads are, in a sense, virtual. The mapping from virtual threads to 
+real threads is done as a step in the compilation.  
 
 %Pull arrays have a length associated with them. The length of a pull array 
 %represents its inherent capability of parallelism. 
@@ -754,7 +770,7 @@ the {\tt force} function can be used to express parallelism in Obsidian.
 The length of an array, the {\tt s} parameter,
 can be either static (a Haskell known-at-compile-time value) or dynamic 
 (a runtime value). Static lengths are used for local (or block) 
-computations, with those lengths determining the number of threads needed and the shared memory consumption. Dynamic 
+computations, with those lengths determining shared memory consumption. Dynamic 
 lengths are used for global computations (across many blocks). After specifying 
 a local computation, it can often be applied over a variable number of blocks. 
 The dynamic lengths capture this common use case.
@@ -781,7 +797,8 @@ exposed by Obsidian. In reference ~\citehl{JOSEFJOELCSORT} we make use of these 
 capabilities to implement histograms using atomic operations (not shown here). 
 
 The {\tt Program} data type has a parameter, {\tt t}, that can be 
-either {\tt Thread}, {\tt Block} or {\tt Grid}, corresponding to the GPU hierarchy, as shown in Figure~\ref{fig:Hierarchy}.
+either {\tt Thread}, {\tt Block} or {\tt Grid}, corresponding to 
+the GPU hierarchy, as shown in Figure~\ref{fig:Hierarchy}.
 
 \begin{small}
 \begin{verbatim} 
@@ -916,21 +933,22 @@ only by using {\tt force} that the programmer can explicitly demand that the
 operations should not be fused but that the actual intermediate result should 
 be stored in memory. In Obsidian, {\tt force} is also the only way 
 to convert a push array into a pull array. 
-The type of {\tt force} is: 
+With some class constraints removed for simplicity, the type of {\tt force} is: 
 \begin{small} 
 \begin{Verbatim}[samepage=true] 
-force :: (Write p, MemoryOps a) 
-         => p Word32 a 
-         -> Program Block (Pull Word32 a)
+force :: ( ... ) 
+       => arr Word32 a 
+       -> Program Block (Pull Word32 a)
 \end{Verbatim}
 \end{small}
 
 \noindent
-where {\tt p} is an array (push or pull) with elements that can be stored into memory. 
+where {\tt arr} is an array (push or pull) with elements that can be stored into memory. 
 Note that the return type of {\tt force} is a program yielding a pull array. This pull 
 array represents reading from a named area of memory. 
 
-Converting a pull array to a push array is cheap and is done using a function called {\tt push} that behaves differently (sequentially or in parallel) at different levels
+Converting a pull array to a push array is cheap and is done using a function called 
+{\tt push} that behaves differently (sequentially or in parallel) at different levels
 of the GPU hierarchy. This is implemented as a type class: 
 
 \begin{small}
@@ -1163,36 +1181,36 @@ cs i (Return a) = (a,[])
 \end{small}
 
 
-After compiling the monadic {\tt Program} into a list of statements, 
-some characteristics are collected. 
+%% After compiling the monadic {\tt Program} into a list of statements, 
+%% some characteristics are collected. 
 
-The first analysis done on the {\tt IM} 
-discovers the number of threads needed per block to run the program. This 
-is done by a pass over the {\tt IM} and looking at the size  
-of each parallel {\tt SForAll} loop. The largest {\tt SForAll} loop present 
-decides how many threads are needed. The implementation of any other 
-{\tt SForAll} loop will be wrapped in a conditional that turns 
-off any unused threads.
+%% The first analysis done on the {\tt IM} 
+%% discovers the number of threads needed per block to run the program. This 
+%% is done by a pass over the {\tt IM} and looking at the size  
+%% of each parallel {\tt SForAll} loop. The largest {\tt SForAll} loop present 
+%% decides how many threads are needed. The implementation of any other 
+%% {\tt SForAll} loop will be wrapped in a conditional that turns 
+%% off any unused threads.
 
-Note that there is no similar analysis to discover the maximum extents 
-of {\tt SForAllBlocks} loops. The reason is that the restriction
-to kernels of the form: 
+%% Note that there is no similar analysis to discover the maximum extents 
+%% of {\tt SForAllBlocks} loops. The reason is that the restriction
+%% to kernels of the form: 
 
-\begin{small} 
-\begin{Verbatim}[samepage=true]
-myKernel :: a0 -> ... -> aN -> DPush Grid b 
-\end{Verbatim} 
-\end{small} 
+%% \begin{small} 
+%% \begin{Verbatim}[samepage=true]
+%% myKernel :: a0 -> ... -> aN -> DPush Grid b 
+%% \end{Verbatim} 
+%% \end{small} 
 
-\noindent means that there can be no sequence of {\tt SForAllBlocks} loops in the program. In other 
-words, an Obsidian Program for which we can generate code will contain at most 
-one {\tt SForAllBlocks} loop. Some care has also to be taken with
-the language constructs that result in grid push arrays, so that none of these 
-creates illegal programs.
+%% \noindent means that there can be no sequence of {\tt SForAllBlocks} loops in the program. In other 
+%% words, an Obsidian Program for which we can generate code will contain at most 
+%% one {\tt SForAllBlocks} loop. Some care has also to be taken with
+%% the language constructs that result in grid push arrays, so that none of these 
+%% creates illegal programs.
 
 % \emph{*** would wrong word in above sentence.}
 
-In the current {\tt IM}, all arrays in shared memory will have unique 
+In the {\tt IM}, all arrays in shared memory will have unique 
 names. These names are obtained via the value supply during the reification 
 of the {\tt Program} monad. These names will be used in a memory mapping phase.
 A {\em liveness} analysis of the arrays collects information needed to lay 
@@ -1200,11 +1218,19 @@ out the arrays in the shared memory of the GPU. Currently no spilling of
 arrays that do not fit into shared memory is performed, so it is very possible 
 to design an Obsidian program that will not work because of shared memory 
 restrictions. After the arrays are assigned addresses in the shared memory,
-a renaming phase replaces array names with these locations. This is done 
-while also going from the {\tt IM} data type to a third internal representation 
-of the program. This third representation is a C-like AST extended with some 
-GPU specific concepts (just as CUDA is an extended C). We strive to make this representation sufficiently general to be turned into 
-either CUDA code or OpenCL code, but currently only output CUDA.   
+a renaming phase replaces array names with these locations. 
+
+The last step in compilation process uses the Language.C.Quote library to 
+turn the {\tt IM} into CUDA code. This compilation stage takes a {\em configuration} 
+as parameter. The configuration tells how many actual threads per block the 
+CUDA code should be generated for. At this stage parallel for loops (\tt SForAll) 
+are turned into more than one parallel for loop in sequence, if needed. 
+
+%This is done 
+%while also going from the {\tt IM} data type to a third internal representation 
+%of the program. This third representation is a C-like AST extended with some 
+%GPU specific concepts (just as CUDA is an extended C). We strive to make this representation sufficiently general to be turned into 
+%either CUDA code or OpenCL code, but currently only output CUDA.   
 
 % ---------------------------------------------------------------------------
 % More example programs 
@@ -1214,9 +1240,13 @@ either CUDA code or OpenCL code, but currently only output CUDA.
 
 %\emph{*** SOME TEXT THAT LEADS INTO THE CASE STUDIES}
 
-The following case studies show first a typical application, the Mandelbrot fractal, in which the required work is naturally highly parallel.
-The remaining case studies consider key building blocks, reduce and scan, that have data-flow graphs involving much more communication. Then, the programmer must find ways to decompose the algorithm in order to fit within
-the constraints imposed by the GPU architecture. These two case studies illustrate the use of Obsidian for exploring the design space when implementing a particular algorithm.
+The following case studies show first a typical application, the Mandelbrot 
+fractal, in which the required work is naturally highly parallel.
+The remaining case studies consider key building blocks, reduce and scan, 
+that have data-flow graphs involving much more communication. Then, the 
+programmer must find ways to decompose the algorithm in order to fit within
+the constraints imposed by the GPU architecture. These two case studies illustrate 
+the use of Obsidian for exploring the design space when implementing a particular algorithm.
 
 \subsection{Fractals} 
 
@@ -1326,10 +1356,10 @@ The final step is to run the iterations for each pixel location.
 This is done by using the {\tt generate} function: 
 \begin{small}
 \begin{Verbatim}[samepage=true] 
-generate :: ASize l
-            => l
-            -> (EWord32 -> Program t (SPush t b))
-            -> Push (Step t)  l b
+generate :: ASize l 
+          => l 
+          -> (EWord32 -> SPush t b) 
+          -> Push (Step t) l b
 \end{Verbatim}
 \end{small}
 
@@ -1348,11 +1378,10 @@ an element per thread, a block,  and then to execute a number of such blocks ove
 genRect :: MemoryOps b
            => EWord32
            -> Word32
-           -> (EWord32 -> EWord32 
-                 -> TProgram (SPush Thread b))
+           -> (EWord32 -> EWord32 -> SPush Thread b)
            -> DPush Grid b 
-genRect bs ts p = 
-   generate bs (\bid -> return $ generate ts (p bid))
+genRect bs ts p = generate bs $
+                  \bid -> generate ts $ p bid 
 \end{verbatim}
 \end{small} %$
 
@@ -1363,7 +1392,7 @@ limitation of current GPUs. The code below generates a 512$\times$512 element
 image. 
 \begin{small} 
 \begin{verbatim}
-mandel = genRect 512 512 iters 
+mandel = genRect 512 512 (\b -> pJoin . iters b)
 \end{verbatim}
 \end{small}
 
@@ -1467,9 +1496,9 @@ kernel will work for arrays whose length is a power of two.
 \begin{small} 
 \begin{Verbatim}[samepage = true] 
 red1 :: MemoryOps a
-           => (a -> a -> a)
-           -> SPull a
-           -> BProgram (SPush Block a)
+      => (a -> a -> a)
+      -> SPull a
+      -> BProgram (SPush Block a)
 red1 f arr
   | len arr == 1 = return $ push arr
   | otherwise    = 
@@ -1490,7 +1519,7 @@ mapRed1 :: MemoryOps a
               => (a -> a -> a) 
               -> DPull (SPull a) 
               -> DPush Grid a
-mapRed1 f = pConcatMap $ red1 f
+mapRed1 f = pConcatMap $ pJoin . red1 f
 \end{Verbatim}
 \end{small} %$
 
