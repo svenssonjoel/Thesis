@@ -1223,7 +1223,7 @@ a renaming phase replaces array names with these locations.
 The last step in compilation process uses the Language.C.Quote library to 
 turn the {\tt IM} into CUDA code. This compilation stage takes a {\em configuration} 
 as parameter. The configuration tells how many actual threads per block the 
-CUDA code should be generated for. At this stage parallel for loops (\tt SForAll) 
+CUDA code should be generated for. At this stage parallel for loops ({\tt SForAll})
 are turned into more than one parallel for loop in sequence, if needed. 
 
 %This is done 
