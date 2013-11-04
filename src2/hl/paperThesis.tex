@@ -278,7 +278,7 @@ on the CPU of the host machine.
 
 
 \begin{figure} 
-\def\s{.50}
+\def\s{.75}
 \begin{tikzpicture}[scale=(\s)]
 
 % \draw [help lines] (0,0) grid (16,4);
@@ -689,7 +689,13 @@ data Exp a where
   Index   :: Scalar a => 
              (Name,[Exp Word32]) 
              -> Exp a 
-             
+\end{Verbatim}
+\end{small}
+
+\pagebreak
+
+\begin{small}
+\begin{Verbatim}             
   If      :: Scalar a 
              => Exp Bool
              -> Exp a 

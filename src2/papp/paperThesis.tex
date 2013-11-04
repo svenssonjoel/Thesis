@@ -488,6 +488,8 @@ floating point or integer valued. This particular kernel does not use
 any shared memory; the incremented values are stored directly into the 
 result array that resides in global memory.  
 
+\pagebreak 
+
 Given two GPU programs, {\tt f} and {\tt g}, of suitable types, a 
 composite GPU program can be created by passing the output of {\tt f} to the 
 input of {\tt g}. In Obsidian this is done using the composition operator (or combinator)
@@ -691,6 +693,9 @@ mergeOE n f = ilv (mergeOE (n-1) f) ->- sync ->- pure (odds f)
 \noindent
 This is actually a pattern into which any two-input two-output function
 can be plugged. However, we choose the following {\em comparator} function (a compare and swap operation). The resulting merger can be executed on the GPU.
+
+\pagebreak
+
 \begin{small}
 \begin{verbatim}
 cmp :: (Ordered a, Choice (a, a)) => (a, a) -> (a, a)

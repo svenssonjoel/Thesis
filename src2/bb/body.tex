@@ -157,7 +157,7 @@ Since the language is going to be compiled, \studname{} realises that the
 booleans in his language cannot be regular Haskell booleans. The booleans 
 needs to be replaced by boolean typed expressions.
 
-\pagebreak
+% \pagebreak
 \begin{small} 
 \begin{verbatim}
 type Name = String
@@ -202,7 +202,9 @@ data Program a where
             -> (a -> Program b)
             -> Program b 
 \end{verbatim} 
-\end{small} 
+\end{small}
+ 
+\pagebreak 
 
 Then he writes down the {\tt Monad} instance.
  
@@ -438,11 +440,22 @@ runCompile :: Program a -> Prg
 runCompile prg = snd $ compile s prg 
   where 
     s = newNameSupply
+\end{verbatim}
+\end{small}
     
+\begin{small}
+\begin{verbatim}
 compile :: NameSupply -> Program a -> (a, Prg) 
 compile s Move = ((),PMove)
 compile s TurnRight = ((),PTurnRight)
 compile s TurnLeft  = ((),PTurnLeft)
+\end{verbatim}
+\end{small}
+
+\pagebreak
+
+\begin{small}
+\begin{verbatim}
 compile s Sensor    = (Var nom,PSensor nom)
   where
     v   = supplyValue s
@@ -893,7 +906,7 @@ instance Compile (SensorOp x) where
     where v   = supplyValue s
           nom = "v" ++ show v
 \end{verbatim}
-\pagebreak
+% \pagebreak
 \begin{verbatim}
 instance Compile x => Compile (CondOp x) where
   compile s (Cond b p1 p2) = 
@@ -1048,6 +1061,8 @@ test1 = do
   turnL 
 \end{verbatim}
 \end{small}
+
+\pagebreak 
 
 Compiling the program above gives the expected result. 
 
