@@ -165,12 +165,14 @@ run on the GPU. Section \ref{sec:GPU} covers GPU architecture.
 Obsidian is an embedded language for GPU programming that aims to raise the 
 level of abstraction for the GPU programmer, while maintaining control over 
 the low-level details that are needed for performance. 
-So far,
-we have chosen not to try to apply automatic transformations or compiler 
+
+So far, we have chosen not to try to apply automatic transformations or compiler 
 optimisation techniques to a GPU architecture agnostic program and hope 
 to get performance. In Obsidian, we want to put the tools to make the 
 correct decisions into the hands of the programmer. From Obsidian programs, 
-CUDA kernels are generated, while host code must still be written in CUDA.
+CUDA kernels are generated; host code can be written in Obsidian, but is still 
+preferably written in CUDA.
+
 For key building blocks like scan and reduce, we see a trend towards
 the use of fewer and much more complicated kernels~\citehl{merrill}, so
 that the host code is often relatively simple. We wish to support the construction of these sophisticated kernels.
@@ -2376,7 +2378,7 @@ shared memory to the same extent as the ones we generate. It would be interestin
 to try to incorporate these capabilities Obsidian. However, this 
 would mean that plans to target both OpenCL and CUDA would have to be retired. 
 
-In reference ~\citehl{CSORT}, we experiment with atomic operations 
+In reference ~\citehl{JOSEFJOELCSORT}, we experiment with atomic operations 
 and are forced to write our code in a very imperative style. The addition of mutable 
 arrays and a set of operations on them could improve this situation 
 while giving up purity. We will explore what the addition of mutable arrays to 
