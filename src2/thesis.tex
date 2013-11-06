@@ -304,87 +304,68 @@ but the sparse matrix vector multiplication example is entirely Mary's.
 
 \section{Introduction} 
 
-This thesis is about applying embedded language techniques to programming 
-multi- and many-core computers. Computers today are becoming more and more  
-parallel. With each new generation of 
-general purpose processor (CPU) or graphics processor (GPU), we get more 
-parallel resources. To fully make use of modern CPUs and GPUs, we need to
-exploit their parallelism. 
+This thesis applies embedded language methodology to data-parallel programming of 
+massively parallel hardware. Embedded languages are languages that are implemented 
+as a library for some existing host language. In this case, the functional programming 
+language Haskell is used as host language. 
 
-While it is sometimes possible to automatically parallelise programs originally 
-written for serial execution, it is becoming clear that explicitly parallel 
-programming models are needed for making use of all parallel resources~\cite{STRUCTURED}. 
-This also means that it is important to think in parallel from the beginning. 
+Computers today are increasingly parallel. Each new generation of general purpose processors
+(CPUs) and of graphics processors (GPUs), brings more parallelism. The question 
+of how to program these computers most efficiently, both from a productivity and 
+a performance point of view, arise. Explicit parallel programming is hard and automatic 
+means of parallelisation, while giving a sequential programming model to the programmer, 
+often misses the target when it comes to performance. {\bf \emph{source??}} 
 
-This thesis focuses on data-parallelism, as opposed to control- or 
-task-parallelism. Data parallelism is applicable where the input data can 
-be divided into chunks and operated upon independently. Data-parallelism is scalable,
-meaning that the potential for parallelism increases with problem size. 
+The embedded language approach to programming language implementation is beneficial 
+since we are not entirely sure of how to program current and future highly parallel 
+computers. Implementing an embedded language allows us more rapid prototyping of ideas. 
+We can experiment with what abstractions to expose to the programmer, without much 
+effort. Other benefits of embedded languages often mentioned are: making use 
+of the host language's library functions, if they are general enough. The host language 
+can be used as a powerful macro language for the embedded language. An embedded 
+language also provide a more leveled learning curve to programmers already familiar 
+with the host language. For these programmers using an embedded language is more like  
+learning about a new library. 
 
-Modern CPUs are parallel in a number of different ways. They discover instruction
-level parallelism (ILP), they have multiple processor cores and vector units for 
-Single Instruction Multiple Data (SIMD)  parallelism. The exact configuration, number
-of cores and number of vector units, varies over available processor models. 
-To obtain maximum performance, with a specific target processor in mind, the programmer
-can use low-level intrinsics in order to get SIMD parallelism and a threading library
-for parallelism over the available cores. One problem with this is that the resulting program 
-would be specialised to a specific processor model. The Intel Array Building Blocks (ArBB) 
-system approaches this problem by providing a high level programming interface~\citet{ARBB2011}.
-This interface is based on a set of parallel operations on arrays, such as map, folds 
-and scans. ArBB was implemented as an embedded language in C++, but a low-level C interface to 
-its capabilities was also provided. ArBB programs are JIT-ed (Just-In-Time compiled) to 
-target the available CPU or accelerator (such as the Intel Larrabee~\citet{Larrabee}, 
-knights Ferry, Xeon Phi). In chapter~\ref{chap:ArBB}, there are papers describing work 
-towards embedding Intel ArBB in Haskell. 
+This thesis focuses on data-parallelism, as opposed to task or control parallelism.
+Data-parallelism is applicable where the input data can be divided into chunks
+and operated upon independently. Data-parallelism is scalable; the potential 
+for parallelism increases with the problem size. Two different embedded languages 
+for data-parallel programming are presented in this thesis: Obsidian, for 
+general purpose computations on GPUs and EmbArBB for parallel programming across 
+platforms, CPU, GPU and other accelerators. 
 
 Graphics Processors (GPUs) trade programmer convenience for increased parallelism. 
-For example, where CPUs dedicate large portions of chip area to caches, branch prediction and 
-ILP, GPUs put additional cores. This comes at a price of increased programmer effort.
-GPUs have programmer managed shared memories, conditionals are troublesome from a performance 
+For example, where CPUs dedicate large portions of chip area to caches, branch 
+prediction and Instruction level parallelism (ILP), GPUs put additional cores. 
+This comes at a price of increased programmer effort. GPUs have programmer managed 
+shared memories, conditionals are troublesome from a performance 
 perspective and memory access patterns can make or break the performance of an 
-application.  
+application. With Obsidian we try to find the right level of abstraction for 
+programming GPUs. We try to strike a balance between low-level control of details 
+that influence performance and high-level abstractions to increase productivity and 
+make programs more terse. The end goal with Obsidian is a language for writing 
+high performance GPU programs that compare well to code written by CUDA 
+(a C-dialect for GPU programming) experts, provided that both programmers have 
+similar GPU expertise. The Obsidian programmer would however do so in a more 
+composable manner. Obsidian programs are compiled into CUDA.  
 
-Intel ArBB is part of a movement towards thinking of structure and patterns in 
-parallel programming. Other languages and libraries with similar aspirations 
-are NVIDIA Thrust~\citet{THRUST} and Data.Array.Accelerate~\citet{ACCELERATEDAMP11}.
-In the book ``Structured Parallel Programming'' by Michael McCool et al, a case is 
-made for thinking in terms of building blocks for parallel programming~\citet{STRUCTURED}. 
-They emphasise the importance of collective array operations such as map, fold, scans, 
-permutations and gather/scatter operations. The book contains examples in ArBB, Cilk Plus, 
-Intel Threading Building Blocks, OpenMP and OpenCL. Not all these languages include 
-the patterns as abstractions, but most are possible to express in each of the languages. 
-The patterns, while very powerful as abstractions, also provide tools for thinking about 
-parallel algorithms. The ArBB library supports flat regular data-parallelism, but also 
-irregular and to some degree nested data-parallelism. 
+Obsidian is geared towards the programmer who is interested in GPU hardware. Making 
+good use of Obsidian requires that the programmer is willing to make an effort 
+of learning about GPUs and how to program them efficiently. However, another case 
+is a programmer who does not want to invest that effort but wants to write a high-level 
+parallel program and have it run reasonably well on different parallel architectures. 
+In this case a language with even higher level of abstraction is preferable. It then 
+becomes the job of a more advanced compiler to turn that into code for the targetted 
+platforms. The EmbArBB language targets this programmer. EmbArBB exposes a set of high-level 
+operations on arrays, such as {\tt map}, {\tt reduce} and {\tt scan}. The programmer 
+has no power over the parallel strategy that should be used to implement these 
+operations but instead rely on a JIT-compiler (Just In Time-compiler). EmbArBB is a 
+Haskell embedding of Intel ArBB that was released as an embedded language in C++. 
 
-The patterns are powerful abstractions, but it is also important not to be locked into 
-a single implementation of each pattern. This could have negative performance impacts. 
-In ArBB, for example, the patterns used are specialised to the current hardware during JIT 
-compilation. Languages like OpenCL and CUDA do not provide abstractions of these patterns. 
-The programmer needs to implement them using lower level features, making CUDA and OpenCL 
-code less composable and harder to reuse. As an example, look at the slides from NVIDIA in 
-reference~\citet{reduction} where a reduction primitive is implemented in CUDA. First a 
-naive reduction pattern is implemented and then refined over many steps, taking many 
-characteristics of the GPU into mind. The end result is an implementation of the 
-reduction pattern that performs very well on the chosen GPU. But as GPUs evolve, the 
-design space may need to be explored again. 
-%What is 
-%is that says that we do not need to redo this exploration with each new GPU generation 
-%and discover a new optimal solution?  
 
-Obsidian is our embedded language for GPU programming. We raise the level of abstraction 
-compared to CUDA and provide a more composable interface. But we also want to keep 
-the possibility for the programmer to implement patterns in different ways. A balance 
-must be struck between providing enough low-level control to get at the performance 
-and still making building blocks implemented by the programmer reusable and composable. 
-We want to provide more compositional tools for the programmer to experiment with while 
-exploring the space of various ways to implement a given pattern or primitive. 
-In chapter~\ref{chap:GPUProgramming}, there are papers describing work on Obsidian. 
-Obsidian is focused on flat and regular data-parallelism. 
+{\bf {\emph old text from here to end}}
 
-% \section{The problem}
-
-% \emph{what is so interesting about Parallelism and GPUs}
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
