@@ -416,9 +416,63 @@ also divided into {\em Blocks}; the threads within a block can communicate using
 shared memory. The maximum block size is currently 1024 threads. Since 
 the number of threads in a block can be higher than the warp size, a barrier 
 synchronisation mechanism exists to ensure that threads within a block 
-can communicate safely via the shared memory. 
+can communicate safely via the shared memory. Blocks are also grouped into a grid that 
+is the collection of blocks executing the same program. 
+
+\subsection{GPU programming} 
+
+The CUDA programming model reflects the hierarchical architecture of the GPU. The 
+programmer writes what are called \emph{kernels}; in CUDA jargon a kernel refers to a sequential 
+C program that is parameterised on a thread's identity. The kernel program is executed 
+in parallel across all the threads of a block and many such blocks of threads can execute 
+in parallel on the available MPs. Kernels may use shared memory that is local to a block; 
+the programmer needs to decompose the algorithm and data in such a way that communication 
+will be local to the blocks. 
 
 
+The program below is a very simple example of a CUDA kernel that computes elementwise sums. 
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+__global__ void kernel(int32_t *i1, int32_t *i2, int32_t *r) {
+  
+  unsigned int gid = blockIdx.x * 
+                     blockDim.x + 
+                     threadIdx.x;
+
+  r[gid] = i1[gid] + i2[gid]; 
+
+} 
+
+\end{Verbatim}
+\end{small}
+
+\noindent The kernel takes two input arrays, {\tt i1} and {\tt i2}; the result is stored 
+in {\tt r}. Note how the kernel makes use of three variables, {\tt threadIdx.x}, 
+{\tt blockIdx.x} and {\tt gridDim.x}. These variables identify a thread uniquely within 
+a grid. Here they are used to obtain an index into the provided arrays. The dimensions of 
+the blocks and of the grid is set by a controling program upon launch of the kernel. This 
+controling program is run by the CPU of the computer housing the GPU. the kernel is launched 
+using the following syntax: 
+
+\begin{small} 
+\begin{Verbatim}[samepage=true]
+kernel<<<1,32,0>>>(d_i1,d_i2,d_r);
+\end{Verbatim}
+\end{small}
+
+\noindent The line of code above launches the kernel on one block of 32 threads. The zero 
+indicates that the kernel uses no shared memory. If the kernel did use shared memory, the 
+amount needed should have been specified there. Figure~\ref{fig:CUDACODE1} shows the complete 
+sequence of commands for a minimal example using the kernel specified above. 
+
+In Obsidian the same kernel (the local computation) is implemented as follows: 
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+
+\end{Verbatim]
+\end{small}
 
 
 \subsection{Writing efficient GPU Kernels} 
@@ -503,6 +557,7 @@ the GPU. The host runs a control program that launches kernels on the GPU. First
 needs to be allocated in the device to hold the inputs and outputs. Then data is copied from 
 the host's system memory into device memory. 
 
+\begin{figure} 
 \begin{small}
 \begin{Verbatim}[samepage=true]
 int main(void) {
@@ -549,6 +604,11 @@ int main(void) {
 }
 \end{Verbatim} 
 \end{small}
+
+\caption{Host code for launching a simple CUDA kernel on the GPU.}
+\label{fig:CUDACODE1}
+
+\end{figure} 
 
 \pagebreak 
 
