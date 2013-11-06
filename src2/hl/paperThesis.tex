@@ -615,21 +615,21 @@ arrays cannot be expressed.
 \node [right=11mm of l1.north east, anchor=north west] (l2) {\small Key concepts};
 \node [right=16mm of l2.north east, anchor=north west] (l3) {\small Obsidian};
 
-\node [wbox,inner ysep=15pt,right=0cm of gd.north east, anchor=north west] (obs1) {% 
+\node [wbox,inner ysep=19.5pt,right=0cm of gd.north east, anchor=north west] (obs1) {% 
   \begin{minipage}{0.35\linewidth}
         {\small pMap, generate, DPush, DPull}
     \end{minipage}
 };
 
-\node [wbox,inner ysep=15pt,below=0cm of obs1.south] (obs2) {% 
+\node [wbox,inner ysep=14pt,below=0pt of obs1.south] (obs2) {% 
   \begin{minipage}{0.35\linewidth}
         {\small pMap, generate, force, SPush, SPull}
     \end{minipage}
 };
-
-\node [wbox,inner ysep=9.5pt, below=0cm of obs2.south] (obs3) {% 
+%below=0cm of obs2.south
+\node [wbox,inner ysep=13.5pt, below=0pt of obs2.south] (obs3) {% 
   \begin{minipage}{0.35\linewidth}
-        {\small seqFor, seqUntil \\ seqReduce\\ seqScan, SPush, SPull}
+        {\small seqFor, seqUntil, seqReduce\\ seqScan, SPush, SPull}
     \end{minipage}
 };
 
@@ -2543,6 +2543,7 @@ Swedish Research Council.
 
 \bibliographystylehl{alpha}
 \bibliographyhl{thesis}
+\addcontentsline{toc}{subsection}{Bibliography}
 
 % The bibliography should be embedded for final submission.
 

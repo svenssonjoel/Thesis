@@ -10,7 +10,7 @@ all:
 	bibtex emb
 	bibtex arbb
 	bibtex t
-	bibtex thesis 
+#	bibtex thesis 
 	pdflatex thesis
 	pdflatex thesis
 
