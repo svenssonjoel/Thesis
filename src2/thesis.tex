@@ -354,7 +354,7 @@ application. With Obsidian we try to find the right level of abstraction for
 programming GPUs. We try to strike a balance between low-level control of details 
 that influence performance and high-level abstractions to increase productivity and 
 make programs more terse. The end goal with Obsidian is a language for writing 
-high performance GPU programs that compare well to code written by CUDA 
+high performance GPU programs that compare well to code written by CUDA~\citet{CUDA}  
 (a C-dialect for GPU programming) experts, provided that both programmers have 
 similar GPU expertise. The Obsidian programmer would however do so in a more 
 composable manner. Obsidian programs are compiled into CUDA.  
@@ -371,6 +371,59 @@ operations on arrays, such as {\tt map}, {\tt reduce} and {\tt scan}. The progra
 has no power over the parallel strategy that should be used to implement these 
 operations but instead rely on a JIT-compiler (Just In Time-compiler). EmbArBB is a 
 Haskell embedding of Intel ArBB that was released as an embedded language in C++. 
+EmbArBB relies entirely on the ArBB system for code generation and optimisation.  
+
+
+\section {Obsidian: An embedded language for GPU kernel implementation} 
+
+In 2006 NVIDIA released their first Compute Unified Device Architecture (CUDA) 
+GPU. With CUDA, NVIDIA also made it a lot easier for programmers to use GPUs
+for general purpose programming. A dialect of C, called CUDA C, was released 
+specifically to simplify the implementation of general purpose computations on GPUs. 
+
+Before CUDA, programmers still tried (very ingeniously) to make use of GPUs for 
+non-graphics applications via the graphics API. The computation needed to be expressed 
+in graphics terms and the result computed through an act of rendering. Of course, since the 
+available abstractions targetted at the graphics domain, this added extra
+burden  on the programmer. CUDA was NVIDIA's first response to this problem. With CUDA 
+there is a dialect of C, extended with GPU specific functionality. 
+
+Having a language specifically made for general purpose programming on the GPU, such as 
+CUDA, is a big step up from earlier. But CUDA still offers a very low-level interface to 
+programming the GPU, which is preferred in a situation where the programmer needs to 
+think about hardware specific details to get the best performance. This CUDA provides, 
+but at the price that it is hard to build upon, abstract and reuse prior programming 
+effort. This is where we are trying to go one step further with Obsidian. 
+
+\subsection{GPU hardware} 
+
+Before going into programming of GPUs, it is important to have some background. The 
+GPU programming model exposed by CUDA very much mirrors the underlying hardware. Some 
+of the details that make GPU programming hard is more apparent when looking at the 
+underlying hardware. 
+
+A CUDA GPU is built around a single kind of processor (as opposed to the different 
+kinds of processors found in earlier GPUs). The processors in the GPU (called MPs, 
+MultiProcessors) all contain a number of cores called SPs (Streaming Processors). 
+Each MP also contains local memory, called shared memory since it can be accessed 
+by all of the SPs in that MP. The number of MPs varies over the available GPUs; cheaper 
+GPUs have as few as one MP, and as you go up in price the number of MPs increases.
+
+Each MP of the GPU can manage a large number of threads; on today's GPUs up to 
+2048 threads can run on a single MP. The GPU schedules threads in groups of 32, called 
+{\em Warps}, that are executed in lock-step (SIMD style execution). Threads are 
+also divided into {\em Blocks}; the threads within a block can communicate using the 
+shared memory. The maximum block size is currently 1024 threads. Since 
+the number of threads in a block can be higher than the warp size, a barrier 
+synchronisation mechanism exists to ensure that threads within a block 
+can communicate safely via the shared memory. 
+
+
+
+
+\subsection{Writing efficient GPU Kernels} 
+ \emph{now takes up both CUDA and Obsidian aspects at the same time, pref. with code examples} 
+  
 
 
 {\bf {\emph old text from here to end}}
@@ -1350,8 +1403,8 @@ to for anyone starting out with compiled embedded languages.
 
 \node[anchor=west] (acc) at (1,2.7) {Accelerate\\Nikola\\Thrust};
 \node[anchor=west] (acc) at (1,1.7) {CUB};
-\node[anchor=west] (repa) at (0,2.6) {DPH\\Nesl\\Repa\\Meta-repa};
-\node[anchor=west] (mixed) at (0,1.7) {Cilk+\\ TBB\\ Feldspar};
+\node[anchor=west] (repa) at (0,2.5) {DPH\\Nesl\\Repa\\Meta-repa\\Feldspar};
+\node[anchor=west] (mixed) at (0,1.7) {Cilk+\\ TBB};
 \node[anchor=west] (accelerator) at (2,1.7) {Accelerator};
 
 \node[anchor=west] (cuda) at (1,0.3) {CUDA};
