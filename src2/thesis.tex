@@ -314,9 +314,9 @@ but the sparse matrix vector multiplication example is entirely Mary's.
 \section{Introduction} 
 
 This thesis applies embedded language methodology to data-parallel programming of 
-massively parallel hardware. Embedded languages are languages that are implemented 
+massively parallel hardware. An Embedded language is a language that is implemented 
 as a library for some existing host language. In this case, the functional programming 
-language Haskell is used as host language. 
+language, Haskell is used as host language. 
 
 Computers today are increasingly parallel. Each new generation of general purpose processors
 (CPUs) and of graphics processors (GPUs), brings more parallelism. The question 
@@ -382,16 +382,16 @@ for general purpose programming. A dialect of C, called CUDA C, was released
 specifically to simplify the implementation of general purpose computations on GPUs. 
 
 Before CUDA, programmers still tried (very ingeniously) to make use of GPUs for 
-non-graphics applications via the graphics API. The computation needed to be expressed 
+non-graphics applications via the graphics API. The desired computation was expressed 
 in graphics terms and the result computed through an act of rendering. Of course, since the 
-available abstractions targetted at the graphics domain, this added extra
-burden  on the programmer. CUDA was NVIDIA's first response to this problem. With CUDA 
-there is a dialect of C, extended with GPU specific functionality. 
+available abstractions targeted the graphics domain, this added extra
+burden on the programmer. CUDA was NVIDIA's first response to this problem. With CUDA 
+there is a dialect of C, extended with a parallel programming model suitable for GPUs. 
 
 Having a language specifically made for general purpose programming on the GPU, such as 
 CUDA, is a big step up from earlier. But CUDA still offers a very low-level interface to 
 programming the GPU, which is preferred in a situation where the programmer needs to 
-think about hardware specific details to get the best performance. This CUDA provides, 
+think about hardware specific details to get the best performance. CUDA provides this, 
 but at the price that it is hard to build upon, abstract and reuse prior programming 
 effort. This is where we are trying to go one step further with Obsidian. 
 
@@ -434,7 +434,7 @@ The program below is a very simple example of a CUDA kernel that computes elemen
 
 \begin{small}
 \begin{Verbatim}[samepage=true]
-__global__ void kernel(int32_t *i1, int32_t *i2, int32_t *r) {
+__global__ void vecAdd(int32_t *i1, int32_t *i2, int32_t *r) {
   
   unsigned int gid = blockIdx.x * 
                      blockDim.x + 
@@ -457,7 +457,7 @@ using the following syntax:
 
 \begin{small} 
 \begin{Verbatim}[samepage=true]
-kernel<<<1,32,0>>>(d_i1,d_i2,d_r);
+vecAdd<<<1,32,0>>>(d_i1,d_i2,d_r);
 \end{Verbatim}
 \end{small}
 
@@ -470,7 +470,33 @@ In Obsidian the same kernel (the local computation) is implemented as follows:
 
 \begin{small}
 \begin{Verbatim}[samepage=true]
+vecAdd :: Num a => SPull a -> SPull a -> SPull a
+vecAdd = zipWith (+)
+\end{Verbatim}
+\end{small}
 
+\noindent The {\tt vecAdd} program takes two {\tt SPull} input arrays and gives one 
+as result. The Obsidian {\tt vecAdd} is more general than the CUDA version. From it 
+we can generate CUDA kernels for any type that supports {\tt (+)}, is in the {\tt Num} class. 
+
+There are some important differences between CUDA and Obsidian programs. One is that with Obsidian 
+we generate kernels for fixed size local computations. This is to avoid doing out-of-bounds check 
+which would mean conditionals in the code and conditionals are problematic from a performance 
+point of view. Another difference is that in Obsidian the programmer specifies the entire 
+computation, including how it is mapped over the blocks of the GPU. This is done implicitly 
+in CUDA, based on the indexing arithmetic used in the kernel and the number of blocks and 
+threads provided at kernel launch. This means that the Obsidian programmer needs to 
+write a program that performs this mapping: 
+
+\begin{small} 
+\begin{Verbatim}[samepage=true]
+vecAddG :: Num a => DPull a -> DPull a -> DPush Grid a
+vecAddG i1 i2  =
+  pConcat $
+  fmap push $
+  zipWith vecAdd
+          (splitUp 32 i1)
+          (splitUp 32 i2)  
 \end{Verbatim}
 \end{small}
 
@@ -490,33 +516,6 @@ In Obsidian the same kernel (the local computation) is implemented as follows:
 %
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
-\section{GPUs and CUDA} 
-
-In 2006 NVIDIA released their first Compute Unified Device Architecture (CUDA) 
-GPU. With CUDA, NVIDIA also made it a lot easier for programmers to use GPUs 
-for general purpose programming. A dialect of C, called CUDA C, was released specifically 
-to simplify implementation of general purpose algorithms on GPUs. 
-
-A CUDA GPU is built around a single kind of processor (as opposed to the different 
-kinds of processors found in earlier GPUs). The processors in the GPU (called MPs, 
-MultiProcessors) all contain a number of function units called SPs (Streaming Processors). 
-Each MP also contains local memory, called shared memory since it can be accessed 
-by all of the SPs in that MP. The number of MPs varies over the available GPUs; cheaper 
-GPUs have as few as one MP, and as you go up in price the number of MPs increases.
-
-Each MP of the GPU can manage a large number of threads; on today's GPUs up to 
-2048 threads can run on a single MP. The GPU schedules threads in groups of 32, called 
-{\em Warps}, that are executed in lock-step (SIMD style execution). Threads are 
-also divided into {\em Blocks}; the threads within a block can communicate using the 
-shared memory. The maximum block size is currently 1024 threads. Since 
-the number of threads in a block can be higher than the warp size, a barrier 
-synchronisation mechanism exists to ensure that threads within a block 
-can communicate safely via the shared memory. 
-
-
-Papers B, C, E and F (sections~\ref{sec:paperB},~\ref{sec:paperC},~\ref{sec:paperE},
-~\ref{sec:paperF}) contain more information about GPUs, and the assumptions we make 
-about them in relation to Obsidian. 
 
 \subsection{CUDA programming} 
 
@@ -588,7 +587,7 @@ int main(void) {
              cudaMemcpyHostToDevice);
   
   // Launch the kernel
-  kernel<<<1,32,0>>>(d_i1,d_i2,d_r); 
+  vecAdd<<<1,32,0>>>(d_i1,d_i2,d_r); 
 
   // Copy result to host
   cudaMemcpy(h_r,
