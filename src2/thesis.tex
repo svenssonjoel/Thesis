@@ -663,7 +663,9 @@ performVecAdd =
 \label{fig:OBSIDIANHOST1}
 \end{figure} 
 
-A CUDA kernel that uses shared memory takes the form: 
+\pagebreak 
+
+\noindent A CUDA kernel that uses shared memory takes the form: 
 
 \begin{small}
 \begin{Verbatim}[samepage=true]
@@ -744,7 +746,8 @@ kernelF = liftM (fmap (+1)) . force . fmap (*2)
 \end{Verbatim} 
 \end{small} 
 
-
+This change introduced some noise. The reason for this is that Obsidian programs that 
+use memory are monadic. The {\tt BProgram} in the result type is a monad. 
 
 \FloatBarrier 
 \subsection{Writing efficient GPU Kernels} 
