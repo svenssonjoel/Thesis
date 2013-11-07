@@ -200,7 +200,7 @@ Abstract abstract
 
 \noindent
 
-\textbf{Keywords:} Data-parallelism, Functional Programming, Embedded languages, GPU
+\textbf{Keywords:} Data-parallelism, Embedded languages, Functional Programming, Graphics Processing Units
 
 \clearpage
 
@@ -311,29 +311,33 @@ but the sparse matrix vector multiplication example is entirely Mary's.
 % --------------------------------------------------------------------------- %
 \chapter{\thesistitle}
 
+% -------------------------------------------------------------------------
+%  INTRO SECTION OF INTRO CHAPTER
+% -------------------------------------------------------------------------
+
 \section{Introduction} 
 
 This thesis applies embedded language methodology to data-parallel programming of 
-massively parallel hardware. An Embedded language is a language that is implemented 
+massively parallel hardware. An embedded language is a language that is implemented 
 as a library for some existing host language. In this case, the functional programming 
-language, Haskell is used as host language. 
+language Haskell is used as host language. 
 
 Computers today are increasingly parallel. Each new generation of general purpose processors
 (CPUs) and of graphics processors (GPUs), brings more parallelism. The question 
 of how to program these computers most efficiently, both from a productivity and 
-a performance point of view, arise. Explicit parallel programming is hard and automatic 
+a performance point of view, arises. Explicit parallel programming is hard and automatic 
 means of parallelisation, while giving a sequential programming model to the programmer, 
 often misses the target when it comes to performance. {\bf \emph{source??}} 
 
-The embedded language approach to programming language implementation is beneficial 
+The embedded language approach to programming language implementation is beneficial, 
 since we are not entirely sure of how to program current and future highly parallel 
 computers. Implementing an embedded language allows us more rapid prototyping of ideas. 
 We can experiment with what abstractions to expose to the programmer, without much 
 effort. Other benefits of embedded languages often mentioned are: making use 
 of the host language's library functions, if they are general enough. The host language 
 can be used as a powerful macro language for the embedded language. An embedded 
-language also provide a more leveled learning curve to programmers already familiar 
-with the host language. For these programmers using an embedded language is more like  
+language also provides a more leveled learning curve to programmers already familiar 
+with the host language. For these programmers, using an embedded language is more like  
 learning about a new library. 
 
 This thesis focuses on data-parallelism, as opposed to task or control parallelism.
@@ -346,11 +350,11 @@ platforms, CPU, GPU and other accelerators.
 
 Graphics Processors (GPUs) trade programmer convenience for increased parallelism. 
 For example, where CPUs dedicate large portions of chip area to caches, branch 
-prediction and Instruction level parallelism (ILP), GPUs put additional cores. 
+prediction and instruction level parallelism (ILP), GPUs put additional cores. 
 This comes at a price of increased programmer effort. GPUs have programmer managed 
 shared memories, conditionals are troublesome from a performance 
 perspective and memory access patterns can make or break the performance of an 
-application. With Obsidian we try to find the right level of abstraction for 
+application. With Obsidian, we try to find the right level of abstraction for 
 programming GPUs. We try to strike a balance between low-level control of details 
 that influence performance and high-level abstractions to increase productivity and 
 make programs more terse. The end goal with Obsidian is a language for writing 
@@ -361,18 +365,21 @@ composable manner. Obsidian programs are compiled into CUDA.
 
 Obsidian is geared towards the programmer who is interested in GPU hardware. Making 
 good use of Obsidian requires that the programmer is willing to make an effort 
-of learning about GPUs and how to program them efficiently. However, another case 
+to learn about GPUs and how to program them efficiently. However, another case 
 is a programmer who does not want to invest that effort but wants to write a high-level 
 parallel program and have it run reasonably well on different parallel architectures. 
-In this case a language with even higher level of abstraction is preferable. It then 
+In this case, a language with even higher level of abstraction is preferable. It then 
 becomes the job of a more advanced compiler to turn that into code for the targetted 
 platforms. The EmbArBB language targets this programmer. EmbArBB exposes a set of high-level 
 operations on arrays, such as {\tt map}, {\tt reduce} and {\tt scan}. The programmer 
 has no power over the parallel strategy that should be used to implement these 
-operations but instead rely on a JIT-compiler (Just In Time-compiler). EmbArBB is a 
+operations but instead relies on a JIT-compiler (Just In Time-compiler). EmbArBB is a 
 Haskell embedding of Intel ArBB that was released as an embedded language in C++. 
 EmbArBB relies entirely on the ArBB system for code generation and optimisation.  
 
+% -------------------------------------------------------------------------
+% Obsidian !
+% -------------------------------------------------------------------------
 
 \section {Obsidian: An embedded language for GPU kernel implementation} 
 
@@ -385,8 +392,8 @@ Before CUDA, programmers still tried (very ingeniously) to make use of GPUs for
 non-graphics applications via the graphics API. The desired computation was expressed 
 in graphics terms and the result computed through an act of rendering. Of course, since the 
 available abstractions targeted the graphics domain, this added extra
-burden on the programmer. CUDA was NVIDIA's first response to this problem. With CUDA 
-there is a dialect of C, extended with a parallel programming model suitable for GPUs. 
+burden on the programmer. CUDA was NVIDIA's first response to this problem. CUDA 
+is a dialect of C, extended with a parallel programming model suitable for GPUs. 
 
 Having a language specifically made for general purpose programming on the GPU, such as 
 CUDA, is a big step up from earlier. But CUDA still offers a very low-level interface to 
@@ -394,6 +401,10 @@ programming the GPU, which is preferred in a situation where the programmer need
 think about hardware specific details to get the best performance. CUDA provides this, 
 but at the price that it is hard to build upon, abstract and reuse prior programming 
 effort. This is where we are trying to go one step further with Obsidian. 
+
+% -------------------------------------------------------------------------
+% GPU Hardware 
+% -------------------------------------------------------------------------
 
 \subsection{GPU hardware} 
 
@@ -418,6 +429,10 @@ the number of threads in a block can be higher than the warp size, a barrier
 synchronisation mechanism exists to ensure that threads within a block 
 can communicate safely via the shared memory. Blocks are also grouped into a grid that 
 is the collection of blocks executing the same program. 
+
+% -------------------------------------------------------------------------
+%  GPU Programming
+% -------------------------------------------------------------------------
 
 \subsection{GPU programming} 
 
@@ -451,8 +466,8 @@ __global__ void vecAdd(int32_t *i1, int32_t *i2, int32_t *r) {
 in {\tt r}. Note how the kernel makes use of three variables, {\tt threadIdx.x}, 
 {\tt blockIdx.x} and {\tt gridDim.x}. These variables identify a thread uniquely within 
 a grid. Here they are used to obtain an index into the provided arrays. The dimensions of 
-the blocks and of the grid is set by a controling program upon launch of the kernel. This 
-controling program is run by the CPU of the computer housing the GPU. the kernel is launched 
+the blocks and of the grid are set by a controling program upon launch of the kernel. This 
+controling program is run by the CPU of the computer housing the GPU. The kernel is launched 
 using the following syntax: 
 
 \begin{small} 
@@ -461,100 +476,14 @@ vecAdd<<<1,32,0>>>(d_i1,d_i2,d_r);
 \end{Verbatim}
 \end{small}
 
-\noindent The line of code above launches the kernel on one block of 32 threads. The zero 
+\noindent This line of code launches the kernel on one block of 32 threads. The zero 
 indicates that the kernel uses no shared memory. If the kernel did use shared memory, the 
 amount needed should have been specified there. Figure~\ref{fig:CUDACODE1} shows the complete 
 sequence of commands for a minimal example using the kernel specified above. 
 
-In Obsidian the same kernel (the local computation) is implemented as follows: 
-
-\begin{small}
-\begin{Verbatim}[samepage=true]
-vecAdd :: Num a => SPull a -> SPull a -> SPull a
-vecAdd = zipWith (+)
-\end{Verbatim}
-\end{small}
-
-\noindent The {\tt vecAdd} program takes two {\tt SPull} input arrays and gives one 
-as result. The Obsidian {\tt vecAdd} is more general than the CUDA version. From it 
-we can generate CUDA kernels for any type that supports {\tt (+)}, is in the {\tt Num} class. 
-
-There are some important differences between CUDA and Obsidian programs. One is that with Obsidian 
-we generate kernels for fixed size local computations. This is to avoid doing out-of-bounds check 
-which would mean conditionals in the code and conditionals are problematic from a performance 
-point of view. Another difference is that in Obsidian the programmer specifies the entire 
-computation, including how it is mapped over the blocks of the GPU. This is done implicitly 
-in CUDA, based on the indexing arithmetic used in the kernel and the number of blocks and 
-threads provided at kernel launch. This means that the Obsidian programmer needs to 
-write a program that performs this mapping: 
-
-\begin{small} 
-\begin{Verbatim}[samepage=true]
-vecAddG :: Num a => DPull a -> DPull a -> DPush Grid a
-vecAddG i1 i2  =
-  pConcat $
-  fmap push $
-  zipWith vecAdd
-          (splitUp 32 i1)
-          (splitUp 32 i2)  
-\end{Verbatim}
-\end{small}
-
-
-\subsection{Writing efficient GPU Kernels} 
- \emph{now takes up both CUDA and Obsidian aspects at the same time, pref. with code examples} 
-  
-
-
-{\bf {\emph old text from here to end}}
-
-
-% ---------------------------------------------------------------------------
-% ---------------------------------------------------------------------------
-%
-% GPU Programming 
-%
-% ---------------------------------------------------------------------------
-% ---------------------------------------------------------------------------
-
-\subsection{CUDA programming} 
-
-The CUDA programming model reflects the hierarchical architecture of GPUs. The programmer 
-writes what are called {\em kernels}; in CUDA jargon a kernel refers to a sequential C program 
-that is parameterised on a thread's identity. The kernel program is executed in parallel across 
-all the threads of a block and many such blocks of threads can execute in parallel on the 
-available MPs. The programmer needs to decompose the algorithm and data in such a way that 
-communication will be local to the blocks. 
-
-Below is a very simple CUDA example to give some indication of what a kernel and 
-the code to launch that kernel looks like. 
-
-\begin{small}
-\begin{Verbatim}[samepage=true]
-__global__ void kernel(int32_t *i1, int32_t *i2, int32_t *r) {
-  
-  unsigned int gid = blockIdx.x * 
-                     blockDim.x + 
-                     threadIdx.x;
-
-  r[gid] = i1[gid] + i2[gid]; 
-
-} 
-
-\end{Verbatim}
-\end{small}
-
-This kernel takes two input arrays, {\tt i1} and {\tt i2}, and computes 
-element wise sums into the result array, {\tt r}. The {\tt threadIdx} variable identifies 
-a thread within a block. There is also a {\tt blockIdx} variable that identifies 
-the block a thread belongs to and {\tt blockDim.x} specifies the number of threads per block. 
-
-
-In CUDA there is a notion of {\em host} and {\em device}, the device is the GPU and 
-its memory (Global memory, usually a few Gigabytes). The host refers to the system housing 
-the GPU. The host runs a control program that launches kernels on the GPU. First memory 
-needs to be allocated in the device to hold the inputs and outputs. Then data is copied from 
-the host's system memory into device memory. 
+% -------------------------------------------------------------------------
+% CUDACODE1 FIGURE
+% -------------------------------------------------------------------------
 
 \begin{figure} 
 \begin{small}
@@ -609,23 +538,136 @@ int main(void) {
 
 \end{figure} 
 
-\pagebreak 
+% -------------------------------------------------------------------------
+% 
+% -------------------------------------------------------------------------
 
-The syntax for launching a kernel is:
+In Obsidian, the same kernel (the local computation) is implemented as follows: 
 
 \begin{small}
 \begin{Verbatim}[samepage=true]
-name<<<Blocks, Threads/Block, BytesShared>>>(arg1,..,argN);
+vecAdd :: Num a => SPull a -> SPull a -> SPull a
+vecAdd = zipWith (+)
 \end{Verbatim}
 \end{small}
 
-\noindent In the example above one block of 32 threads, using no shared memory, is launched. 
+\noindent The {\tt vecAdd} program takes two {\tt SPull} input arrays and gives one 
+as result. The Obsidian {\tt vecAdd} is more general than the CUDA version. From it 
+we can generate CUDA kernels for any element type that supports the {\tt (+)} operation. 
+In Haskell we know this is true for types that are member of the {\tt Num} typeclass.  
 
-A kernel that uses shared memory takes the form: 
+There are some important differences between CUDA and Obsidian programs. One is that with Obsidian 
+we generate kernels for fixed size local computations. This is to avoid doing out-of-bounds check 
+which would mean conditionals in the code. Conditionals are problematic from a performance 
+point of view. Another difference is that in Obsidian the programmer specifies the entire 
+computation, including how it is mapped over the blocks of the GPU. This is done implicitly 
+in CUDA, based on the indexing arithmetic used in the kernel and the number of blocks and 
+threads provided at kernel launch. This means that the Obsidian programmer needs to 
+write a program that performs this mapping: 
+
+\begin{small} 
+\begin{Verbatim}[samepage=true]
+vecAddG :: Num a => DPull a -> DPull a -> DPush Grid a
+vecAddG i1 i2  =
+  pConcat $
+  zipWith vecAdd
+          (splitUp 32 i1)
+          (splitUp 32 i2)  
+\end{Verbatim}
+\end{small} % $ 
+
+The {\tt vecAddG} program specifies a computation on large arrays; the large input arrays 
+are split up into pieces that are operated upon by the local computation, {\tt vecAdd}, 
+specified above. Each input array passed to this function must have length a multiple of 32.
+Since the {\tt splitUp} operation splits the arrays into chunks of 32 elements, the body 
+of the generated kernel will be constructed specifically for this size. {\tt zipWith} is 
+used to map the local computation onto each chunk of the input arrays. The result is an 
+array of arrays that is flattened with the {\tt pConcat} function. The CUDA code below 
+is generated from the {\tt vecAddG} program: 
+
+\begin{small}
+\begin{Verbatim}[samepage=true] 
+extern "C" __global__ void vecAdd(int32_t* input0, uint32_t n0,
+                                  int32_t* input1, uint32_t n1,
+                                  int32_t* output2)
+{
+    uint32_t tid = threadIdx.x;
+    
+    if (blockIdx.x < min(n0 / 32U, n1 / 32U)) {
+        output2[blockIdx.x * 32U + tid] = 
+            input0[blockIdx.x * 32U + tid] +
+            input1[blockIdx.x * 32U + tid];
+    }
+}
+\end{Verbatim}
+\end{small} 
+
+There are some superficial differences between the code generated using Obsidian and the 
+handwritten example above. One such difference is that the index computation is not shared. 
+Obsidian relies on the CUDA compiler to discover such sharing via a common subexpression 
+elimination optimisation pass. Another difference is that Obsidian has inserted a conditional 
+that only executes the body for certain blocks. Discussion of the causes for that conditional 
+is postponed until a later section {\bf \emph{POINT TO SECTION}}. A real difference is that 
+the kernel is generated for a fixed size, here there is a constant (32) where in the handwritten
+code we used {\tt blockDim.x}. If those differences are set aside, the two kernels are identical. 
+Figure~\ref{fig:OBSIDIANHOST1} shows how the {\tt vecAddG} kernel can be launched from 
+within Haskell, using Obsidian's rudimentary support for launching GPU computations. 
+
+An alternative way to implement {\tt vecAddG} is to inline the local computation 
+directly. This makes the entire program look like this. 
 
 \begin{small}
 \begin{Verbatim}[samepage=true]
-__global__ void kernel2(int32_t *i, int32_t *r) {
+vecAddG :: Num a => DPull a -> DPull a -> DPush Grid a
+vecAddG i1 i2  =
+  pConcat $
+  zipWith (zipWith (+)) 
+          (splitUp 32 i1)
+          (splitUp 32 i2)
+\end{Verbatim} 
+\end{small} % $ 
+
+\noindent The generated code looks exactly as before. 
+
+% -------------------------------------------------------------------------
+% OBSIDIANHOST1 FIGURE
+% -------------------------------------------------------------------------
+
+\begin{figure} 
+\begin{small}
+\begin{Verbatim}[samepage=true]
+performVecAdd =
+  withCUDA $
+  do
+    kern <- capture 32 (vecAddG :: DPull EInt32
+                                 -> DPull EInt32
+                                 -> DPush Grid EInt32)
+
+    useVector (V.fromList [0..32::Int32]) $ \i1 ->
+      useVector (V.fromList [0..32::Int32]) $ \i2 -> 
+        allocaVector 32 $ \(o :: CUDAVector Int32) ->
+        do
+          fill o 0
+          o <== (1,kern) <> i1 <> i2 
+
+          r <- peekCUDAVector o
+          lift $ putStrLn $ show r
+\end{Verbatim} 
+\end{small}
+
+\caption{Host code for launching a simple Obsidian kernel on the GPU. \\ 
+ {\tt capture} compiles an Obsidian program into CUDA. At this point the 
+  types of the Obsidian program need to be made concrete. The number, 32, used as 
+ an argument to {\tt capture} specifies that generated code should be specialised 
+ for 32 threads per block. }
+\label{fig:OBSIDIANHOST1}
+\end{figure} 
+
+A CUDA kernel that uses shared memory takes the form: 
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+__global__ void kernel(int32_t *i, int32_t *r) {
 
   extern __shared__ int32_t sm[]; 
 
@@ -647,10 +689,85 @@ __global__ void kernel2(int32_t *i, int32_t *r) {
 \end{small} 
 
 \noindent A portion of the input array is stored into shared memory. A 
-barrier synchronisation is used to ensure that each threads within the block 
+barrier synchronisation is used to ensure that each thread within the block 
 has stored its value into shared memory (only necessary if threads will 
 communicate across warp boundaries). After computing on the data locally, 
-it is written back into global memory. 
+it is written back into global memory. This kernel sets up two aliases for 
+thread identities. A thread's global identity is called {\tt gid} and its local 
+identity is called {\tt tid}. The global ID is used to index into the large global 
+array; indexing into local shared memory is done using the local ID. 
+
+In Obsidian, local computations can also use shared memory. The Obsidian arrays 
+we have seen in the examples, {\tt Pull} and {\tt Push} arrays do not directly 
+correspond to actual data in memory. Pull and push arrays, rather represent ways 
+to compute arrays. More information about these array representations is available 
+in section {\bf \emph{REF SECTION}}. The Obsidian programmer can store intermediate 
+arrays in shared memory by using a {\tt force} operation. The 
+{\tt force} operation computes an array and stores it into shared memory. 
+
+The following kernel multiplies each element in an array by two and then adds one: 
+
+\begin{small}
+\begin{Verbatim}[samepage=true] 
+kernel :: Num a => SPull a -> SPull a
+kernel = fmap (+1) . fmap (*2)
+\end{Verbatim}
+\end{small}
+
+\noindent This kernel computes its result without any storage of intermediate results. 
+In the generated CUDA code below, it can be seen that the (*2) and (+1) operations 
+are applied without any intermediate storage. 
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+extern "C" __global__ void kernel(int32_t* input0, uint32_t n0,
+                                  int32_t* output1)
+{
+    uint32_t tid = threadIdx.x;
+    
+    if (blockIdx.x < n0 / 32U) {
+        output1[blockIdx.x * 32U + tid] = 
+          input0[blockIdx.x * 32U + tid] * 2 + 1;
+    }
+}
+\end{Verbatim}
+\end{small}
+
+Storing an intermediate result between the two operations can be accomplished by 
+changing the kernel as follows. 
+
+\begin{small}
+\begin{Verbatim}[samepage=true]
+kernelF :: (MemoryOps a, Num a)
+         => SPull a -> BProgram (SPull a)
+kernelF = liftM (fmap (+1)) . force . fmap (*2)
+\end{Verbatim} 
+\end{small} 
+
+
+
+\FloatBarrier 
+\subsection{Writing efficient GPU Kernels} 
+ \emph{now takes up both CUDA and Obsidian aspects at the same time, pref. with code examples} 
+  
+
+
+{\bf {\emph old text from here to end}}
+
+
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+%
+% GPU Programming 
+%
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+
+\subsection{CUDA programming} 
+
+A kernel that uses shared memory takes the form: 
+
+
 
 
 \subsection{Writing efficient GPU kernels} 
@@ -730,7 +847,7 @@ of decomposing computation and data in a way that makes this possible.
 \section{Embedded languages}
 
 This thesis applies embedded language methodology to data-parallel programming. An 
-embedded language is implemented as a library in a host language, Haskell in this case. 
+embedded language is implemented as a library in a host language,  Haskell in this case. 
 The embedded language approach is beneficial since we are not entirely sure how 
 to program current and future highly parallel computers. Implementing embedded languages allows 
 us more rapid prototyping of ideas. Other benefits of embedded languages often listed 
