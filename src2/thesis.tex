@@ -747,41 +747,22 @@ kernelF = liftM (fmap (+1)) . force . fmap (*2)
 \end{small} 
 
 This change introduced some noise. The reason for this is that Obsidian programs that 
-use memory are monadic. The {\tt BProgram} in the result type is a monad. 
+use memory are monadic. The {\tt BProgram} in the result type is a monad. Another difference 
+is that we need to be able to write the array elements to memory; in Obsidian this means 
+that the element type must be in the {\tt MemoryOps} class. 
+
 
 \FloatBarrier 
 \subsection{Writing efficient GPU Kernels} 
- \emph{now takes up both CUDA and Obsidian aspects at the same time, pref. with code examples} 
-  
-
-
-{\bf {\emph old text from here to end}}
-
-
-% ---------------------------------------------------------------------------
-% ---------------------------------------------------------------------------
-%
-% GPU Programming 
-%
-% ---------------------------------------------------------------------------
-% ---------------------------------------------------------------------------
-
-\subsection{CUDA programming} 
-
-A kernel that uses shared memory takes the form: 
-
-
-
-
-\subsection{Writing efficient GPU kernels} 
 \label{sec:efficient}
-
+ 
 Writing efficient GPU kernels is hard. There are many details that the CUDA 
 programmer must be aware of in order to make optimal use of the GPU. 
 The NVIDIA ``CUDA C Best Practices Guide''~\citet{BestPrac}, is a good source 
 to learn more about these details. Here is a list, with explanations of some 
-of the practices that the guide deems most important. 
-
+of the practices that the guide deems most important. The list also contains 
+information about how these best practices influence our work on Obsidian.  
+  
 \begin{itemize} 
 
 \item {\bf Minimise data transfers between host and device:} The bandwidth between device memory 
@@ -793,12 +774,26 @@ the operation that is about to perform on it is more efficiently handled by the 
 be better to let the GPU do the work. In other words, compute near the data unless transferring it 
 pays off. 
 
+Data transfers between the host memory and device (GPU) memory is out of Obsidian's scope. 
+If Obsidian is used to generate kernels for a computation, the programmer has already decided that 
+a GPU should be used. However, even after making the decision to use the GPU the programmer 
+may need to consider how to transfer the data. In some cases it is possible to overlap 
+computation on the GPU and data transfer. These kinds of optimisations are considered 
+when writing the C program that launches the CUDA kernels. Obsidian does have rudimentary 
+support for launching kernels from within Haskell but currently we consider this mostly a
+tool for quickly being able to run a kernel and see what it does, not as a means to implement 
+applications. This part of Obsidian is future work. 
+
 \item {\bf Ensure that global memory accesses are coalesced:} Certain access patterns into 
 GPU device memory can be {\em coalesced} (combined into few memory transactions). Unfortunately 
 what these access patterns are varies somewhat depending on the GPU. For a typical model of 
 GPU, the rule is that concurrent memory accesses (by threads within a warp) will be coalesced 
 to as many transactions as cache lines touched (128b l1 cache lines). This means that strided 
 accesses from within a warp are not favoured. 
+
+Inputs to an Obsidian program are pull arrays. Pull arrays can be arbitrarily permuted; 
+the permutation used will decide the access pattern. If this method can be applied or 
+not partly also depends on the algorithm being implemented. 
 
 \item {\bf Minimise use of global memory:} Accessing global device memory can take as 
 many as 400 to 600 clock cycles if the data is not cached. The programmer should 
@@ -807,6 +802,9 @@ Shared memory can also be used to coalesce reads from global memory. Shared memo
 a limited resource in the MP, so if a kernel uses very much shared memory it means 
 fewer such blocks can be active on the MP. 
 
+Intermediate arrays are stored into shared memory when the Obsidian programmer uses 
+the {\tt force} function. 
+
 \item {\bf Use a multiple of 32 threads per block:} Groups of 32 threads, warps, are the 
 scheduled unit on a GPU. If a warp accesses memory (and will be waiting for it arrive during 
 600 cycles) it will be swapped out and another warp will take its place. This means that 
@@ -814,31 +812,62 @@ the number of available warps decides how well memory latency can be hidden. A b
 not a multiple of 32 leads to wasting GPU resources; some processing elements will stand 
 idle during the execution of the not full warps. 
 
+Obsidian requires regularity even more than CUDA does. Since we focus on generating high 
+performance kernels, we rule out generation of kernels that work on different sizes (per block). 
+The choice of how many threads to use per block is in the hands of the Obsidian programmer.
+The method for making that choice has changed over time. Earlier, the number of threads 
+needed by a kernel was decided by the size of the arrays it computed. This has recently changed
+and is now set by a parameter passed to the code generation process.  
+
 \item {\bf Avoid different execution paths within a block:} Any branching instruction that 
-causes the execution paths to diverge within a warp will affect performance. When the execution 
-paths within a warp diverge, the computation is serialised. 
+causes the execution to branch into different code (in CUDA jargon called a diverging branch) 
+within a warp will affect performance. When the execution paths within a warp diverge, the 
+computation is serialised. 
+
+Sometimes divergent code cannot be avoided. However, it is important not to have threads 
+diverge unnecessarily. When using pull arrays alone this was often a problem; with the 
+addition of push arrays the situation improved. Using push arrays some divergent computations 
+can be explicitly split up into phases, each phase with all threads following the 
+same execution path. This means that fewer threads are required to do the same work. 
 
 \item {\bf Do not use {\tt \_\_synchthreads()} in diverging code:} Extreme care must be taken 
 when synchronising within any conditionally executed code; every thread must reach this barrier.
 Failing to ensure this will likely lead to the kernel producing incorrect results. Note that 
 this is a major limitation to the composability of CUDA functions. Wheather or not it is safe to 
-call some function in a certain place in your code can be decided only by inspecting that function's 
-implementation. 
+call some function in a certain place in your code can be decided only by inspecting that 
+function's implementation. 
+
+In Obsidian it is impossible for a barrier synchronisation to appear within diverging 
+conditional code. Conditionals can be introduced either by an {\tt ifThenElse} function 
+at the element level or by a {\tt Cond} statement that is an operation in the {\tt Program} 
+monad. The {\tt Program} monad is parameterised on the GPU hierarchy level. There are 
+thread programs ({\tt TProgram}), block programs ({\tt BProgram}) and grid programs ({\tt GProgram}). the {\tt Cond} conditional choose between two thread programs while a synchronisation can 
+only appear in an Obsidian block program. More information about programs and the GPU hierarchy 
+is available in section~\ref{sec:OBSIMP}.
+
 %f it is safe or 
 %not to call some function at a certain place in your code, can only be decided by inspecting 
 %that functions implementation. 
-\end{itemize} 
+\end{itemize}  
 
 The list above provides some very general guidelines on what to think about when 
 writing GPU kernels. The lesson is that fast memory near the processing element 
 should be preferred over slow memory far away. However, this comes at the effort 
 of decomposing computation and data in a way that makes this possible. 
- 
 
-%\citet{FERMIOPT}
-%\citet{BestPrac} 
-%\citet{merrill}
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+%
+% Obsidian Implementation 
+%
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+\subsection{Obsidian Implementation}
+\label{sec:OBSIMP}
 
+
+
+{\bf {\emph old text from here to end}}
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
