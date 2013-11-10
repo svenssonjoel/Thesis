@@ -200,13 +200,13 @@ G\"oteborg, Sweden 2013
 
 Computers today are becoming more and more parallel. General purpose processors (CPUs) 
 have multiple processing cores and Single Instruction Multiple Data (SIMD) units for 
-data-parallelism. Graphics processors (GPUs) brings massive parallelism at the cost of 
+data-parallelism. Graphics processors (GPUs) bring massive parallelism at the cost of 
 being harder to program than CPUs. This thesis applies embedded language methodology 
 to data-parallel programming. Two embedded languages are presented, Obsidian for general 
 purpose GPU programming and EmbArBB for data-parallel programming across platforms. 
 
-Each generation of CPU and GPU bringing more parallel resources. The question of how to write 
-programs for these processors efficiently arise. We are after efficiency both in programmer 
+CPUs and GPUs get more parallel resources with each new generation. The question of how to 
+program these processors efficiently arises. We are after efficiency both in programmer 
 productivity and in application performance. Using embedded languages allows us to experiment
 with what abstractions to present to the programmer at relatively little effort.
 
@@ -215,7 +215,7 @@ a balance between high level, productivity increasing abstractions and low-level
 control needed for performance. Obsidian programs are compiled into CUDA C code. 
 
 In cases where the programmer is not interested in low-level details 
-or wants the program to run over a range of hardware a higher level language can be used.
+or wants the program to run over a range of hardware, a higher level language can be used.
 EmbArBB is a Haskell embedding or the Intel ArBB system. EmbArBB relies on the ArBB system 
 to generate code (via a Just-In-Time compiler) to a range of hardware. 
 
@@ -223,10 +223,10 @@ EmbArBB embeds a preexisting library for data-parallelism into Haskell and we ob
 very good performance at little implementation effort. This performance comes from the 
 expertise and effort put into the ArBB system and that we get for free. Embedding ArBB is 
 a way to provide these benefits to the Haskell programmer and a way to increase usefulness
-of an existing system by opening it up to a wider audience. Obsidian is very different, it 
+of an existing system by opening it up to a wider audience. Obsidian is very different; it 
 is not based on a set of high-level parallel primitives. The Obsidian programmer 
-can implement these primitives in different ways, select the best one and then  abstract 
-upon that. We have obtained very good performance in case studies involving reductions. 
+can implement these primitives in different ways and then select the best one. 
+We have obtained very good performance in case studies involving reductions. 
  
 \vspace{5mm}
 
@@ -243,9 +243,9 @@ upon that. We have obtained very good performance in case studies involving redu
 
 I would like to thank my supervisor Mary Sheeran. She is a very suportive, motivating and 
 understanding supervisor. I also thank my co-supervisor Koen Claessen for all the great advice 
-and tips he has provided over he years. I cannot imagine that this would have worked with 
+and tips he has provided over the years. I cannot imagine that this would have worked with 
 any other supervisors. Thanks to Josef Svenningsson, a late addition to my troop of 
-supervisors. Working with Josef has been a very fun and rewarding experience. 
+supervisors. Working with Josef has been fun and rewarding. 
 
 I thank Manuel Chakravarty for letting me visit his group at the University of New South Wales 
 and Trevor McDonell and Sean Lee for taking care of me during my visit. I look back 
@@ -628,11 +628,12 @@ write a program that performs this mapping:
 vecAddG :: Num a => DPull a -> DPull a -> DPush Grid a
 vecAddG i1 i2  =
   pConcat $
+  fmap push $ 
   zipWith vecAdd
           (splitUp 32 i1)
           (splitUp 32 i2)  
 \end{Verbatim}
-\end{small} % $ 
+\end{small} 
 
 The {\tt vecAddG} program specifies a computation on large arrays; the large input arrays 
 are split up into pieces that are operated upon by the local computation, {\tt vecAdd}, 
@@ -680,11 +681,12 @@ directly. This makes the entire program look like this.
 vecAddG :: Num a => DPull a -> DPull a -> DPush Grid a
 vecAddG i1 i2  =
   pConcat $
+  fmap push $
   zipWith (zipWith (+)) 
           (splitUp 32 i1)
           (splitUp 32 i2)
 \end{Verbatim} 
-\end{small} % $ 
+\end{small} 
 
 \noindent The generated code looks exactly as before. 
 
