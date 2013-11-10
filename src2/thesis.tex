@@ -241,11 +241,14 @@ We have obtained very good performance in case studies involving reductions.
 % ---------------------------------------------------------------------------
 \section*{Acknowledgments}
 
-I would like to thank my supervisor Mary Sheeran. She is a very suportive, motivating and 
+I would like to thank my supervisor Mary Sheeran. She is a very supportive, motivating and 
 understanding supervisor. I also thank my co-supervisor Koen Claessen for all the great advice 
 and tips he has provided over the years. I cannot imagine that this would have worked with 
 any other supervisors. Thanks to Josef Svenningsson, a late addition to my troop of 
 supervisors. Working with Josef has been fun and rewarding. 
+
+I have often turned to Emil Axelsson with technical questions and he has always been
+happy to help. For this I am grateful. 
 
 I thank Manuel Chakravarty for letting me visit his group at the University of New South Wales 
 and Trevor McDonell and Sean Lee for taking care of me during my visit. I look back 
@@ -255,9 +258,13 @@ For being a great supervisor during my three month internship at Intel, I thank 
 These where three very intense months away from family but at the same time a very rewarding 
 experience. 
 
-I want to thank Erik, Ola, Markus and Viktor for our occasional lunches and GPU discussions. 
-
 Thanks to my thesis opponent Stephen Edwards for valuable comments on a draft of this thesis. 
+
+I want to thank Erik, Ola, Markus and Viktor for our occasional lunches and GPU discussions. 
+I also thank my office mates, Michal and Nicholas, for their company. I thank Eva Axelsson, 
+who I have felt most comfortable to turn to for help and information, even when she was not 
+the appropriate channel. 
+
 
 Finally I want to thank my family and friends. Thanks to my sisters and parents for their support.
 I thank my friends for being understanding during times when I have been very self-absorbed. 
@@ -426,7 +433,7 @@ to learn about GPUs and how to program them efficiently. However, another case
 is a programmer who does not want to invest that effort but wants to write a high-level 
 parallel program and have it run reasonably well on different parallel architectures. 
 In this case, a language with even higher level of abstraction is preferable. It then 
-becomes the job of a more advanced compiler to turn that into code for the targetted 
+becomes the job of a more advanced compiler to turn that into code for the targeted 
 platforms. The EmbArBB language targets this programmer. EmbArBB exposes a set of high-level 
 operations on arrays, such as {\tt map}, {\tt reduce} and {\tt scan}. The programmer 
 has no power over the parallel strategy that should be used to implement these 
@@ -524,8 +531,8 @@ __global__ void vecAdd(int32_t *i1, int32_t *i2, int32_t *r) {
 in {\tt r}. Note how the kernel makes use of three variables, {\tt threadIdx.x}, 
 {\tt blockIdx.x} and {\tt gridDim.x}. These variables identify a thread uniquely within 
 a grid. Here they are used to obtain an index into the provided arrays. The dimensions of 
-the blocks and of the grid are set by a controling program upon launch of the kernel. This 
-controling program is run by the CPU of the computer housing the GPU. The kernel is launched 
+the blocks and of the grid are set by a controlling program upon launch of the kernel. This 
+controlling program is run by the CPU of the computer housing the GPU. The kernel is launched 
 using the following syntax: 
 
 \begin{small} 
@@ -1150,12 +1157,12 @@ convertToPush (Pull n ixf) =
 
 The function above takes a pull array and creates a push array with a parallel 
 iteration schema over threads within a block. There are other iteration schemas to 
-chose from such as sequential, combinbations of sequential and parallel
+chose from such as sequential, combinations of sequential and parallel
 across both threads and blocks (two level parallelism). 
 
 Push arrays give many of the same benefits that pull arrays have. Using push 
 arrays we also get fusion of operations as default. The implementation of map 
-(shown below) illustrates how maping a function {\tt f} over a push array results 
+(shown below) illustrates how mapping a function {\tt f} over a push array results 
 in an application of {\tt f} in the write-function. 
 
 \begin{verbatim} 
@@ -1190,7 +1197,7 @@ faster than the reduction skeleton used in Accelerate. This is quite a feat, sin
 reduction in Accelerate corresponds to just one single hand optimised skeleton. We would have 
 been happy just getting close.   
 
-In paper E (section~\ref{sec:paperE}), we implement counting sort and occurrance sort 
+In paper E (section~\ref{sec:paperE}), we implement counting sort and occurrence sort 
 using Obsidian. We use very low-level features of Obsidian and end up producing 
 code that performs very well. 
 
@@ -1487,7 +1494,7 @@ with pragmas to ensure inlining. On the other hand, in Meta-Repa the programmer
 needs to explicitly state when something should not be inlined (using a {\tt force} primitive).
 This is related to our work on EmbArBB that also uses an existing library (ArBB) 
 for its parallelism. In reference~\citet{FPCDSL}, a case is made for this style 
-of embedding prexisting DSLs. 
+of embedding preexisting DSLs. 
 
 
 % ---------------------------------------------------------------------------
@@ -1533,7 +1540,7 @@ and solves a single problem and does it well. In ``Generic monad constructs'' Pe
 also solves the problem of compiling monads using a continuation monad. 
 
 ``Compiling Embedded Languages'' by Elliott and Finne has been a constant source of information 
-and something we have refered to in almost all our work. This is, in my opinion, the paper to turn 
+and something we have referred to in almost all our work. This is, in my opinion, the paper to turn 
 to for anyone starting out with compiled embedded languages. 
 
 %\subsection{Parallelism} 
@@ -1569,7 +1576,7 @@ to for anyone starting out with compiled embedded languages.
 Obsidian is a language for GPU kernel implementation, not complete applications. 
 It is not as well integrated into Haskell as for example Accelerate. There are 
 ways to execute Obsidian kernels from within Haskell (we have seen examples of this in 
-section~\ref{sec:GPUPROGRAMMING}); the recommended workflow, 
+section~\ref{sec:GPUPROGRAMMING}); the recommended work flow, 
 however, is to generate the CUDA as text and write the host code by hand. This 
 can be seen as both a shortcoming and a feature. It is hard to integrate 
 Accelerate programs in larger applications written in other languages; when 
@@ -1614,7 +1621,7 @@ This thesis contains two approaches to embedding a language for data-parallel pr
 in Haskell. EmbArBB embeds a preexisting library for data-parallelism in Haskell 
 and at little effort from us, very good performance is gained. The performance of 
 EmbArBB is entirely due to all the optimisation expertise and effort that was invested in 
-the ArBB system. We get all that expertice for free. What EmbArBB provides is a 
+the ArBB system. We get all that expertise for free. What EmbArBB provides is a 
 way for Haskellers to benefit from the ArBB system. ArBB and EmbArBB are based on a 
 set of parallel primitives for the programmer to use and compose. Obsidian takes 
 a different approach. Built in primitives are very few and very low level, such as 
