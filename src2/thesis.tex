@@ -1071,7 +1071,7 @@ Obsidian arithmetic expressions to look exactly like corresponding native Haskel
 The approach taken to embed the scalar language is very similar to what is described 
 in ``Compiling Embedded Languages''~\citet{COMPILEEDSL}; but we use a Generalised Algebraic 
 Datatype (GADT) to obtain typed expressions. An alternative to using a GADT is to use phantom 
-types, which earlier versions of Obsidian did (section~\ref{sec:paperB}). 
+types, which earlier versions of Obsidian did (section~\ref{sec:paperB}).   
 
 
 \subsubsection{Arrays} 
@@ -1250,23 +1250,23 @@ ArBB is based on a set of parallel primitives (or structures) on dense one, two 
 \item {\bf Sorting:}      {\tt sort} 
 \item {\bf Permutations:} {\tt gather}, {\tt scatter}, {\tt reverse} ...
 \item {\bf Sequential loops:} {\tt \_for}, {\tt \_while} 
-\item {\bf Map, zipWith, stencil:}  {\tt map} 
+\item {\bf Map, zipWith, stencil:} are all supported via a single primitive called {\tt map}.
 \end{itemize}
 
 These operations (and many more, there are about 120 operations in total) can be used 
 by the programmer when writing programs using ArBB. Note that there are sequential looping 
 constructs with special names, {\tt \_for} and {\tt \_while}. ArBB is a deeply embedded 
-language and calling the ArBB functions does not actually execute them, it just ads a node to 
+language and calling the ArBB functions does not actually execute them, it just adds a node to 
 some internal representation. Therefore, the use of normal C++ for loops leads to unrolled 
 ArBB programs and a special {\tt \_for} loop is needed to get a loop in the generated program. 
 This is exactly the way these things work in Haskell embedded languages, but it may be even 
-more surprising to a C++ programmer. Before an ArBB function can be computed it needs to be 
+more surprising to a C++ programmer. Before an ArBB function can be computed, it needs to be 
 captured. For this, ArBB has a {\tt call} function that is used to run functions using ArBB 
-functionality. The first time {\tt call} is used on a function pointer that function is 
+functionality. The first time {\tt call} is used on a function pointer, that function is 
 executed and the ArBB functions used in it build an AST (we say the function has been 
 captured). The AST is then compiled and specialised for the hardware available. Any 
-subsequent calls of a function using ArBB functionality do not lead to a recompilation, 
-the first call caches this compiled code. 
+subsequent calls of a function using ArBB functionality do not lead to a recompilation; 
+as the first call caches this compiled code. 
 
 The first step of our work with embedding Intel ArBB functionality was to implement very direct 
 and low-level bindings to the C interface. This provides a Haskell function (in the IO Monad) 
@@ -1281,30 +1281,31 @@ can be found in paper G in section~\ref{sec:paperG}.
 \label{sec:EmbArBB} 
 
 The ArBB Haskell bindings provide a very rudimentary interface to ArBB functionality and 
-is not useful for application implementation. A higher-level interface to ArBB to offer 
-the Haskell programmer is needed. Our first attempt was to implement an Accelerate backend 
+are not useful for application implementation. We need a higher-level interface to ArBB to offer 
+to the Haskell programmer. Our first attempt was to implement an Accelerate backend 
 using the ArBB bindings. However, this had some hard problems to solve. Accelerate is a 
-more richer language and there was an API mismatch between Accelerate and ArBB. These problems 
-are mentioned in in paper G, section~\ref{sec:paperG}. As a way to offer ArBB functionality 
-to the Haskell in a way that is useful and simpler to implement, we start working on EmbArBB. 
+richer language and there was an API mismatch between Accelerate and ArBB. These problems 
+are mentioned in paper G, section~\ref{sec:paperG}. As a way to offer ArBB functionality 
+to the Haskell programmer in a way that is useful and simpler to implement, we started 
+working on EmbArBB. 
 
-With EmbArBB we improve the interfacing with Haskell by implementing a deeply embedded language. 
-Now, programs in EmbArBB create ASTs. These ASTs are compiled via the ArBB bindings creating 
+EmbArBB improves the interfacing with Haskell by implementing a deeply embedded language. 
+Now, programs in EmbArBB create ASTs. These ASTs are compiled via the ArBB bindings, creating 
 function objects that can then be run. 
 
 \subsubsection{Dense and nested arrays}
 
-ArBB supports one, two and three dimensional arrays, called dense vectors. In EmbArBB we 
+ArBB supports one, two and three dimensional arrays, called dense vectors. In \\ EmbArBB, we 
 represent these with a data type, {\tt DVector}, parameterised by dimensionality and 
 element type. The dimension parameter can be either {\tt Dim1}, {\tt Dim2} or {\tt Dim3}. 
 There are also nested vectors, in EmbArBB called {\tt NVector}, parameterised on element type. 
 
 \subsubsection{Operations on arrays} 
 
-EmbArBB provides many of the ArBB operations on vectors but provides a 
-shape-polymorphic interface to them. For example, a reduction operation can take a two  
-dimensional vector and reduce all rows or columns and provide a one dimensional result. Or 
-it takes a one dimensional vector and returns a single value (zero dimensional vector). 
+EmbArBB provides many of the ArBB operations on vectors via a 
+shape-polymorphic interface. For example, a reduction operation can take a two  
+dimensional vector and reduce all rows or columns and provide a one dimensional result. 
+It can also take a one dimensional vector and return a single value (zero dimensional vector). 
 
 \begin{verbatim} 
 addReduce :: Num a 
@@ -1325,34 +1326,36 @@ ArBB C interface already construct an AST within the ArBB system. One possible b
 of the deep embedding is that it buys independence from the ArBB backend. It is possible 
 to compile the AST generated on the Haskell side to some other target language. 
 
-When compiling EmbArBB to ArBB a sharing detection pass is performed. This pass detects 
+When compiling EmbArBB to ArBB, a sharing detection pass is performed. This pass detects 
 sharing in the AST using the method of A. Gill~\citet{Gill}. One benefit of this pass 
-is that it reduces the numbers of calls into the ArBB C library. The efficiency of code 
-generated is probably not affected since ArBB would discover that sharing in a Common 
+is that it reduces the number of calls into the ArBB C library. The efficiency of code 
+generated is probably not affected, since ArBB would discover that sharing in a Common 
 Subexpression Elimination (CSE) pass. Another potential benefit is that sharing detection 
-on the Haskell side results in a simpler AST being built on the ArBB side; potentially making 
+on the Haskell side results in a simpler AST being built on the ArBB side, potentially making 
 the job for the ArBB optimisation passes simpler. What effects these 
 operations truly had on performance has not been investigated. Actually, applying a sharing 
-detection technique was one of my personal motivations for working on EmbArBB. In Obsidian 
-we have not seen the need for this technique.
+detection technique was one of my personal motivations for working on EmbArBB. In Obsidian, 
+we have not seen the need for this technique. In Obsidian, sharing is in the hands of the 
+programmer, via the {\tt force} operation. On a GPU, communication is more expensive than 
+computation, so whether to share a computation or not becomes a tool for the programmer to use. 
 
 One benefit of a deep embedding is that transformations can be performed on the AST. Applying 
 any optimisations in EmbArBB would very likely duplicate effort already put into ArBB. 
-Therefore we apply no further transformations after sharing detection. However, if EmbArBB 
+Therefore, we apply no further transformations after sharing detection. However, if EmbArBB 
 would be used to generate code in some other target language a set of optimisations 
 would be needed.  
 
 \subsubsection{Evaluation} 
 
 In paper H, section~\ref{sec:paperH}, we benchmark EmbArBB against ArBB in C++ and the Haskell 
-Repa library. EmbArBB compares favourably to Repa and is often a lot faster. EmbArBB and the ArBB 
-C++ performance is not distinguishable from EmbArBB's indicating that our Haskell embedding 
-adds no extra overhead. Of course this is expected, since once the ArBB system has generated 
+Repa library. EmbArBB compares favourably to Repa and is often a lot faster. The ArBB 
+C++ performance is not distinguishable from EmbArBB's, indicating that our Haskell embedding 
+adds no extra overhead. Of course, this is expected, since once the ArBB system has generated 
 the code, that code is identical no matter if the AST was built via Haskell or C++ calls. 
-Missing is a comparison of how well EmbArBB and C++ compares in regards to the time it actually 
-takes to go through the process of making those ArBB C API calls. However, if the generated 
-code is used many times the caching ArBB does of generated code means that the initial code 
-generation cost can be amortised. 
+A comparison of how well EmbArBB and C++ compares in regards to the time it actually 
+takes to go through the process of making those ArBB C API calls has not been performed. 
+However, if the generated code is used many times, ArBB's caching of generated code means 
+that the initial code generation cost can be amortised. 
 
 \subsection{Current status of ArBB and EmbArBB} 
 
@@ -1381,7 +1384,7 @@ embedded languages and libraries for parallel programming. The languages and lib
 are data-parallel; languages for control parallelism or distributed message passing systems are 
 not considered. The systems are roughly divided 
 into three groups, based on their level of abstraction. There are low-level languages; here 
-I place languages that are imperative and C-like. In the middle layer I place languages 
+I place languages that are imperative and C-like. In the middle, layer I place languages 
 that have higher level abstractions and are more easily composable. 
 at the highest level, I place languages that completely abstract away from details of the 
 hardware they run on. The division is not free from personal bias and the placement of languages
@@ -1398,9 +1401,9 @@ With Obsidian, we try to target the sparsely occupied area of mid-level GPU prog
 CUDA~\citet{wwwcuda} and OpenCL~\citet{OpenCL}, the programmer has full control of how to divide 
 the computation amongst threads and blocks. Using Accelerate~\citet{ACCELERATEDAMP11}, 
 Nikola~\citet{NIKOLA} 
-and Thrust~\citet{THRUST} the programmer would use 
-high-level patterns without direct insight into how the application would be mapped onto 
-threads and blocks of the GPU. Using Obsidian, we want to bridge that gap by both being 
+and Thrust~\citet{THRUST}, the programmer uses 
+high-level patterns, without direct insight into how the application is mapped onto 
+the threads and blocks of the GPU. Using Obsidian, we want to bridge that gap by both being 
 more composable than CUDA and giving the programmer control of what the computation will 
 look like on the GPU. This is done by allowing the programmer to specify and compose 
 thread-level and block-level code. Recently, the CUB library arrived that is built on a 
@@ -1458,8 +1461,9 @@ general purpose programming of CPUs, GPUs or both. }
 % ArBB EmbArBB
 % ---------------------------------------------------------------------------
 The ArBB and EmbArBB systems also provide a set of parallel primitives that the programmer
-composes to build his application. I place the ArBB and EmbArBB in a box slightly lower than 
-Accelerate since while ArBB/EmbArBB also have built in reduction primitives, just like Accelerate, 
+composes to build his application. I place ArBB and EmbArBB in a box slightly lower than 
+Accelerate,  since while ArBB/EmbArBB also have built in reduction primitives, just like 
+Accelerate, 
 they are not general primitives. Where Accelerate has a single higher order reduction 
 operation, ArBB/EmbArBB has \\ {\tt reduce\_add, reduce\_mul} and so on. Benefits of 
 having ArBB embedded in Haskell compared to C++ are discussed in section~\ref{sec:EmbArBB}.
@@ -1469,7 +1473,7 @@ having ArBB embedded in Haskell compared to C++ are discussed in section~\ref{se
 % ---------------------------------------------------------------------------
 % Microsoft Accelerator
 % ---------------------------------------------------------------------------
-Microsoft Accelerator~\citet{ACCELERATOR}, is a language embedded in C\#. Accelerator has
+Microsoft Accelerator~\citet{ACCELERATOR} is a language embedded in C\#. Accelerator has
 data-parallel arrays and a set of aggregate operations (operations on entire arrays). The 
 operations on data-parallel arrays are JIT-compiled to GPU code. Accelerator can also 
 compile to multithreaded CPU code and make use of SIMD units of modern 
@@ -1478,7 +1482,7 @@ CPUs~\citet{ACCELERATORCPU}; this makes the Accelerator system related to ArBB.
 % ---------------------------------------------------------------------------
 % Python systems
 % ---------------------------------------------------------------------------
-There are many embedded languages implemented in Python that makes use of GPUs 
+There are many embedded languages implemented in Python that make use of GPUs 
 to improve performance. One example is Copperhead~\citet{copperhead}. Copperhead 
 supports flat and nested data-parallelism via primitives such as {\tt map} and 
 {\tt reduce}.  
@@ -1487,7 +1491,7 @@ supports flat and nested data-parallelism via primitives such as {\tt map} and
 % Repa, Meta-Repa 
 % --------------------------------------------------------------------------- 
 
-Repa (Regular Shape-polymorphic Arrays)~\citet{REPA}, is a Haskell library for 
+Repa (Regular Shape-polymorphic Arrays)~\citet{REPA} is a Haskell library for 
 data-parallel programming. 
 Repa uses the same array representation as Obsidian, in Repa called a delayed
 array, which is a function from index to element. However, in Repa arrays have shape; 
@@ -1496,7 +1500,7 @@ For example, {\tt map} can be applied to an array of any shape.
 
 Meta-Repa~\citet{METAREPA} is a reimplementation of the Repa library using deep embedded language 
 techniques. Meta-Repa programs build ASTs that are then compiled (using template 
-Haskell) to Haskell code using low-level parts of the Repa library for its parallelism.
+Haskell) to Haskell code that uses low-level parts of the Repa library for its parallelism.
 The Meta-Repa approach to implementing the Repa library 
 gives inlining of operations for free, where Repa programs need to be annotated 
 with pragmas to ensure inlining. On the other hand, in Meta-Repa the programmer 
@@ -1522,11 +1526,11 @@ specific embedded languages. There is an extensible internal representation (IR,
 the programmer extends some base IR with domain specific constructs. The Delite system 
 has been used to implement domain specific embedded languages for machine learning, rendering, 
 physics and other domains. Delite, being a framework and the languages implemented using it 
-very domains specific, was impossible to place in the matrix (figure~\ref{fig:researchmatrix}). 
+very domains specific, was impossible to place in the matrix (Figure~\ref{fig:researchmatrix}). 
 
 \subsection{Embedded domain specific languages} 
 
-Feldspar is an embedded language for digital signal processors~\citet{FELDSPAR}. Apart 
+Feldspar is an embedded language for digital signal processing~\citet{FELDSPAR}. Apart 
 from using the syntactic library~\citet{SyntacticICFP12}, it is quite similar to Obsidian. 
 There is a deeply embedded core language (called Core) and vectors as a shallow embedding 
 on top of that, just like in Obsidian.
@@ -1539,14 +1543,12 @@ requires more control of GPU architecture specifics.
 
 \subsection{Compiling Embedded Languages}
 
-In paper A~(section \ref{sec:paperA}) we describe our method for compiling monadic embedded 
-languages. 
-This means to take a monadic computation and observe its structure in order to generate
-code. This work is closely related to a method described in ``The Constrained Monad Problem''
-by Sculthorpe and Gill~\citet{sculthorpe2013constrained}. In that paper they solve a more 
+In paper A~(section \ref{sec:paperA}), we describe our method for compiling monadic embedded 
+languages. This work is closely related to a method described in ``The Constrained Monad Problem''
+by Sculthorpe and Gill~\citet{sculthorpe2013constrained}. In that paper, they solve a more 
 general problem than just compilation, but our method is nice because it is easy to understand 
-and solves a single problem and does it well. In ``Generic monad constructs'' Persson et al 
-also solves the problem of compiling monads using a continuation monad. 
+and solves a single problem and does it well. In ``Generic monad constructs'', Persson et al 
+also solve the problem of compiling monads using a continuation monad. 
 
 ``Compiling Embedded Languages'' by Elliott and Finne has been a constant source of information 
 and something we have referred to in almost all our work. This is, in my opinion, the paper to turn 
@@ -1584,22 +1586,23 @@ to for anyone starting out with compiled embedded languages.
 
 Obsidian is a language for GPU kernel implementation, not complete applications. 
 It is not as well integrated into Haskell as for example Accelerate. There are 
-ways to execute Obsidian kernels from within Haskell (we have seen examples of this in 
+ways to execute Obsidian kernels from within Haskell (we have seen an example of this in 
 section~\ref{sec:GPUPROGRAMMING}); the recommended work flow, 
 however, is to generate the CUDA as text and write the host code by hand. This 
 can be seen as both a shortcoming and a feature. It is hard to integrate 
 Accelerate programs in larger applications written in other languages; when 
 using Obsidian a kernel is generated and can be used as part of for example a library. 
 
-Obsidian is also a quite low-level language. The programmer needs to know GPU details 
+Obsidian is also quite a low-level language. The programmer needs to know GPU details 
 and is allowed to write programs at a level almost as low as CUDA, if it is desired. 
 Paper E (section~\ref{sec:paperE}) contains examples of programming at this low level. 
 One potential use of Obsidian could be as the code generating backend of high-level 
 and very domain specific embedded languages. This could be a niche for Obsidian.  
 
-Warp level computations is work in progress and that these are not as well integrated 
-into the hierarchy as the block, thread and grid levels are. The warp abstractions 
-offered also requires more work in the code generating backend than the others, 
+Obsidian's support for warp level computations is work in progress. Currently, warp level 
+computations are not as well integrated into the hierarchy as the block, thread and grid 
+levels are. The warp abstractions 
+offered also require more work in the code generating backend than those 
 that correspond directly to CUDA concepts. The problem is that CUDA does not have 
 a warp abstraction. Warps needs to be better integrated with the rest of Obsidian 
 and the code generation required for warps needs more testing before being 
@@ -1628,7 +1631,7 @@ the programmer make better use of the GPU.
 
 This thesis contains two approaches to embedding a language for data-parallel programming 
 in Haskell. EmbArBB embeds a preexisting library for data-parallelism in Haskell 
-and at little effort from us, very good performance is gained. The performance of 
+and, at little effort from us, very good performance is gained. The performance of 
 EmbArBB is entirely due to all the optimisation expertise and effort that was invested in 
 the ArBB system. We get all that expertise for free. What EmbArBB provides is a 
 way for Haskellers to benefit from the ArBB system. ArBB and EmbArBB are based on a 
@@ -1642,16 +1645,16 @@ Looking at the related work, we see that almost all high level GPU programming
 languages provide abstractions of parallel primitives, aggregate operations, 
 maps, folds and reductions, giving justification to our investigation of GPU 
 programming without these. We believe that the GPU architecture is still volatile 
-enough that there be no ``the right'' way of implementing these primitives. As of 
+enough that there is no ``the right'' way of implementing these primitives. As of 
 today, the programmer still needs to explore the design space and find a solution 
 that performs well on a particular GPU. 
 
 Performance of Obsidian kernels is often good and the Obsidian code that they 
 are generated from is often shorter than corresponding CUDA programs. Obsidian 
-programs differ from CUDA programs by describing whole programs. With this I mean 
-that a CUDA programmer needs to take a leap from the single threaded program 
+programs differ from CUDA programs by describing whole programs. A CUDA programmer 
+needs to take a leap from the single threaded program 
 parameterised on thread ID, to what actually will happen when this program is 
-run by hundreds or thousands threads at once. The extensive indexing arithmetic 
+run by hundreds or thousands of threads at once. The extensive indexing arithmetic 
 often present in CUDA programs can make this leap a hard one. Similar programs 
 in Obsidian could use operations on whole arrays such as {\tt map} or explicitly 
 bounded parallel loops. 
@@ -1697,9 +1700,10 @@ Authors: Josef Svenningsson and Bo Joel Svensson
 reification of monads. This is useful for compilation of 
 monadic embedded languages. We use a simple robot control language 
 as the example. Robot programs can be expressed using Haskell do notation 
-and is compiled down to a simple first order program representation. 
+and are compiled down to a simple first order program representation. 
 There is also a graphical simulator available that runs the compiled 
-code. Robot language and simulator is available at github: \url{github.com/svenssonjoel/Robot}.
+code. The robot language and simulator are available at github: \\ 
+\url{github.com/svenssonjoel/Robot}.
 
 \subsection{GPU programming papers} 
 
@@ -1709,8 +1713,8 @@ Authors: Bo Joel Svensson, Mary Sheeran and Koen Claessen \newline
 
 \vspace{5mm}
 
-The first real paper about Obsidian, our embedded language for GPU 
-programming. In this paper we identify similarities between 
+This is the first real paper about Obsidian, our embedded language for GPU 
+programming. In this paper, we identify similarities between 
 connection patterns in hardware and parallel computations on GPUs. 
 We introduce a structured and compositional way to write data-parallel 
 programs on a GPU.
@@ -1726,7 +1730,7 @@ Authors: Bo Joel Svensson, Koen Claessen and Mary Sheeran \newline
 
 In this paper we describe a version of Obsidian implemented with a 
 a different internal representation of GPU programs. We realised that 
-most of our kernels have similar shape, they are parallel operations 
+most of our kernels have similar shape; they are parallel operations 
 composed in sequence interspersed with barrier synchronisations. The 
 internal representation used here captures this case exactly. Programming 
 is now done is a style resembling arrows. 
@@ -1739,7 +1743,7 @@ Authors: Koen Claessen, Mary Sheeran and  Bo Joel Svensson \newline
 \vspace{5mm}
 
 This paper introduces {\em Push} arrays, invented by Koen Claessen. This 
-array representation target specific performance problems that we want 
+array representation targets specific performance problems that we want 
 to solve with Obsidian. Here we have also gone back to using monadic 
 style for programming in Obsidian. 
 
@@ -1753,10 +1757,10 @@ Authors: Josef Svenningsson, Bo Joel Svensson and Mary Sheeran \newline
 This paper contains a sorting case study performed in Obsidian. It 
 is however the algorithms that are in focus here. We describe 
 an interesting variation on Counting sort that removes duplicate 
-elements and is a nice fit for GPUs because of its little need for 
+elements and is a nice fit for GPUs because of its reduced need for 
 synchronisation. 
 
-In order to implement these sorting algorithms we added atomic operations 
+In order to implement these sorting algorithms, we added atomic operations 
 to Obsidian. 
 
 \subsubsection{\paperF: \\ \paperFTitle}
@@ -1767,11 +1771,11 @@ Authors: Bo Joel Svensson and Mary Sheeran \newline
 
 \noindent 
 
-In this paper the most recent additions and improvements of Obsidian are 
+In this paper, the most recent additions and improvements to Obsidian are 
 described. Obsidian Programs are now parameterised on Hierarchy level. This forces
 the programmer into writing programs that we know how to compile to a GPU easily 
-(by limiting how parallel operations can be nested). The paper also gives a detailed  
-optimisation story using Obsidian for implementing reduction kernels. 
+(by limiting how parallel operations can be nested). The central part of this paper 
+describes how to implement and optimise reduction kernels using Obsidian. 
 
 
 \subsection{Retargetable parallel programming} 
