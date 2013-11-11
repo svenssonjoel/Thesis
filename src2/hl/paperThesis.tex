@@ -1723,18 +1723,18 @@ This is a new way of introducing sequential work into kernels; unlike {\tt seqRe
 \centering
 \begin{tabular}{| l | c | c | c | c | r | }
 \hline 
-  Kernel & Threads & Shared mem. & ms & ms*\\ \hline 
-  red1 & 1024 & 16384 & 9.619 & 1.678 \\ \hline
-  red2 & 1024 & 16384 & 9.174 & 1.838 \\ \hline
-  red3 & 1024 & 16384 & 8.795 & 1.855 \\ \hline
-  red4 & 256 & 2048  & 10.839 & 2.120  \\ \hline
-  red5 & 256 & 2048  & 2.608 &  0.445 \\ \hline
-  red6 & 128 & 1024  & 2.471 &  0.442 \\ \hline
-  red7 & 64 & 512  & 2.524 &    0.439 \\ \hline
+  Kernel & Threads & Shared mem. & ms \\ \hline 
+  red1 & 1024 & 16384 & 2.085 \\ \hline
+  red2 & 1024 & 16384 & 1.748 \\ \hline
+  red3 & 1024 & 16384 & 1.741 \\ \hline
+  red4 & 256 & 2048  & 2.113  \\ \hline
+  red5 & 256 & 2048  & 0.455  \\ \hline
+  red6 & 128 & 1024  & 0.441  \\ \hline
+  red7 & 64 & 512    & 0.441  \\ \hline
 \end{tabular}
 \caption{ Execution time of a grid of 8192 reductions , each of
 2048 elements on 
-and on a GTX680 (ms*). The timing figures were obtained using the NVIDIA Profiler.}
+and on a GTX680. The timing figures were obtained using the NVIDIA Profiler.}
 \label{fig:reducetable} 
 \end{small} 
 \end{figure} 
@@ -1744,17 +1744,17 @@ and on a GTX680 (ms*). The timing figures were obtained using the NVIDIA Profile
 \centering
 \begin{tabular}{| l | c | c | c | c | r | }
 \hline 
-  Kernel & Threads & Shared mem. & ms & ms*\\ \hline 
-  red1l & 1024 & 16384 & 8.883 & 1.762 \\ \hline
-  red2l & 1024 & 16384 & 5.721 & 1.030  \\ \hline
-  red3l & 1024 & 16384 & 5.377 & 0.980  \\ \hline
-  red4l & 256 & 2048  & 11.202 & 2.201 \\ \hline
-  red5l & 256 & 2048  & 2.476  & 0.440 \\ \hline
-  red6l & 128 & 1024  & 2.471  & 0.442 \\ \hline
-  red7l & 64 & 512  & 4.712    & 0.752\\ \hline
+  Kernel & Threads & Shared mem. & ms \\ \hline 
+  red1l & 1024 & 16384 & 1.567   \\ \hline
+  red2l & 1024 & 16384 & 1.073   \\ \hline
+  red3l & 1024 & 16384 & 0.976   \\ \hline
+  red4l & 256 & 2048  &  2.240   \\ \hline
+  red5l & 256 & 2048  &  0.443   \\ \hline
+  red6l & 128 & 1024  &  0.440   \\ \hline
+  red7l & 64 & 512  &    0.440   \\ \hline
 \end{tabular}
-\caption{ Execution time of a grid of 4096 reductions, each of 4096 elements on a GT650m GPU (ms)
-and on a GTX680 (ms*). The timing figures were obtained using the NVIDIA Profiler.}
+\caption{ Execution time of a grid of 4096 reductions, each of 4096 elements on 
+a GTX680. The timing figures were obtained using the NVIDIA Profiler.}
 \label{fig:reducetablel} 
 \end{small} 
 \end{figure} 
@@ -2251,13 +2251,12 @@ describes future work to improve this situation.
 \begin{small}
 \begin{tabular}{| l | r | r | r | }
 \hline 
-  System            & Elements & ms     & ms*   \\ \hline 
-  Obsidian and CUDA & $2^{24}$  & 2.480  & 0.446 \\ \hline
-  Accelerate        & $2^{24}$  & 2.716  & 0.478 \\ \hline
+  System            & Elements & ms    \\ \hline 
+  Obsidian and CUDA & $2^{24}$  & 0.449 \\ \hline
+  Accelerate        & $2^{24}$  & 0.478 \\ \hline
 \end{tabular}
 \caption{Running times of $2^{24}$ element reduction using Obsidian and CUDA 
-or Accelerate. The results were obtained on a NVIDIA GT650m GPU (ms) 
-and on a NVIDIA GTX680 GPU (ms*).}
+or Accelerate. The results were obtained on a NVIDIA GTX680 GPU.}
 
 \label{fig:CUDATABLE} 
 \end{small}
