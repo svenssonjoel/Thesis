@@ -206,17 +206,17 @@ to data-parallel programming. Two embedded languages are presented, Obsidian for
 purpose GPU programming and EmbArBB for data-parallel programming across platforms. 
 
 CPUs and GPUs get more parallel resources with each new generation. The question of how to 
-program these processors efficiently arises. We are after efficiency both in programmer 
+efficiently program these processors arises. We are after efficiency both in programmer 
 productivity and in application performance. Using embedded languages allows us to experiment
 with what abstractions to present to the programmer at relatively little effort.
 
 Obsidian is an embedded language for general purpose programming of GPUs. We try to strike 
 a balance between high level, productivity increasing abstractions and low-level 
 control needed for performance. The Obsidian programming model mirrors the GPU architecture 
-and the programmer is constrained into writing GPU-friendly code. By supplying hierarchy level 
-polymorphic library functions, these constraints does not feel obtrusive. Obsidian programs are 
-compiled into CUDA C code. This compilation is based on a simple and elegant monad reification 
-technique.  
+and the programmer is constrained into writing GPU-friendly code. Hierarchy level 
+polymorphic library functions are supplied to make these constraints feel less obtrusive. 
+Obsidian programs are compiled into CUDA C code. This compilation is based on a simple 
+and elegant monad reification technique.  
 
 In cases where the programmer is not interested in low-level details 
 or wants the program to run over a range of hardware, a higher level language can be used.
@@ -343,7 +343,7 @@ paper. Programming and running time experimentation was performed by me, while g
 valuable advice and guidance from Ryan. 
 
 The work behind paper H was done by me as a hobby project and my aspirations were not 
-high. I just wanted to experiment with some embedded languages techniques that we had 
+high. I just wanted to experiment with some embedded language techniques that we had 
 been avoiding (had no need for) in Obsidian. Mary discovered what I was doing and applied 
 the right amount of pressure, leading to us encompassing much more of ArBB functionality than 
 I had in mind. The paper's text is joint work; most examples as well as benchmarking are my work,
@@ -389,24 +389,24 @@ as a library for some existing host language. In this case, the functional progr
 language Haskell is used as host language. 
 
 Computers today are increasingly parallel. Each new generation of general purpose processors
-(CPUs) and of graphics processors (GPUs), brings more parallelism. The question 
+(CPUs) and of graphics processors (GPUs) brings more parallelism. The question 
 of how to program these computers most efficiently, both from a productivity and 
 a performance point of view, arises. Explicit parallel programming is hard and automatic 
 means of parallelisation, while giving a sequential programming model to the programmer, 
 often misses the target when it comes to performance. The book ``Structured Parallel 
-Programming'' by Michael McCool et al argues for the need of explicit parallel programming 
+Programming'' by Michael McCool et al argues the need for explicit parallel programming 
 models~\citet{STRUCTURED}.
 
 The embedded language approach to programming language implementation is beneficial, 
 since we are not entirely sure of how to program current and future highly parallel 
 computers. Implementing an embedded language allows us more rapid prototyping of ideas. 
 We can experiment with what abstractions to expose to the programmer, without much 
-effort. Other benefits of embedded languages often mentioned are: making use 
-of the host language's library functions, if they are general enough. The host language 
-can be used as a powerful macro language for the embedded language. An embedded 
-language also provides a more leveled learning curve to programmers already familiar 
-with the host language. For these programmers, using an embedded language is more like  
-learning about a new library. 
+effort. There are many other benefits of embedded languages: making use 
+of the host language's library functions (if they are general enough), the host language 
+can be used as a powerful macro language for the embedded language, providing a more 
+leveled learning curve to programmers already familiar with the host language. 
+For programmers who are already proficient in the host language, learning an embedded 
+language is more like picking up a new library. 
 
 This thesis focuses on data-parallelism, as opposed to task or control parallelism.
 Data-parallelism is applicable where the input data can be divided into chunks
@@ -414,9 +414,9 @@ and operated upon independently. Data-parallelism is scalable; the potential
 for parallelism increases with the problem size. Two different embedded languages 
 for data-parallel programming are presented in this thesis: Obsidian, for 
 general purpose computations on GPUs and EmbArBB for parallel programming across 
-platforms, CPU, GPU and other accelerators. 
+platforms, such as CPUs, GPUs and other accelerators. 
 
-Graphics Processors (GPUs) trade programmer convenience for increased parallelism. 
+Graphics Processors trade programmer convenience for increased parallelism. 
 For example, where CPUs dedicate large portions of chip area to caches, branch 
 prediction and instruction level parallelism (ILP), GPUs put additional cores. 
 This comes at a price of increased programmer effort. GPUs have programmer managed 
@@ -428,7 +428,7 @@ that influence performance and high-level abstractions to increase productivity 
 make programs more terse. The end goal with Obsidian is a language for writing 
 high performance GPU programs that compare well to code written by CUDA~\citet{CUDA}  
 (a C-dialect for GPU programming) experts, provided that both programmers have 
-similar GPU expertise. The Obsidian programmer would however do so in a more 
+similar GPU expertise. The Obsidian programmer would however write programs in a more 
 composable manner. Obsidian programs are compiled into CUDA.  
 
 Obsidian is geared towards the programmer who is interested in GPU hardware. Making 
@@ -442,8 +442,8 @@ platforms. The EmbArBB language targets this programmer. EmbArBB exposes a set o
 operations on arrays, such as {\tt map}, {\tt reduce} and {\tt scan}. The programmer 
 has no power over the parallel strategy that should be used to implement these 
 operations but instead relies on a JIT-compiler (Just In Time-compiler). EmbArBB is a 
-Haskell embedding of Intel ArBB that was released as an embedded language in C++. 
-EmbArBB relies entirely on the ArBB system for code generation and optimisation.  
+Haskell embedding of Intel ArBB~\citet{ARBB2011} that was released as an embedded language 
+in C++. EmbArBB relies entirely on the ArBB system for code generation and optimisation.  
 
 % -------------------------------------------------------------------------
 % Obsidian !
@@ -451,9 +451,9 @@ EmbArBB relies entirely on the ArBB system for code generation and optimisation.
 
 \section {Obsidian: An embedded language for GPU kernel implementation} 
 
-In 2006 NVIDIA released their first Compute Unified Device Architecture (CUDA) 
+In 2006, NVIDIA released their first Compute Unified Device Architecture (CUDA) 
 GPU. With CUDA, NVIDIA also made it a lot easier for programmers to use GPUs
-for general purpose programming. A dialect of C, called CUDA C, was released 
+for general purpose programming~\citet{wwwcuda}. A dialect of C, called CUDA C, was released 
 specifically to simplify the implementation of general purpose computations on GPUs. 
 
 Before CUDA, programmers still tried (very ingeniously) to make use of GPUs for 
@@ -478,7 +478,7 @@ effort. This is where we are trying to go one step further with Obsidian.
 
 Before going into programming of GPUs, it is important to have some background. The 
 GPU programming model exposed by CUDA very much mirrors the underlying hardware. Some 
-of the details that make GPU programming hard is more apparent when looking at the 
+of the details that make GPU programming hard are more apparent when looking at the 
 underlying hardware. 
 
 A CUDA GPU is built around a single kind of processor (as opposed to the different 
@@ -492,10 +492,11 @@ Each MP of the GPU can manage a large number of threads; on today's GPUs up to
 2048 threads can run on a single MP. The GPU schedules threads in groups of 32, called 
 {\em Warps}, that are executed in lock-step (SIMD style execution). Threads are 
 also divided into {\em Blocks}; the threads within a block can communicate using the 
-shared memory. The maximum block size is currently 1024 threads. Since 
-the number of threads in a block can be higher than the warp size, a barrier 
-synchronisation mechanism exists to ensure that threads within a block 
-can communicate safely via the shared memory. Blocks are also grouped into a grid that 
+shared memory. The maximum block size is currently 1024 threads. Threads within 
+a warp can communicate via the shared memory without using any synchronisation 
+primitive. However, if communication takes place across warps synchronisation is 
+necessary. A barrier synchronisation mechanism exists to ensure that all threads within a block 
+have reached the same position in the code. Blocks are also grouped into a grid that 
 is the collection of blocks executing the same program. 
 
 % -------------------------------------------------------------------------
@@ -503,10 +504,10 @@ is the collection of blocks executing the same program.
 % -------------------------------------------------------------------------
 
 \subsection{GPU programming} 
-\label{GPUPROGRAMMING}
+\label{sec:GPUPROGRAMMING}
 
 The CUDA programming model reflects the hierarchical architecture of the GPU. The 
-programmer writes what are called \emph{kernels}; in CUDA jargon a kernel refers to a sequential 
+programmer writes what are called \emph{kernels}; in CUDA jargon, a kernel refers to a sequential 
 C program that is parameterised on a thread's identity. The kernel program is executed 
 in parallel across all the threads of a block and many such blocks of threads can execute 
 in parallel on the available MPs. Kernels may use shared memory that is local to a block; 
@@ -611,7 +612,7 @@ int main(void) {
 % 
 % -------------------------------------------------------------------------
 
-In Obsidian, the same kernel (the local computation) is implemented as follows: 
+\noindent In Obsidian, the same kernel (the local computation) is implemented as follows: 
 
 \begin{small}
 \begin{Verbatim}[samepage=true]
@@ -623,10 +624,10 @@ vecAdd = zipWith (+)
 \noindent The {\tt vecAdd} program takes two {\tt SPull} input arrays and gives one 
 as result. The Obsidian {\tt vecAdd} is more general than the CUDA version. From it 
 we can generate CUDA kernels for any element type that supports the {\tt (+)} operation. 
-In Haskell we know this is true for types that are member of the {\tt Num} typeclass.  
+In Haskell we know that types that belong to the {\tt Num} typeclass has a {\tt (+)} operation.  
 
 There are some important differences between CUDA and Obsidian programs. One is that with Obsidian 
-we generate kernels for fixed size local computations. This is to avoid doing out-of-bounds check 
+we generate kernels for fixed size local computations. This is to avoid doing out-of-bounds checks 
 which would mean conditionals in the code. Conditionals are problematic from a performance 
 point of view. Another difference is that in Obsidian the programmer specifies the entire 
 computation, including how it is mapped over the blocks of the GPU. This is done implicitly 
@@ -677,8 +678,8 @@ handwritten example above. One such difference is that the index computation is 
 Obsidian relies on the CUDA compiler to discover such sharing via a Common Subexpression 
 Elimination (CSE) optimisation pass. Another difference is that Obsidian has inserted a 
 conditional that only executes the body for certain blocks. Discussion of the causes for 
-that conditional is postponed until a later section~\ref{sec:OBSARRAYS}. A real 
-difference is that the kernel is generated for a fixed size, here there is a constant (32) 
+that conditional is postponed until section~\ref{sec:OBSARRAYS}. A real 
+difference is that the kernel is generated for a fixed size; here there is a constant (32) 
 where in the handwritten code we used {\tt blockDim.x}. If those differences are set 
 aside, the two kernels are identical. Figure~\ref{fig:OBSIDIANHOST1} shows how the 
 {\tt vecAddG} kernel can be launched from within Haskell, using Obsidian's rudimentary 
@@ -773,7 +774,7 @@ array; indexing into local shared memory is done using the local ID.
 
 In Obsidian, local computations can also use shared memory. The Obsidian arrays 
 we have seen in the examples, {\tt Pull} and {\tt Push} arrays do not directly 
-correspond to actual data in memory. Pull and push arrays, rather represent ways 
+correspond to actual data in memory. Pull and push arrays rather represent ways 
 to compute arrays. More information about these array representations is available 
 in section~\ref{sec:OBSARRAYS}. The Obsidian programmer can store intermediate 
 arrays in shared memory by using a {\tt force} operation. 
@@ -836,18 +837,20 @@ extern "C" __global__ void kernel(int32_t* input0, uint32_t n0,
     uint32_t tid = threadIdx.x;
     
     if (blockIdx.x < n0 / 32U) {
-        ((int32_t*) sbase)[tid] = input0[blockIdx.x * 32U + tid] * 2;
+        ((int32_t*) sbase)[tid] = 
+           input0[blockIdx.x * 32U + tid] * 2;
         __syncthreads();
-        output1[blockIdx.x * 32U + tid] = ((int32_t*) sbase)[tid] + 1;
+        output1[blockIdx.x * 32U + tid] = 
+           ((int32_t*) sbase)[tid] + 1;
     }
 }
 \end{Verbatim}
 \end{small} 
 
 \noindent This code uses a shared memory array called {\tt sbase}. There 
-is also a call to {\tt \_\_syncthreads} to ensure that all the writes have 
+is also a call to \\ {\tt \_\_syncthreads} to ensure that all the writes have 
 completed before proceeding. In this case the synchronisation is not really
-necessary since all threads belong to the same warp. There is a {\tt unsafeforce} 
+necessary since all threads belong to the same warp. There is an {\tt unsafeforce} 
 operation that naively removes synchronisations if the array being forced is short 
 enough. More advanced analysis could also be performed to remove synchronisations 
 whenever communication is entirely warp local. We do not apply that optimisation, 
@@ -869,12 +872,12 @@ information about how these best practices influence our work on Obsidian.
 
 \item {\bf Minimise data transfers between host and device:} The bandwidth between device memory 
 and GPU is much higher than the bandwidth between host memory and the GPU device via the PCIe bus.
-This means that, first of all one must evaluate if the computation to be performed is significant 
+This means that, first of all, one must evaluate if the computation to be performed is significant 
 enough to warrant a transfer to the GPU. If the computation is not arithmetic intensive, it may be 
 better to do the work on the CPU. However, if the data is already in device memory and 
-the operation that is about to perform on it is more efficiently handled by the CPU, it may still 
-be better to let the GPU do the work. In other words, compute near the data unless transferring it 
-pays off. 
+the operation that is about to be performed on it is more efficiently handled by the CPU, it 
+may still be better to let the GPU do the work. In other words, compute near the data unless 
+transferring it pays off. 
 
 Data transfers between the host memory and device (GPU) memory is out of Obsidian's scope. 
 If Obsidian is used to generate kernels for a computation, the programmer has already decided that 
@@ -890,18 +893,18 @@ applications. This part of Obsidian is future work.
 GPU device memory can be {\em coalesced} (combined into few memory transactions). Unfortunately 
 what these access patterns are varies somewhat depending on the GPU. For a typical model of 
 GPU, the rule is that concurrent memory accesses (by threads within a warp) will be coalesced 
-to as many transactions as cache lines touched (128b l1 cache lines). This means that strided 
+to as many transactions as cache lines touched (128 Byte l1 cache lines). This means that strided 
 accesses from within a warp are not favoured. 
 
 Inputs to an Obsidian program are pull arrays. Pull arrays can be arbitrarily permuted; 
-the permutation used will decide the access pattern. If this method can be applied or 
-not partly also depends on the algorithm being implemented. 
+the permutation used will decide the access pattern. If global memory accesses can 
+be coalesced or not partly also depends on the algorithm being implemented. 
 
 \item {\bf Minimise use of global memory:} Accessing global device memory can take as 
 many as 400 to 600 clock cycles if the data is not cached. The programmer should 
 use shared memory as much as possible to avoid redundant loading from global memory.
 Shared memory can also be used to coalesce reads from global memory. Shared memory is 
-a limited resource in the MP, so if a kernel uses very much shared memory it means 
+a limited resource in the MP, so if a kernel uses very much shared memory, 
 fewer such blocks can be active on the MP. 
 
 Intermediate arrays are stored into shared memory when the Obsidian programmer uses 
@@ -912,7 +915,7 @@ scheduled unit on a GPU. If a warp accesses memory (and will be waiting for it a
 600 cycles) it will be swapped out and another warp will take its place. This means that 
 the number of available warps decides how well memory latency can be hidden. A block that is 
 not a multiple of 32 leads to wasting GPU resources; some processing elements will stand 
-idle during the execution of the not full warps. 
+idle during the execution of the incomplete warps. 
 
 Obsidian requires regularity even more than CUDA does. Since we focus on generating high 
 performance kernels, we rule out generation of kernels that work on different sizes (per block). 
@@ -927,8 +930,8 @@ within a warp will affect performance. When the execution paths within a warp di
 computation is serialised. 
 
 Sometimes divergent code cannot be avoided. However, it is important not to have threads 
-diverge unnecessarily. When using pull arrays alone this was often a problem; with the 
-addition of push arrays the situation improved. Using push arrays some divergent computations 
+diverge unnecessarily. When using pull arrays alone, this was often a problem; with the 
+addition of push arrays, the situation improved. Using push arrays, some divergent computations 
 can be explicitly split up into phases, each phase with all threads following the 
 same execution path. This means that fewer threads are required to do the same work. 
 
@@ -939,13 +942,13 @@ this is a major limitation to the composability of CUDA functions. Wheather or n
 call some function in a certain place in your code can be decided only by inspecting that 
 function's implementation. 
 
-In Obsidian it is impossible for a barrier synchronisation to appear within diverging 
+In Obsidian, it is impossible for a barrier synchronisation to appear within diverging 
 conditional code. Conditionals can be introduced either by an \\{\tt ifThenElse} function 
 at the element level or by a {\tt Cond} statement that is an operation in the {\tt Program} 
 monad; we have seen an example of the program monad in section~\ref{sec:GPUPROGRAMMING}. 
 The {\tt Program} monad is parameterised on the GPU hierarchy level. There are 
 thread programs ({\tt TProgram}), block programs ({\tt BProgram}) and grid programs 
-({\tt GProgram}). the {\tt Cond} conditional choose between two thread programs while a 
+({\tt GProgram}). the {\tt Cond} conditional chooses between two thread programs while a 
 synchronisation can only appear in an Obsidian block program. More information about programs 
 and the GPU hierarchy is available in section~\ref{sec:OBSIMP}.
 
@@ -956,7 +959,7 @@ and the GPU hierarchy is available in section~\ref{sec:OBSIMP}.
 
 The list above provides some very general guidelines on what to think about when 
 writing GPU kernels. The lesson is that fast memory near the processing element 
-should be preferred over slow memory far away. However, this comes at the effort 
+should be preferred over slow memory far away. Favouring fast memory demands the effort 
 of decomposing computation and data in a way that makes this possible. 
 
 % ---------------------------------------------------------------------------
@@ -971,7 +974,7 @@ of decomposing computation and data in a way that makes this possible.
 
 Obsidian is implemented as an embedded language using Haskell as host. Obsidian 
 is a compiled embedded language; a very good paper that is highly relevant to our 
-approach, is ``Compiling Embedded Languages'' by Conal Elliott et al~\citet{COMPILEEDSL}. 
+approach is ``Compiling Embedded Languages'' by Conal Elliott et al~\citet{COMPILEEDSL}. 
 This paper describes how to embed a compiler backend and generate efficient code 
 in some target language. One key aspect of this approach is that the embedded 
 language is a library of functions that create and compose Abstract Syntax Trees 
@@ -986,20 +989,20 @@ and deep embeddings.
 
 The embedded language approach has become popular to use as a way of raising the 
 level of abstraction in fields where the default is to use low-level languages. 
-For example, Lava and Wired~\citet{LAVA,Wired} raises the level of abstraction in the 
+For example, Lava and Wired~\citet{LAVA,Wired} raise the level of abstraction in the 
 fields of hardware design and verification and Feldspar does the same in the area of  
 digital signal processing~\citet{FELDSPAR2010}. For GPU programming, there are numerous 
 embedded approaches using various host languages. Two languages for GPU programming 
 embedded in Haskell are  Accelerate and Nikola \citet{ACCELERATEDAMP11, NIKOLA}. 
 And there is Intel ArBB, embedded in C++, with the goal of being parallel across 
 platforms \citet{ARBB2011}. Related work and information about the tools, libraries 
-and language that make the wider context surrounding Obsidian can be found in 
+and languages that make the wider context surrounding Obsidian can be found in 
 section~\ref{sec:relatedwork}. 
 
 \subsubsection{Deep embedding: The {\tt Program} data type}
 
 Obsidian uses a deeply embedded {\tt Program} data type that represents GPU Kernels. 
-A CUDA GPU has a hierarchy of parallel resources. At the bottom there are threads, each 
+A CUDA GPU has a hierarchy of parallel resources. At the bottom there are threads,  
 executing sequential programs. There are groups of threads (of 32) called {\em Warps} that 
 execute in lock-step. Warps are the scheduled unit of work on a GPU. There are {\em Blocks} 
 of threads, a set of threads that run as a group and share local (shared) memory. And 
@@ -1023,7 +1026,7 @@ data Zero
 
 The {\tt Thread} type is level {\tt Zero} ({\tt type Thread = Zero}). Then {\tt Block} is 
 {\tt Step Thread} and {\tt Grid} is {\tt Step Block}. Currently {\tt Warp} is not included 
-in the hierarchy leading to warp programming being a special case. One benefit a warp has is 
+in the hierarchy, leading to warp programming being a special case. One benefit a warp has is 
 that threads can communicate via shared memory without using synchronisation primitives. There 
 is no programmer support for warp level programming in CUDA (as there is for block level 
 programs). The programmer needs to take care to ensure that the communication patterns are 
@@ -1052,7 +1055,7 @@ section \ref{sec:paperF}.
 
 \subsubsection{Scalars} 
 
-Scalars and operations on scalars are represented by an expression data type ({\tt Exp a}) in 
+Scalars and operations on scalars are represented by an expression data type \\ ({\tt Exp a}) in 
 Obsidian. This is another example of a deep embedding; the expression data type contains 
 constructors for literal values, arithmetic operations, and conditionals. 
 
@@ -1062,8 +1065,8 @@ Obsidian arithmetic expressions to look exactly like corresponding native Haskel
 
 The approach taken to embed the scalar language is very similar to what is described 
 in ``Compiling Embedded Languages''~\citet{COMPILEEDSL}; but we use a Generalised Algebraic 
-Datatype (GADT) to obtain typed expressions. An alternative to the GADT, is to use phantom 
-types. Earlier versions of Obsidian (section~\ref{sec:paperB}) used phantom types. 
+Datatype (GADT) to obtain typed expressions. An alternative to using a GADT is to use phantom 
+types, which earlier versions of Obsidian did (section~\ref{sec:paperB}). 
 
 
 \subsubsection{Arrays} 
@@ -1085,18 +1088,19 @@ data Pull s a = Pull {pullLen :: s,
 \end{verbatim} 
 
 Pull arrays are parameterised on both element ({\tt a}) and length ({\tt s}) type. The length 
-parameter is used to be able to represent arrays with both static (known at Haskell runtime) 
+parameter is used to be able to represent arrays with static (known at Haskell runtime) 
 or dynamic (length represented by an expression, an unknown length). When creating block 
 level computations, we want to know the exact lengths in order to avoid generating code 
-riddled with conditionals concerning array lengths. It is possible to write kernels that 
+riddled with conditionals concerning array lengths. In CUDA, it is possible to write kernels that 
 are not specialised for a certain size. This is accomplished by adding bounds checks. Since 
 conditionals  are problematic from a performance point of view, fixed size kernels are recommended 
-when performance is crucial. Dynamic lengths are used for grid level computations, this allows 
-a local computation of a fixed size to be run in parallel over arrays a multiple of the size that 
-the local computation handles. In generated code this is currently visible as a conditional 
-on {\tt blockIdx.x}. However, this is still considered work in progress; the conditional is 
-only really necessary for Obsidian kernels that have more than one output array and the outputs
-are of different length. 
+when performance is crucial. In Obsidian, we have chosen to disallow implementation of kernels 
+that operate on different sizes locally.  Dynamic lengths are used for grid level computations; 
+this allows a local computation of a fixed size to be run in parallel over arrays a multiple
+of the size that the local computation handles. In generated code, this is currently visible 
+as a conditional on {\tt blockIdx.x}. However, this is still considered work in progress; the 
+conditional is only really necessary for Obsidian kernels that have more than one output array 
+and the outputs are of different length. 
 %Conditionals are problematic on GPUs and 
 %while general programs that run for any size is possible when performance is crucial a fixed 
 %size is recommended. 
@@ -1112,7 +1116,7 @@ Now, we see that \verb!map f . map g! is the same as \verb!map (f . g)! since bo
 and {\tt g} becoming composed onto the indexing function. No intermediate array is built in 
 memory.  
 
-Another benefit of pull arrays are that they are parallel. Simply put, early Obsidian was pull 
+Another benefit of pull arrays is that they are parallel. Simply put, early Obsidian was pull 
 arrays in addition to a way to compute the array and store its elements to memory 
 (called {\tt sync} in early versions of Obsidian and later {\tt force}). A very 
 direct way to compile a pull array to a GPU is to launch as many threads as there are 
@@ -1125,10 +1129,10 @@ will have computed an element of the array and can store that to memory.
 Push arrays were added to Obsidian as a complement to pull arrays. Pull arrays are 
 good because they are so simple to understand and easy to parallelise. However, certain
 operations on pull arrays yield code that is not suitable for GPU execution. Concatenation 
-or interleaving of pull arrays result in conditionals in the indexing function. The 
+and interleaving of pull arrays results in conditionals in the indexing function. The 
 interleaving case, which is worst, leads to diverging branching in every warp. If branches 
-diverge, the GPU will turn off the processing elements taking one path and 
-allow the others to progress; then turning to the other branch. The computation of the 
+diverge, the GPU turns the processing elements taking one path off and 
+allow the others to progress; then turn to the other branch. The computation of the 
 branches is serialised and compute resources are wasted. 
 
 Push arrays, like pull arrays, are functions. A Push array is a higher order 
@@ -1144,11 +1148,11 @@ data Push p s a =
 \end{verbatim} 
 
 When working with pull arrays, the consumer of such an array decides how to 
-iterate over the array and what elements to compute. This is done applying the 
+iterate over the array and what elements to compute. This is done by applying the 
 push array function to those indices that are interesting to the consumer. Push 
-arrays work in the opposite way. The Push array function (the result program) contain 
+arrays work in the opposite way. The Push array (the result program) contains 
 the iteration schema; the consumer of the push only decides what write function 
-to supply. The iteration schema used is decided upon when creating a push arrays. 
+to supply. The iteration schema used is decided upon when creating a push array. 
 The code below is an example of how to create a push array from a pull array.
 
 \begin{verbatim} 
@@ -1164,8 +1168,8 @@ iteration schema over threads within a block. There are other iteration schemas 
 chose from such as sequential, combinations of sequential and parallel
 across both threads and blocks (two level parallelism). 
 
-Push arrays give many of the same benefits that pull arrays have. Using push 
-arrays we also get fusion of operations as default. The implementation of map 
+Push arrays give many of the same benefits as pull arrays. Using push 
+arrays, we also get fusion of operations as default. The implementation of map 
 (shown below) illustrates how mapping a function {\tt f} over a push array results 
 in an application of {\tt f} in the write-function. 
 
@@ -1206,13 +1210,9 @@ using Obsidian. We use very low-level features of Obsidian and end up producing
 code that performs very well. 
 
 Paper D (section~\ref{sec:paperD}) introduces push arrays and uses them in the 
-implementation of sorting networks to quite good results. With push arrays we 
+implementation of sorting networks, with quite good results. With push arrays we 
 were able to experiment with more detailed decompositions (what thread computes 
 what value) of the algorithms. 
-
-In section \ref{sec:efficient}, guidelines for writing efficient CUDA code is listed. 
-Here we revisit these guidelines and explain how they are approached by Obsidian and 
-the Obsidian programmer. 
 
 \FloatBarrier 
 % ---------------------------------------------------------------------------
