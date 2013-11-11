@@ -1362,7 +1362,8 @@ that the initial code generation cost can be amortised.
 Since our work with ArBB, Intel has unfortunately retired the ArBB system. This 
 leaves EmbArBB without a functioning code generating backend. This makes the choice of a
 deep embedding (in hindsight) the correct one. EmbArBB could be resurrected by implementing 
-a new code generating backend. 
+a new code generating backend. However, a complete reimplementation of the ArBB API would be 
+a massive undertaking.
 
 
 % ---------------------------------------------------------------------------
@@ -1598,6 +1599,13 @@ and is allowed to write programs at a level almost as low as CUDA, if it is desi
 Paper E (section~\ref{sec:paperE}) contains examples of programming at this low level. 
 One potential use of Obsidian could be as the code generating backend of high-level 
 and very domain specific embedded languages. This could be a niche for Obsidian.  
+
+Obsidian constrains the programmer into writing programs that we can easily compile to 
+CUDA. This is done by modelling the GPU programming in types attached to programs. A 
+currently ongoing master's project is investigating what effects removing these 
+types have. It is clear that if the programmer is not constrained to writing flat 
+(or very limited nested) programs, transformations are needed on the AST before 
+generating CUDA code. 
 
 Obsidian's support for warp level computations is work in progress. Currently, warp level 
 computations are not as well integrated into the hierarchy as the block, thread and grid 
