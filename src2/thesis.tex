@@ -212,7 +212,11 @@ with what abstractions to present to the programmer at relatively little effort.
 
 Obsidian is an embedded language for general purpose programming of GPUs. We try to strike 
 a balance between high level, productivity increasing abstractions and low-level 
-control needed for performance. Obsidian programs are compiled into CUDA C code. 
+control needed for performance. The Obsidian programming model mirrors the GPU arhcitecture 
+and the programmer is constrained into writing GPU-friendly code. By supplying hierarchy level 
+polymorphic library functions, these constraints does not feel obtrusive. Obsidian programs are 
+compiled into CUDA C code. This compilation is based on a simple and elegant monad reification 
+technique.  
 
 In cases where the programmer is not interested in low-level details 
 or wants the program to run over a range of hardware, a higher level language can be used.
@@ -226,7 +230,8 @@ a way to provide these benefits to the Haskell programmer and a way to increase 
 of an existing system by opening it up to a wider audience. Obsidian is very different; it 
 is not based on a set of high-level parallel primitives. The Obsidian programmer 
 can implement these primitives in different ways and then select the best one. 
-We have obtained very good performance in case studies involving reductions. 
+We have obtained very good performance in case studies involving reductions. Obsidian 
+programs are also more terse and composable, compared to CUDA. 
  
 \vspace{5mm}
 
