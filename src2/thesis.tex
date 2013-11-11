@@ -897,15 +897,19 @@ to as many transactions as cache lines touched (128 Byte l1 cache lines). This m
 accesses from within a warp are not favoured. 
 
 Inputs to an Obsidian program are pull arrays. Pull arrays can be arbitrarily permuted; 
-the permutation used will decide the access pattern. If global memory accesses can 
-be coalesced or not partly also depends on the algorithm being implemented. 
+the permutation used will decide the access pattern. In section~\ref{sec:OBSARRAYS}, there 
+is more information about pull arrays. If global memory accesses can 
+be coalesced or not partly also depends on the algorithm being implemented. The next paragraph 
+suggests a trick for coalescing memory accesses, in some cases, even if the algorithm is 
+unsuitable. Then it becomes a trade between bad memory access pattern and using more 
+shared memory. 
 
 \item {\bf Minimise use of global memory:} Accessing global device memory can take as 
-many as 400 to 600 clock cycles if the data is not cached. The programmer should 
-use shared memory as much as possible to avoid redundant loading from global memory.
-Shared memory can also be used to coalesce reads from global memory. Shared memory is 
-a limited resource in the MP, so if a kernel uses very much shared memory, 
-fewer such blocks can be active on the MP. 
+many as 400 to 600 clock cycles if the data is not cached, this is 10 - 20 times as many cycles 
+as an access to shared memory. The programmer should use shared memory as much as possible 
+to avoid redundant loading from global memory. Shared memory can also be used to coalesce 
+reads from global memory. Shared memory is a limited resource in the MP, so if a kernel 
+uses very much shared memory, fewer such blocks can be active on the MP. 
 
 Intermediate arrays are stored into shared memory when the Obsidian programmer uses 
 the {\tt force} function. 
@@ -933,7 +937,8 @@ Sometimes divergent code cannot be avoided. However, it is important not to have
 diverge unnecessarily. When using pull arrays alone, this was often a problem; with the 
 addition of push arrays, the situation improved. Using push arrays, some divergent computations 
 can be explicitly split up into phases, each phase with all threads following the 
-same execution path. This means that fewer threads are required to do the same work. 
+same execution path. This means that fewer threads are required to do the same work. Push arrays 
+are explained in more detail in section~\ref{sec:OBSARRAYS}. 
 
 \item {\bf Do not use {\tt \_\_synchthreads()} in diverging code:} Extreme care must be taken 
 when synchronising within any conditionally executed code; every thread must reach this barrier.
