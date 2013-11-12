@@ -461,7 +461,7 @@ vsort n = composeS . map pure $ [istage (n-i) (i-j)
   where istage i j = ilvVee2 i j min max
 \end{verbatim}
 \end{codesize}
-
+\normalfont
 \noindent
 The resulting generated code uses one thread per
 $2$ indices.
@@ -486,6 +486,7 @@ $2$ indices.
     bmergeSmall<<<blocks,threads,4096>>>(din,din);}
 \end{verbatim}
 \end{codesize}
+\normalfont
 \caption{CUDA code for our large sorter. {\tt sortSmall} and {\tt bmergeSmall}
 are replaced by Obsidian-generated kernels in the experiments. {\tt vSwap} and {\tt iSwap} are handwritten CUDA kernels
 that perform one column of compare and swap operations in the vee and ilv shapes respectively, and are
@@ -514,6 +515,7 @@ for(int j = i-1; j >= 0; j -= 3){
        iSwap3<<<blocks/8,threads*2,0>>>(din,din,(1<<j)*S_SIZE);}}
 \end{verbatim}
 \end{codesize}
+\normalfont
 \noindent
 The Obsidian implementation and all code for examples in the paper are available at \url{http://www.cse.chalmers.se/~joels/expressive.html}.
 

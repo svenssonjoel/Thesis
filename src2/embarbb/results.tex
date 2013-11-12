@@ -33,7 +33,7 @@ directly from the ArBB distribution.
 \subsubsection{Sobel edge detection}
 In the Repa Sobel code, only the applications of the stencils are timed. This 
 part is defined as follows 
-\begin{verbatim}
+\begin{Verbatim}[samepage=true]
 gradientX :: Monad m => Image -> m Image
 gradientX img
         = computeP
@@ -41,7 +41,8 @@ gradientX img
               [stencil2| -1  0  1
                          -2  0  2
                          -1  0  1 |]
-
+\end{Verbatim}
+\begin{Verbatim}[samepage=true]
 gradientY :: Monad m => Image -> m Image
 gradientY img
         = computeP
@@ -49,7 +50,7 @@ gradientY img
              [stencil2|  1  2  1
                          0  0  0
                         -1 -2 -1 |] 
-\end{verbatim}
+\end{Verbatim}
 
 A corresponding EmbArBB code to use in this comparison was implemented.
 

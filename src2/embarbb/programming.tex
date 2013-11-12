@@ -121,6 +121,8 @@ In EmbArBB, ArBB functions are expressed as Haskell functions on expressions
 (abstract syntax trees). This is standard Haskell embedded language procedure. 
 A function that adds a constant to all elements of a vector is
 
+\pagebreak
+
 \begin{verbatim}
 addconst :: Num a 
           => Exp a 
@@ -177,6 +179,8 @@ The {\tt withArBB} function (line two) is the ``run''-function of the {\tt ArBB}
 It turns something of type {\tt (ArBB a)} into {\tt (IO a)}. This is how ArBB 
 computations are interfaced with Haskell. A {\tt withArBB} session also sets the scope 
 for any captured functions or vectors created in the ArBB monad.
+
+\pagebreak
 
 The result of {\tt capture addconst} on line four in the code has type 
 %Function (Float :- Vector Float) 
@@ -271,7 +275,7 @@ In this way, wherever there is potential for mixup between EmbArBB functions
 and Prelude or Data.Vector functions, these are prefixed by either ``{\tt V.}'' or 
 ``{\tt P.}''. 
 
-% \FloatBarrier 
+\FloatBarrier 
 \subsubsection{Saxpy} 
 {\em Saxpy} is a vector operation that gets its name from the 
 description of what it does ``{\em S}ingle-precision {\em A}lpha {\em X} {\em P}lus {\em Y}''. 
@@ -279,7 +283,7 @@ There is also a double-precision version called {\em daxpy}. Here we can use a s
 to obtain both versions:
 %. The code listing below {\em axpy} illustrates this: 
 
-\begin{verbatim} 
+\begin{Verbatim}[samepage=true]
 saxpy :: Num a 
       => Exp a 
       -> Exp (DVector Dim1 a) 
@@ -288,14 +292,13 @@ saxpy :: Num a
 saxpy s x y = (ss*x) + y 
     where 
       ss = constVector (length x) s
-\end{verbatim}
+\end{Verbatim}
 
 Now, {\tt capture} can be used to instantiate the function at either float or double 
 types.  
 
-\begin{verbatim}
-main = 
-  withArBB $ 
+\begin{Verbatim}[samepage=true]
+main = withArBB $ 
   do 
      f <- capture saxpy
      
@@ -314,7 +317,9 @@ main =
      r <- copyOut r1
               
      liftIO$ putStrLn$ show r
-\end{verbatim}
+\end{Verbatim} 
+
+% $
 
 %If instead the double precision version was desired change just the 
 %type at which the function is captured. In the example above this 
@@ -350,9 +355,8 @@ rows or columns.
 
 The following Haskell {\tt main} function completes the comparison to the C++ version shown in the Introduction:
 
-\begin{verbatim}
-main =  
-  withArBB $ 
+\begin{Verbatim}[samepage=true]
+main = withArBB $ 
   do 
      f <- capture matVec  
      let m1 = V.fromList [2,0,0,0,
@@ -371,7 +375,7 @@ main =
      r <- copyOut r1
               
      liftIO$ putStrLn$ show r
-\end{verbatim}
+\end{Verbatim}
 %$ -- fixes syntax highlighting
 The complete Haskell version of this program is slightly shorter than the corresponding 
 C++ version. However, the C++ version could probably be made shorter as well; the Haskell and C++ versions must be considered similar in implementation complexity. 
@@ -460,7 +464,7 @@ The code below creates the image shown in figure~\ref{fig:histogram}. It
 takes as input a vector on frequencies and outputs a two dimensional vector, 
 a grayscale image. 
 
-\begin{verbatim}
+\begin{Verbatim}[samepage=true]
 histImage :: Exp (Vector Word32) 
            -> Exp (DVector Dim2 Word8) 
 histImage input = fst $ while cond body (cvn,0)    
@@ -479,7 +483,9 @@ histImage input = fst $ while cond body (cvn,0)
       m   = index0 (maxReduce rows input)
       black = 0 
       white = 255
-\end{verbatim}
+\end{Verbatim}
+
+% $
 
 \begin{figure} 
 \includegraphics[width=.5\linewidth]{./embarbb/img/window}
