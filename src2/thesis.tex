@@ -1199,8 +1199,8 @@ and parallel prefix (scans). Often we have managed to get very good performance,
 of hand optimised CUDA code. GPU execution of scan operations is something that has 
 been worked on extensively in the GPGPU community and very efficient implementations 
 exist~\citet{merrill,ScanCUDA,OLAMARCUS,EFFICIENTSCAN}. In Paper F (section~\ref{sec:paperF}), 
-we only study scan kernels (scan of small arrays) and measure their speed relative to eachother. 
-Compared to a scan kernel supplied with the CUDA API, our kernel fastest kernel is slighty more 
+we only study scan kernels (scan of small arrays) and measure their speed relative to each other. 
+Compared to a scan kernel supplied with the CUDA API, our fastest kernel is slighty more 
 than three times slower. Performance needs to be improved at the kernel level before we attempt 
 composing them into large scan operations. We hope to improve this situation with the 
 addition of the warp level abstractions in Obsidian (this is future work, 
@@ -1208,8 +1208,14 @@ section~\ref{sec:thesisFUTURE}).
 
 
 Paper F (section~\ref{sec:paperF}) tells a story about how to implement and tune 
-a reduction kernel in Obsidian. At the end, the implemented reduction kernel 
-reaches a throughput of 140GB/sec on a GPU with 192GB/sec memory bandwith. 
+a reduction kernel in Obsidian. Seven reductions kernels are implemented, the first 
+very simple and naive. Each following kernel, tweaks some aspect of the previous one. 
+Applying these changes is pleasingly simple using Obsidian; some of these changes 
+would mean a major rewrite in CUDA and some are even impossible. 
+The final kernel reaches a throughput of 140GB/sec on a GPU with 192GB/sec memory bandwith. 
+At this point, we have pushed Obsidian as far as possible with the current abstractions. 
+However, it is possible that with more work on warp level capabilites, this could be 
+improved a bit further.   
 %faster than the reduction skeleton used in Accelerate. This is quite a feat, since 
 %reduction in Accelerate corresponds to just one single hand optimised skeleton. We would have 
 %been happy just getting close.   
@@ -1219,7 +1225,7 @@ using Obsidian. We use very low-level features of Obsidian and end up producing
 code that performs very well. 
 
 Paper D (section~\ref{sec:paperD}) introduces push arrays and uses them in the 
-implementation of sorting networks, with quite good results. With push arrays we 
+implementation of sorting networks, with quite good results. With push arrays, we 
 were able to experiment with more detailed decompositions (what thread computes 
 what value) of the algorithms. 
 
@@ -1687,140 +1693,140 @@ calculus in Standard ML.
 %
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
-\section{Thesis overview} 
+%% \section{Thesis overview} 
 
-%This thesis contains an introduction and a selection of papers. The introduction 
-%gives background and context to the papers. 
+%% %This thesis contains an introduction and a selection of papers. The introduction 
+%% %gives background and context to the papers. 
 
-The papers contained in this thesis fall in three categories. 
-\begin{itemize} 
-\item General EDSL methodology in chapter~\ref{chap:EDSLImplementation}. 
-\item GPU Programming using an EDSL in chapter~\ref{chap:GPUProgramming}. 
-\item Retargetable parallel programming in chapter~\ref{chap:ArBB}. 
-\end{itemize} 
-%In the following sections, each paper is given a short description. Hopefully 
-%there is enough information to wet the appetite. 
+%% The papers contained in this thesis fall in three categories. 
+%% \begin{itemize} 
+%% \item General EDSL methodology in chapter~\ref{chap:EDSLImplementation}. 
+%% \item GPU Programming using an EDSL in chapter~\ref{chap:GPUProgramming}. 
+%% \item Retargetable parallel programming in chapter~\ref{chap:ArBB}. 
+%% \end{itemize} 
+%% %In the following sections, each paper is given a short description. Hopefully 
+%% %there is enough information to wet the appetite. 
 
-\subsection{EDSL implementation papers} 
+%% \subsection{EDSL implementation papers} 
 
-\subsubsection{\paperA: \\ \paperATitle} 
+%% \subsubsection{\paperA: \\ \paperATitle} 
 
-Authors: Josef Svenningsson and Bo Joel Svensson 
+%% Authors: Josef Svenningsson and Bo Joel Svensson 
 
-\vspace{5mm}
+%% \vspace{5mm}
 
-\noindent This paper describes a simple and compositional method for 
-reification of monads. This is useful for compilation of 
-monadic embedded languages. We use a simple robot control language 
-as the example. Robot programs can be expressed using Haskell do notation 
-and are compiled down to a simple first order program representation. 
-There is also a graphical simulator available that runs the compiled 
-code. The robot language and simulator are available at github: \\ 
-\url{github.com/svenssonjoel/Robot}.
+%% \noindent This paper describes a simple and compositional method for 
+%% reification of monads. This is useful for compilation of 
+%% monadic embedded languages. We use a simple robot control language 
+%% as the example. Robot programs can be expressed using Haskell do notation 
+%% and are compiled down to a simple first order program representation. 
+%% There is also a graphical simulator available that runs the compiled 
+%% code. The robot language and simulator are available at github: \\ 
+%% \url{github.com/svenssonjoel/Robot}.
 
-\subsection{GPU programming papers} 
+%% \subsection{GPU programming papers} 
 
-\subsubsection{\paperB: \\ \paperBTitle}
+%% \subsubsection{\paperB: \\ \paperBTitle}
 
-Authors: Bo Joel Svensson, Mary Sheeran and Koen Claessen \newline
+%% Authors: Bo Joel Svensson, Mary Sheeran and Koen Claessen \newline
 
-\vspace{5mm}
+%% \vspace{5mm}
 
-This is the first real paper about Obsidian, our embedded language for GPU 
-programming. In this paper, we identify similarities between 
-connection patterns in hardware and parallel computations on GPUs. 
-We introduce a structured and compositional way to write data-parallel 
-programs on a GPU.
+%% This is the first real paper about Obsidian, our embedded language for GPU 
+%% programming. In this paper, we identify similarities between 
+%% connection patterns in hardware and parallel computations on GPUs. 
+%% We introduce a structured and compositional way to write data-parallel 
+%% programs on a GPU.
 
-Basic parallel building blocks are implemented in a monadic style and 
-composed using a sequential composition operator {\tt ->-}. 
+%% Basic parallel building blocks are implemented in a monadic style and 
+%% composed using a sequential composition operator {\tt ->-}. 
 
-\subsubsection{\paperC: \\ \paperCTitle}
+%% \subsubsection{\paperC: \\ \paperCTitle}
 
-Authors: Bo Joel Svensson, Koen Claessen and Mary Sheeran \newline
+%% Authors: Bo Joel Svensson, Koen Claessen and Mary Sheeran \newline
 
-\vspace{5mm}
+%% \vspace{5mm}
 
-In this paper we describe a version of Obsidian implemented with a 
-a different internal representation of GPU programs. We realised that 
-most of our kernels have similar shape; they are parallel operations 
-composed in sequence interspersed with barrier synchronisations. The 
-internal representation used here captures this case exactly. Programming 
-is now done is a style resembling arrows. 
-
-
-\subsubsection{\paperD: \\ \paperDTitle}
-
-Authors: Koen Claessen, Mary Sheeran and  Bo Joel Svensson \newline
-
-\vspace{5mm}
-
-This paper introduces {\em Push} arrays, invented by Koen Claessen. This 
-array representation targets specific performance problems that we want 
-to solve with Obsidian. Here we have also gone back to using monadic 
-style for programming in Obsidian. 
+%% In this paper we describe a version of Obsidian implemented with a 
+%% a different internal representation of GPU programs. We realised that 
+%% most of our kernels have similar shape; they are parallel operations 
+%% composed in sequence interspersed with barrier synchronisations. The 
+%% internal representation used here captures this case exactly. Programming 
+%% is now done is a style resembling arrows. 
 
 
-\subsubsection{\paperE: \\ \paperETitle} 
+%% \subsubsection{\paperD: \\ \paperDTitle}
 
-Authors: Josef Svenningsson, Bo Joel Svensson and Mary Sheeran \newline
+%% Authors: Koen Claessen, Mary Sheeran and  Bo Joel Svensson \newline
 
-\vspace{5mm}
+%% \vspace{5mm}
 
-This paper contains a sorting case study performed in Obsidian. It 
-is however the algorithms that are in focus here. We describe 
-an interesting variation on Counting sort that removes duplicate 
-elements and is a nice fit for GPUs because of its reduced need for 
-synchronisation. 
-
-In order to implement these sorting algorithms, we added atomic operations 
-to Obsidian. 
-
-\subsubsection{\paperF: \\ \paperFTitle}
-
-Authors: Bo Joel Svensson and Mary Sheeran \newline
-\noindent \emph{This work has not yet been published.}
-\vspace{5mm} 
-
-\noindent 
-
-In this paper, the most recent additions and improvements to Obsidian are 
-described. Obsidian Programs are now parameterised on Hierarchy level. This forces
-the programmer into writing programs that we know how to compile to a GPU easily 
-(by limiting how parallel operations can be nested). The central part of this paper 
-describes how to implement and optimise reduction kernels using Obsidian. 
+%% This paper introduces {\em Push} arrays, invented by Koen Claessen. This 
+%% array representation targets specific performance problems that we want 
+%% to solve with Obsidian. Here we have also gone back to using monadic 
+%% style for programming in Obsidian. 
 
 
-\subsection{Retargetable parallel programming} 
+%% \subsubsection{\paperE: \\ \paperETitle} 
 
-\subsubsection{\paperG: \\ \paperGTitle}
+%% Authors: Josef Svenningsson, Bo Joel Svensson and Mary Sheeran \newline
 
-Authors: Bo Joel Svensson and Ryan R. Newton
+%% \vspace{5mm}
 
-\vspace{5mm}
+%% This paper contains a sorting case study performed in Obsidian. It 
+%% is however the algorithms that are in focus here. We describe 
+%% an interesting variation on Counting sort that removes duplicate 
+%% elements and is a nice fit for GPUs because of its reduced need for 
+%% synchronisation. 
 
-\noindent This position paper describes the work I did while on a 3 month internship at 
-Intel. The main part of this work was implementation of Haskell bindings 
-for the now retired Intel ArBB system. 
+%% In order to implement these sorting algorithms, we added atomic operations 
+%% to Obsidian. 
 
-The paper also describes work we did towards implementing a backend for the 
-Accelerate system using ArBB. We reached a proof-of-concept implementation 
-capable of running some simple Accelerate programs using the ArBB backend.
-However, much work would remain to be able to run the full scope of Accelerate 
-programs on ArBB.  
+%% \subsubsection{\paperF: \\ \paperFTitle}
 
-\subsubsection{\paperH: \\ \paperHTitle}
+%% Authors: Bo Joel Svensson and Mary Sheeran \newline
+%% \noindent \emph{This work has not yet been published.}
+%% \vspace{5mm} 
 
-Authors: Bo Joel Svensson and Mary Sheeran 
+%% \noindent 
 
-\vspace{5mm}
+%% In this paper, the most recent additions and improvements to Obsidian are 
+%% described. Obsidian Programs are now parameterised on Hierarchy level. This forces
+%% the programmer into writing programs that we know how to compile to a GPU easily 
+%% (by limiting how parallel operations can be nested). The central part of this paper 
+%% describes how to implement and optimise reduction kernels using Obsidian. 
 
-\noindent Here we explore another way to provide the capabilities of ArBB to the 
-Haskell programmer. Rather than trying to use ArBB as a backend to Accelerate 
-we provide a more direct mapping of ArBB's functionality to Haskell idioms. 
-We call this embedded language EmbArBB and it provides a more Haskell-programmer-friendly 
-interface compared to the raw ArBB bindings (which are a collection of functions 
-in the IO monad). 
+
+%% \subsection{Retargetable parallel programming} 
+
+%% \subsubsection{\paperG: \\ \paperGTitle}
+
+%% Authors: Bo Joel Svensson and Ryan R. Newton
+
+%% \vspace{5mm}
+
+%% \noindent This position paper describes the work I did while on a 3 month internship at 
+%% Intel. The main part of this work was implementation of Haskell bindings 
+%% for the now retired Intel ArBB system. 
+
+%% The paper also describes work we did towards implementing a backend for the 
+%% Accelerate system using ArBB. We reached a proof-of-concept implementation 
+%% capable of running some simple Accelerate programs using the ArBB backend.
+%% However, much work would remain to be able to run the full scope of Accelerate 
+%% programs on ArBB.  
+
+%% \subsubsection{\paperH: \\ \paperHTitle}
+
+%% Authors: Bo Joel Svensson and Mary Sheeran 
+
+%% \vspace{5mm}
+
+%% \noindent Here we explore another way to provide the capabilities of ArBB to the 
+%% Haskell programmer. Rather than trying to use ArBB as a backend to Accelerate 
+%% we provide a more direct mapping of ArBB's functionality to Haskell idioms. 
+%% We call this embedded language EmbArBB and it provides a more Haskell-programmer-friendly 
+%% interface compared to the raw ArBB bindings (which are a collection of functions 
+%% in the IO monad). 
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------

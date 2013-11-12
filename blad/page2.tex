@@ -1,0 +1,51 @@
+\thispagestyle{empty}
+
+\section*{Abstract}
+
+\vspace{5mm}
+
+\begin{small}
+Computers today are becoming more and more parallel. General purpose processors (CPUs) 
+have multiple processing cores and Single Instruction Multiple Data (SIMD) units for 
+data-parallelism. Graphics processors (GPUs) bring massive parallelism at the cost of 
+being harder to program than CPUs. This thesis applies embedded language methodology 
+to data-parallel programming. Two embedded languages are presented, Obsidian for general 
+purpose GPU programming and EmbArBB for data-parallel programming across platforms. 
+
+CPUs and GPUs get more parallel resources with each new generation. The question of how to 
+efficiently program these processors arises. We are after efficiency both in programmer 
+productivity and in application performance. Using embedded languages allows us to experiment
+with what abstractions to present to the programmer at relatively little effort.
+
+Obsidian is an embedded language for general purpose programming of GPUs. We try to strike 
+a balance between high level, productivity increasing abstractions and low-level 
+control needed for performance. The Obsidian programming model mirrors the GPU architecture 
+and the programmer is constrained into writing GPU-friendly code. Hierarchy level 
+polymorphic library functions are supplied to make these constraints feel less obtrusive. 
+Obsidian programs are compiled into CUDA C code. This compilation is based on a simple 
+and elegant monad reification technique.  
+
+In cases where the programmer is not interested in low-level details 
+or wants the program to run over a range of hardware, a higher level language can be used.
+EmbArBB is a Haskell embedding or the Intel ArBB system. EmbArBB relies on the ArBB system 
+to generate code (via a Just-In-Time compiler) to a range of hardware. 
+
+EmbArBB embeds a preexisting library for data-parallelism into Haskell and we obtain 
+very good performance at little implementation effort. This performance comes from the 
+expertise and effort put into the ArBB system and that we get for free. Embedding ArBB is 
+a way to provide these benefits to the Haskell programmer and a way to increase usefulness
+of an existing system by opening it up to a wider audience. Obsidian is very different; it 
+is not based on a set of high-level parallel primitives. The Obsidian programmer 
+can implement these primitives in different ways and then select the best one. 
+We have obtained very good performance in case studies involving reductions. Obsidian 
+programs are also more terse and composable, compared to CUDA. 
+ 
+\vspace{5mm}
+
+\noindent
+
+\textbf{Keywords:} Data-parallelism, Embedded languages, Functional Programming, Graphics Processing Units
+
+
+\end{small}
+\newpage
