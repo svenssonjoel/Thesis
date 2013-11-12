@@ -44,15 +44,15 @@ but rather with specific instances.
 
 The matrix-vector multiplication code above is very concise, but some further
 steps are necessary before it can be run on real data. The code 
-below shows how to set up a 4x4 scaling matrix and a vector to 
+in figure~\ref{fig:EMB_ARBBFIG} shows how to set up a 4x4 scaling matrix and a vector to 
 multiply by that matrix using ArBB. This entails allocating 
 memory on the ArBB heap and copying data into it, reminiscent of the copying of
 data from
 host to 
 device that is common in general purpose GPU (GPGPU) programming . 
-
-%[samepage=true] 
-\begin{Verbatim} 
+\begin{figure}
+\begin{small}
+\begin{Verbatim} [samepage=true] 
 int main(void)
 {
   float matrix[4][4] = {{2.0,0.0,0.0,0.0},
@@ -87,6 +87,12 @@ int main(void)
   return 0;
 }
 \end{Verbatim}
+\end{small}
+
+\caption{ArBB glue code.}
+\label{fig:EMB_ARBBFIG}
+
+\end{figure}
 
 After setting up and copying the data into ArBB, the function {\tt arbb\_matrix\_vector} 
 is {\em called} using the {\tt call} command. At this point, a number of
