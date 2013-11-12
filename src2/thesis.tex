@@ -1212,13 +1212,15 @@ a reduction kernel in Obsidian. Seven reduction kernels are implemented, the fir
 very simple and naive. Each following kernel tweaks some aspect of the previous one. 
 Applying these changes is pleasingly simple using Obsidian; some of these changes 
 would mean a major rewrite in CUDA. The final kernel is almost 5 times as fast as the first, 
-and reaches a throughput of 140GB/sec on a GPU with 192GB/sec memory bandwidth. The speed of any 
+and reaches a throughput of 140GB/s on a GPU with 192GB/s memory bandwidth. The speed of any 
 kernel will always be limited by how fast the data can be pushed through the GPU; this performance 
 is quite satisfactory. In Paper F, a large reduction algorithm based on this kernel is 
 implemented that runs slightly faster than Accelerates fold skeleton. With this reduction 
 case study, we have pushed Obsidian as far as possible with the current abstractions. 
 However, it is possible that with more work on the warp level abstractions, this could be 
-improved further.   
+improved further. Our reduction case study was based on lecture slides from 
+NVIDIA~\citet{reducion}. Reference~\citet{merrill}, has much information about 
+how to think about performance when programming GPUs. 
 %faster than the reduction skeleton used in Accelerate. This is quite a feat, since 
 %reduction in Accelerate corresponds to just one single hand optimised skeleton. We would have 
 %been happy just getting close.   
@@ -1428,7 +1430,7 @@ An in depth comparison of Obsidian and Accelerate is hard to perform. The reason
 this is that Obsidian is a language for kernels, while Accelerate is a language for 
 applications. Any larger GPU application consists of a number of kernels that 
 are cooperating. Obsidian only has very basic support for launching and coordinating 
-kernels for such applications, from within Haskell and Accelerate is limited in specifying 
+kernels for such applications from within Haskell, and Accelerate is limited in specifying 
 new specialised kernels. 
 
 
