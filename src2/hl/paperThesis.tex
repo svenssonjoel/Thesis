@@ -242,13 +242,14 @@ consists of a number of {\em multiprocessors}; each multiprocessor has a
 number of processing elements (cores) and a local memory that is shared 
 between threads running on the cores. Figure \ref{fig:GPU} illustrates these 
 concepts. A GPU can come with as few as one of these multiprocessors.
-The two GPUs used in our measurements are the GTX 680, which has eight 
-multiprocessors, with a total of 1536 processing cores, and the GT 650M, a 
-laptop GPU, which has 384 such cores. On these cores, groups of 32 threads 
-called {\em warps} are scheduled. There are a number of warp scheduling units 
-per multiprocessor. Within a warp, threads execute in lockstep (SIMD); 
-diverging branches, that is those that take different paths on different 
-threads within a warp, are serialised, leading to performance penalties. 
+The GPUs used in our measurements are the GTX 680, which has eight 
+multiprocessors, with a total of 1536 processing cores, the GTX 670 with 1344 cores, 
+and the GT 650M, a laptop GPU, which has 384 such cores. On these cores, 
+groups of 32 threads called {\em warps} are scheduled. There are a number 
+of warp scheduling units per multiprocessor. Within a warp, threads execute 
+in lockstep (SIMD); diverging branches, that is those that take different 
+paths on different threads within a warp, are serialised, leading to 
+performance penalties. 
 
 The scalable architecture design also influences the programming model. CUDA 
 programs must be able to run on all GPUs from the smallest to the largest.
@@ -318,7 +319,7 @@ on the CPU of the host machine.
 
 Obsidian, like CUDA, differentiates between {\em Thread}, {\em Block} and 
 {\em Grid} computations. The programmer specifies a sequential computation 
-to be carried out by each thread. Many instances of a sequential computation,  
+to be carried out by each thread. Many instances of a sequential computation  
 run in parallel over threads, to form a block. A number of such blocks run in 
 parallel, to form a grid. 
 
@@ -353,7 +354,8 @@ reverseL = liftM push . return . reverse
 This program does not make use of any specific details of the BProgram monad; 
 instead it just composes {\tt return} and {\tt push} with the Obsidian library 
 function {\tt reverse}. The {\tt push} function converts a pull array to a push 
-array.
+array. {\tt SPull} and {\tt SPush} arrays have static lengths, this is explained in more 
+detail on page \pageref{pag:HLSTATIC}.
 
 We can change the {\tt reverseL} function slightly to have the result stored 
 in local (shared) memory. Although this storing in shared memory serves little purpose in this case, it illustrates the programmer's ability to use shared memory.
@@ -459,6 +461,7 @@ reverses' arr = pConcatMap reverseLocal'
 \end{verbatim} 
 \end{small} 
 
+\pagebreak
 \noindent
 The {\tt pConcatMap} combinator is overloaded; here it is applied 
 at the following type: 
@@ -536,7 +539,8 @@ where {\tt a0} to {\tt aN} can be pull arrays or scalars. This choice
 limits the kinds of kernels can be expressed, but
 makes compilation of those kernels a lot easier.
 For example, a kernel that outputs data to two different global
-arrays cannot be expressed.
+arrays cannot currently be expressed. Lifting this restriction 
+is work in progress.  
 
 
 %\emph{*** Perhaps we should  give a concrete example of a kernel that we cannot
@@ -766,10 +770,10 @@ when applied to a pull array, writes the elements of that array
 into shared memory using as many threads as needed from those available. 
 If the array is larger than the number of threads made available, the 
 force operation is split into two or more passes. This is a change compared
-to earlier versions of Obsidian where the length of arrays we could force 
-where limited to the maximum number of threads. In this version, the 
-threads are, in a sense, virtual. The mapping from virtual threads to 
-real threads is done as a step in the compilation.  
+to earlier versions of Obsidian, where the length of arrays we could force 
+were limited to the maximum number of threads per block (1024 threads). In 
+this version, the threads are, in a sense, virtual. The mapping from virtual 
+threads to real threads is done as a step in the compilation.  
 
 %Pull arrays have a length associated with them. The length of a pull array 
 %represents its inherent capability of parallelism. 
@@ -782,7 +786,7 @@ lengths are used for global computations (across many blocks). After specifying
 a local computation, it can often be applied over a variable number of blocks. 
 The dynamic lengths capture this common use case.
 
-There are type synonyms for the dynamic and static versions of  pull arrays: 
+There are type synonyms for the dynamic and static versions of  pull arrays: \label{pag:HLSTATIC}
 
 \begin{small}
 \begin{verbatim}
@@ -797,11 +801,11 @@ type DPull = Pull EWord32
 \subsubsection{Thread, Block and Grid Computations} 
 \label{sec:Program}
 
-The programs that can be specified in Obsidian
-are represented in a {\tt Program} data type.
+The programs that can be specified in Obsidian are represented in a {\tt Program} data type.
 This data type also represents the lowest level programming interface 
-exposed by Obsidian. In reference ~\citehl{JOSEFJOELCSORT} we make use of these low-level 
-capabilities to implement histograms using atomic operations (not shown here). 
+exposed by Obsidian. In reference ~\citehl{JOSEFJOELCSORT} we make use of the low-level 
+capabilities provided by that interface to implement histograms using atomic 
+operations (not shown here). 
 
 The {\tt Program} data type has a parameter, {\tt t}, that can be 
 either {\tt Thread}, {\tt Block} or {\tt Grid}, corresponding to 
@@ -825,7 +829,7 @@ number of times. In this case, both the loop body and the loop itself are
 {\tt Thread} Programs. More interesting is the {\tt ForAll} case that introduces 
  different kinds of parallelism depending on the {\tt t} parameter.
 {\tt ForAll} executes a program body at the level below several times in parallel. 
-If the body of the {\tt ForAll} loop is a {\tt Thread} computation the {\tt ForAll} loop 
+If the body of the {\tt ForAll} loop is a {\tt Thread} computation, the {\tt ForAll} loop 
 itself is a {\tt Block} computations. Likewise, if the body is a {\tt Block} computation, 
 the loop itself is a {\tt Grid} computation. 
 %% {\tt ForAllBlocks} executes several blocks 
@@ -903,8 +907,8 @@ A push array has two parts, a length and a higher-order function.
 The idea is that this function is provided with a method to write an 
 element into memory (a {\em write-function}), and returns a program 
 that uses that write-function a number of times. Note that the 
-write-function produces a {\tt TProgram} (short for {\tt Program Thread}), This 
-restricts our push arrays from representing nested data parallelism. 
+write-function produces a {\tt TProgram} (short for {\tt Program Thread}). 
+As a result, push arrays cannot represent nested data parallelism. 
 This concept is best illustrated by showing how to turn a pull array into a push array. 
 
 \begin{small} 
@@ -966,9 +970,8 @@ class Pushable t where
 \end{small}  
 
 The {\tt ASize} class has instances for both the static and dynamic lengths 
-and is used to obtain conversion to a representation used internally; it 
-provides a function called {\tt sizeConv} which can convert both static and 
-dynamic lengths to a {\tt Word32} expression.
+and is used to obtain conversion to a representation used internally; 
+the function {\tt sizeConv} converts both static and dynamic lengths to a {\tt Word32} expression.
 
 %\emph{*** We have not explained what the expression data type is
 %        and what EWord32 is etc.}
@@ -1227,7 +1230,7 @@ to design an Obsidian program that will not work because of shared memory
 restrictions. After the arrays are assigned addresses in the shared memory,
 a renaming phase replaces array names with these locations. 
 
-The last step in compilation process uses the Language.C.Quote library to 
+The last step in the compilation process uses the Language.C.Quote library to 
 turn the {\tt IM} into CUDA code. This compilation stage takes a {\em configuration} 
 as parameter. The configuration tells how many actual threads per block the 
 CUDA code should be generated for. At this stage parallel for loops ({\tt SForAll})
@@ -1733,8 +1736,7 @@ This is a new way of introducing sequential work into kernels; unlike {\tt seqRe
   red7 & 64 & 512    & 0.441  \\ \hline
 \end{tabular}
 \caption{ Execution time of a grid of 8192 reductions , each of
-2048 elements on 
-and on a GTX680. The timing figures were obtained using the NVIDIA Profiler.}
+2048 elements and on a GTX680. The timing figures were obtained using the NVIDIA Profiler.}
 \label{fig:reducetable} 
 \end{small} 
 \end{figure} 
@@ -2051,10 +2053,10 @@ hand-tuned CUDA scan code.
 %% \end{figure} 
 \begin{figure}
 \begin{minipage}{.5\linewidth}
-\begin{tikzpicture} [scale = 0.5]
+\begin{tikzpicture} [scale = 0.6]
 \begin{axis} [xmax = 3, 
               xmin = 0, 
-              ymax = 6,
+              ymax = 1.5,
               ymin = 0,
               % ytick = data,
               xtick = {0,1,2,3},
@@ -2068,26 +2070,26 @@ hand-tuned CUDA scan code.
   \addplot[color = black, 
            mark  = *,
            mark size = 2pt] coordinates {
-    (0, 0.364 )
-    (1, 0.847 )
-    (2, 2.098 ) 
-    (3, 5.762 )
+    (0, 0.096 )
+    (1, 0.214 )
+    (2, 0.517 ) 
+    (3, 1.382 )
   };
   \addplot[color = black, 
            mark  = square*,
            mark size = 2pt] coordinates {
-    (0, 0.408 )
-    (1, 0.564 )
-    (2, 1.292 ) 
-    (3, 3.336 )
+    (0, 0.076 )
+    (1, 0.126 )
+    (2, 0.286 ) 
+    (3, 0.714 )
   };
   \addplot[color = black, 
            mark  = diamond*,
            mark size = 2pt] coordinates {
-    (0, 0.341 )
-    (1, 0.514 )
-    (2, 1.179 ) 
-    (3, 2.957 )
+    (0, 0.077 )
+    (1, 0.127 )
+    (2, 0.286 ) 
+    (3, 0.694 )
   };
     
 
@@ -2097,10 +2099,10 @@ hand-tuned CUDA scan code.
 \end{tikzpicture} 
 \end{minipage}
 \begin{minipage}{.5\linewidth}
-\begin{tikzpicture} [scale = 0.5]
+\begin{tikzpicture} [scale = 0.6]
 \begin{axis} [xmax = 3, 
               xmin = 0, 
-              ymax = 6,
+              ymax = 1.5,
               ymin = 0,
               % ytick = data,
               xtick = {0,1,2,3},
@@ -2113,26 +2115,26 @@ hand-tuned CUDA scan code.
   \addplot[color = black, 
            mark  = *,
            mark size = 2pt] coordinates {
-    (0, 2.882 )
-    (1, 3.372 )
-    (2, 4.194 ) 
-    (3, 5.762 )
+    (0, 0.715 )
+    (1, 0.832 )
+    (2, 1.025 ) 
+    (3, 1.381 )
   };
   \addplot[color = black, 
            mark  = square*,
            mark size = 2pt] coordinates {
-    (0, 3.226 )
-    (1, 2.242 )
-    (2, 2.576 ) 
-    (3, 3.336 )
+    (0, 0.551 )
+    (1, 0.475 )
+    (2, 0.562 ) 
+    (3, 0.715 )
   };
   \addplot[color = black, 
            mark  = diamond*,
            mark size = 2pt] coordinates {
-    (0, 2.723 )
-    (1, 2.041 )
-    (2, 2.352 ) 
-    (3, 2.957 )
+    (0, 0.560 )
+    (1, 0.487 )
+    (2, 0.565 ) 
+    (3, 0.692 )
   };
     
 
@@ -2146,8 +2148,7 @@ hand-tuned CUDA scan code.
 \caption{\emph{left:}The time it takes to run 4096 blocks of varying sizes using our
 different implementations of the Sklansky kernel. \newline
 \emph{Right:} varies the number of blocks so that the number of elements is the 
-same in each experiment. These results where obtained on an NVIDIA GT 650m using the 
-NVIDIA Profiler.}
+same in each experiment. These results where obtained on an NVIDIA GTX 670.}
 \label{fig:scangraphs}
 \end{figure}
 
@@ -2400,15 +2401,16 @@ particularly as we value the simpilicity of the current version of Obsidian.
 
 \subsubsection{To automate or not to automate} 
 Obsidian makes use of types that model the GPU hierarchy. This limits 
-the kind of programs one can express but also ensures that what we can write 
-is suitable for the GPU. An alternative is to remove these types and at the 
+the kind of programs that can be expressed, ensuring that the resulting programs are
+suitable for the GPU. An alternative is to remove these types and at the 
 same time make the compiler more clever. This would move some of the 
 required GPU detail knowledge from the programmer into compiler transformations. 
-We have recently started a project to investigate this change of Obsidian
-together with a Master's student. 
+We have recently started a project to investigate this change to Obsidian,
+together with a Masters student. 
 
 \subsubsection{To optimise or not to optimise} 
-The version of Obsidian described here does not try to use any compiler optimisations techniques. Instead, we are expecting that the 
+The version of Obsidian described here does not try to use any compiler 
+optimisation techniques. Instead, we are expecting that the 
 CUDA compiler will apply a good set of techniques, from common subexpression 
 elimination to more GPU specific transformations. As future work, we 
 will investigate to what extent this reliance on the CUDA
@@ -2428,7 +2430,7 @@ composing two local computations into one, which we already have the
 capability to do. Having an embedded language for expressing full 
 algorithms that make use of many different kernels would further 
 improve the usability of Obsidian. We have started a project with the 
-goal of implementing this language together with a Master's student. 
+goal of implementing this language, together with a Masters student. 
 
 %\subsection{Exploiting Haskell, metaprogramming}
 %We see opportunities for exploiting the fact that Obsidian is embedded

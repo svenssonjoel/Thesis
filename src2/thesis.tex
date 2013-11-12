@@ -1196,19 +1196,23 @@ Paper F (section~\ref{sec:paperF}) contains technical details of the compilation
 
 We have implemented basic algorithms such as sorting, merging, fractal generation, reductions 
 and parallel prefix (scans). Often we have managed to get very good performance, close to that 
-of hand optimised CUDA code. However, there are also cases where we just cannot seem to reach 
-the level of performance that we would want. One such example is parallel prefix, an 
-application that has been haunting us from the very beginning. Scan is problematic to us because 
-it is best implemented as an in-place algorithm, while our array representations do 
-not allow for in-place update; there is no memory associated with them to update. 
-We are trying to improve this situation by adding a third array representation to Obsidian,
-mutable arrays.   
+of hand optimised CUDA code. GPU execution of scan operations is something that has 
+been worked on extensively in the GPGPU community and very efficient implementations 
+exist~\citet{merrill,ScanCUDA,OLAMARCUS,EFFICIENTSCAN}. In Paper F (section~\ref{sec:paperF}), 
+we only study scan kernels (scan of small arrays) and measure their speed relative to eachother. 
+Compared to a scan kernel supplied with the CUDA API, our kernel fastest kernel is slighty more 
+than three times slower. Performance needs to be improved at the kernel level before we attempt 
+composing them into large scan operations. We hope to improve this situation with the 
+addition of the warp level abstractions in Obsidian (this is future work, 
+section~\ref{sec:thesisFUTURE}). 
+
 
 Paper F (section~\ref{sec:paperF}) tells a story about how to implement and tune 
-a reduction kernel in Obsidian. At the end, the implemented reduction kernel is  
-faster than the reduction skeleton used in Accelerate. This is quite a feat, since 
-reduction in Accelerate corresponds to just one single hand optimised skeleton. We would have 
-been happy just getting close.   
+a reduction kernel in Obsidian. At the end, the implemented reduction kernel 
+reaches a throughput of 140GB/sec on a GPU with 192GB/sec memory bandwith. 
+%faster than the reduction skeleton used in Accelerate. This is quite a feat, since 
+%reduction in Accelerate corresponds to just one single hand optimised skeleton. We would have 
+%been happy just getting close.   
 
 In paper E (section~\ref{sec:paperE}), we implement counting sort and occurrence sort 
 using Obsidian. We use very low-level features of Obsidian and end up producing 
@@ -1584,6 +1588,7 @@ to for anyone starting out with compiled embedded languages.
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
 \section{Future work} 
+\label{sec:thesisFUTURE}
 
 Obsidian is a language for GPU kernel implementation, not complete applications. 
 It is not as well integrated into Haskell as for example Accelerate. There are 
