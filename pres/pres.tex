@@ -160,10 +160,6 @@
     \addone{2}{r2}
     \addone{3}{r3}
     \addone{4}{r4}
-    %\draw [->] (1) -- (r1);
-    %\draw [->] (2) -- (r2);
-    %\draw [->] (3) -- (r3);
-    %\draw [->] (4) -- (r4);
     }
 
   \onslide<3>{
@@ -218,35 +214,34 @@
   \foreach \x in {1,2,...,8} {
     \node (\x) [draw, on chain=1] {\x};
   }
-  % \node [on chain=1] {\huge \ldots};
+  
   
   \onslide<2>{
     \node [draw, below=3em of 1] (r1) {0};
-    %\draw [->] (1) -- (r1);
+  
     }
 
   
   \onslide<3>{
     \node [draw, below=3em of 1] (r1) {1};
-    %\draw [->] (1) -- (r1);
+  
     \sumupPrim{1.south}{r1.north}
     }
   
   \onslide<4>{
     \node [draw, below=3em of 1] (r1) {3};
-    %\draw [->] (2.south) |- (r1.east);
+  
     \sumup{2.south}{r1.east}
     }
   
   \onslide<5>{
     \node [draw, below=3em of 1] (r1) {6};
-    %\draw [->] (3.south) |- (r1.east);
+  
     \sumup{3.south}{r1.east}
     }
 
   \onslide<6>{
     \node [draw, below=3em of 1] (r1) {10};
-    %\draw [->] (4.south) |- (r1.east);
     \sumup{4.south}{r1.east}
     }
 
@@ -484,7 +479,6 @@
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
-\section{GPUs and CUDA}
 
 \begin{frame}{GPU Programming}
 \begin{center} 
@@ -516,9 +510,65 @@
   
 
 \end{tikzpicture} 
+
+\onslide<2>{
+  \begin{tikzpicture}[overlay, remember picture]
+    
+   \node [draw, circle,very thick, minimum size=2em] (magni) at (-0.58,2.05) {};
+    
+   \node [draw, very thick] (test) at (-1,0) {
+     \begin{tikzpicture}
+       \node [draw, fill=red!50] (b0) {Block 0};
+       \node [draw, fill=red!50, below=0pt of b0] (b1) {Block 1};
+       \node [below=0pt of b1] (bdots) {\huge \ldots};
+       \node [draw, fill=red!50, below=0pt of bdots] (bN) {Block N};
+       
+
+     \end{tikzpicture} 
+
+   };
+
+   \draw [very thick] (magni) -- (test);
+  \end{tikzpicture}
+}
+
 \end{center}
 
 \end{frame}
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}[fragile]{GPU Programming: CUDA example}
+
+\begin{block}{}
+\begin{verbatim} 
+__global__ void inc(int32_t *a, int32_t *r) {
+  
+  unsigned int gid = blockIdx.x * 
+                     blockDim.x + 
+                     threadIdx.x;
+
+  r[gid] = a[gid] + 1; 
+
+} 
+\end{verbatim}
+\end{block} 
+
+
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}[fragile]{GPU Programming: CUDA example}
+
+\begin{block}{}
+Apa Bepa  
+\end{block} 
+
+
+\end{frame} 
 
 
 % -------------------------------------------------------------------------
@@ -531,7 +581,7 @@
   TODO: 
   \begin{itemize} 
     \item Background, Lava, Compiling embedded languages 
-    \item picture: embedded language vs standalone (same as lecture) 
+    \item Picture: embedded language vs standalone (same as lecture) 
     \item How Bj\"orn and Benny does embedded languages 
   \end{itemize}
   
@@ -544,10 +594,10 @@
 \begin{frame}{Obsidian} 
   
   \begin{itemize} 
-    \item our level of GPU programming 
+    \item Our level of GPU programming 
     \item Programming example  (reduction) 
-    \item performance 
-    \item compare to related approaches 
+    \item Performance 
+    \item Compare to related approaches 
   \end{itemize}
       
 \end{frame} 
