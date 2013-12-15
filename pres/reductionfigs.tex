@@ -1,0 +1,455 @@
+
+% Figures that illustrate optimisation effort of Reduction kernels 
+
+%% \newcommand{\arrayLength}[1]{%
+%%   \setcounter{arraycard}{0}%
+%%   \foreach \x in #1{%
+%%     \stepcounter{arraycard}%
+%%   }%
+%%   \the\value{arraycard}%
+%% }  
+
+% smrow{x}{y}{data}{largest_index}{identifier}
+\newcommand{\smRow}[5] { 
+  
+ %                                       (INSANE!) 
+  \node [draw, fill=gray!30,anchor=west] (#50) at (#1,#2) {\pgfmathparse{#3[0]}\pgfmathresult};   
+  
+  \ifnum#4>0
+    \foreach[count=\i] \j in {1,...,#4} {
+      \pgfmathtruncatemacro{\n}{int(\i) - 1};
+      \pgfmathtruncatemacro{\m}{int(\i)};
+      \node [draw, fill=gray!30,right=0cm of #5\n,anchor=west] (#5\m) {\pgfmathparse{#3[\j]}\pgfmathresult};   % {\j};   
+    } 
+  \fi
+}
+
+
+% smRowTiny{x}{y}{data}{largest_index}{identifier} 
+\newcommand{\smRowTiny}[5] { 
+  
+ %                                       
+  \node [draw, fill=gray!30,anchor=west,inner sep=1pt] (#50) at (#1,#2) {\tiny\pgfmathparse{#3[0]}\pgfmathresult};   
+  
+  \ifnum#4>0
+    \foreach[count=\i] \j in {1,...,#4} {
+      \pgfmathtruncatemacro{\n}{int(\i) - 1};
+      \pgfmathtruncatemacro{\m}{int(\i)};
+      \node [draw, fill=gray!30,right=0cm of #5\n,anchor=west,inner sep=1pt] (#5\m) {\tiny\pgfmathparse{#3[\j]}\pgfmathresult};   % {\j};   
+    } 
+  \fi
+}
+
+\newcommand{\seqRed}[3] { 
+ \tikzset{sstyle/.style={anchor=west,draw,shape=circle,fill,inner sep=1pt}};
+ \tikzset{cstyle/.style={anchor=west,draw,shape=circle,inner sep=0pt}};
+ %\tikzstyle{every node}=[anchor=west,draw,shape=circle,fill,inner sep=1pt]
+
+ \node [sstyle](r1) at (0+ #1,#2) {};
+ \node [sstyle,right=.5mm of r1] (r2) {};
+ \node [sstyle,right=.5mm of r2] (r3) {};
+ \node [sstyle,right=.5mm of r3] (r4) {};
+
+ 
+ \path [draw] (r1) -- (r2) ;
+ \path [draw] (r2) -- (r3) ;
+ \path [draw] (r3) -- (r4) ;
+ 
+ % connectors 
+
+ %\tikzstyle{every node}=[anchor=west,draw,shape=circle,inner sep=0pt]
+
+ \node [cstyle,above=.5mm of r1] (#3c1) {};
+ \node [cstyle,above=.5mm of r2] (#3c2) {};
+ \node [cstyle,above=.5mm of r3] (#3c3) {};
+ \node [cstyle,above=.5mm of r4] (#3c4) {};
+
+ \node [cstyle,below=.5mm of r4] (#3c5) {};
+
+ % wires 
+
+ \path [draw] (r1) -- (#3c1) ;
+ \path [draw] (r2) -- (#3c2) ;
+ \path [draw] (r3) -- (#3c3) ;
+ \path [draw] (r4) -- (#3c4) ;
+ \path [draw] (r4) -- (#3c5) ;
+
+
+}
+
+
+
+%\foreach[count=\i] \j in {1,1,1,1,1,1,1,1} { 
+%  \pgfmathtruncatemacro{\n}{int(\i)};
+%  \node[draw=black] (a\n) at (\i,-2) {\j};
+%}
+
+
+
+\begin{figure} 
+
+% --------------------------------------------------------------------------- 
+% Pair fmap 
+% ---------------------------------------------------------------------------
+\begin{minipage}{.45\linewidth} 
+\begin{tikzpicture}[scale = 0.40]
+
+\smRow{0}{0}{{0,1,2,3,4,5,6,7}}{7}{a}
+
+\smRow{0}{-2}{{1,5,9,13}}{3}{b}
+
+\smRow{0}{-4}{{6,22}}{1}{c}
+
+\smRow{0}{-6}{{28,0}}{0}{d}  % HACK
+
+%% \smRow{0}{0}{{0,1,2,3,4,5,6,7}}{7}{a}
+
+%% \smRow{1.75}{-2}{{1,5,9,13}}{3}{b}
+
+%% \smRow{2.5}{-4}{{6,22}}{1}{c}
+
+%% \smRow{3}{-6}{{28,0}}{0}{d}  % HACK
+
+% connections 
+
+
+\path[->,draw=black] (a0.south) -- (b0.north) ; 
+\path[->,draw=black] (a1.south) -- (b0.north) ; 
+
+\path[->,draw=black] (a2.south) -- (b1.north) ; 
+\path[->,draw=black] (a3.south) -- (b1.north) ; 
+
+\path[->,draw=black] (a4.south) -- (b2.north) ; 
+\path[->,draw=black] (a5.south) -- (b2.north) ; 
+
+\path[->,draw=black] (a6.south) -- (b3.north) ; 
+\path[->,draw=black] (a7.south) -- (b3.north) ; 
+
+
+\path[->,draw=black] (b0.south) -- (c0.north) ; 
+\path[->,draw=black] (b1.south) -- (c0.north) ; 
+
+\path[->,draw=black] (b2.south) -- (c1.north) ; 
+\path[->,draw=black] (b3.south) -- (c1.north) ; 
+
+\path[->,draw=black] (c0.south) -- (d0.north) ; 
+\path[->,draw=black] (c1.south) -- (d0.north) ; 
+
+
+\end{tikzpicture} 
+
+\end{minipage}
+\hfill%hspace{2mm}%
+% --------------------------------------------------------------------------- 
+% Halve zip  
+% ---------------------------------------------------------------------------
+\begin{minipage}{.45\linewidth} 
+\begin{tikzpicture}[scale = 0.40]
+
+\smRow{0}{0}{{0,1,2,3,4,5,6,7}}{7}{a}
+
+\smRow{0}{-2}{{4,6,8,10}}{3}{b}
+
+\smRow{0}{-4}{{12,16}}{1}{c}
+
+\smRow{0}{-6}{{28,0}}{0}{d}  % HACK
+
+%% \smRow{0}{0}{{0,1,2,3,4,5,6,7}}{7}{a}
+
+%% \smRow{1.75}{-2}{{4,6,8,10}}{3}{b}
+
+%% \smRow{2.5}{-4}{{12,16}}{1}{c}
+
+%% \smRow{3.25}{-6}{{28,0}}{0}{d}  % HACK
+
+% connections 
+
+
+\path[->,draw=black] (a0.south) -- (b0.north) ; 
+\path[->,draw=black] (a4.south) -- (b0.north) ; 
+
+\path[->,draw=black] (a1.south) -- (b1.north) ; 
+\path[->,draw=black] (a5.south) -- (b1.north) ; 
+
+\path[->,draw=black] (a2.south) -- (b2.north) ; 
+\path[->,draw=black] (a6.south) -- (b2.north) ; 
+
+\path[->,draw=black] (a3.south) -- (b3.north) ; 
+\path[->,draw=black] (a7.south) -- (b3.north) ; 
+
+
+\path[->,draw=black] (b0.south) -- (c0.north) ; 
+\path[->,draw=black] (b2.south) -- (c0.north) ; 
+
+\path[->,draw=black] (b1.south) -- (c1.north) ; 
+\path[->,draw=black] (b3.south) -- (c1.north) ; 
+
+\path[->,draw=black] (c0.south) -- (d0.north) ; 
+\path[->,draw=black] (c1.south) -- (d0.north) ; 
+
+
+
+\end{tikzpicture} 
+
+\end{minipage}
+
+%% \caption{\emph{Left:} {\tt evenOdds} - {\tt zipWith} reduction, leads to uncoalesced memory accesses.\newline
+%% \emph{Right:} {\tt halve} - {\tt zipWith} reduction, leads to coalesced memory accesses.
+%% This coalescing is most important during the very first phase, when data is 
+%% read from global memory.} 
+
+\label{fig:red1}
+\end{figure} 
+
+
+
+% ---------------------------------------------------------------------------
+% Sequential reductions 
+% ---------------------------------------------------------------------------
+
+
+%% \begin{figure} 
+
+%% \begin{tikzpicture}[scale = 0.40]
+
+%% \smRowTiny{0}{{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}}{31}{a}
+
+%% \seqRed{0}{-2}{redA}
+%% \seqRed{2}{-2}{redB}
+%% \seqRed{4}{-2}{redC}
+%% \seqRed{6}{-2}{redD}
+%% \seqRed{8}{-2}{redE}
+%% \seqRed{10}{-2}{redF}
+%% \seqRed{12}{-2}{redG}
+%% \seqRed{14}{-2}{redH}
+
+%% % connections 
+%% \foreach[count=\i] \j in {redAc1,redAc2,redAc3,redAc4, 
+%%                           redBc1,redBc2,redBc3,redBc4, 
+%%                           redCc1,redCc2,redCc3,redCc4, 
+%%                           redDc1,redDc2,redDc3,redDc4, 
+%%                           redEc1,redEc2,redEc3,redEc4, 
+%%                           redFc1,redFc2,redFc3,redFc4, 
+%%                           redGc1,redGc2,redGc3,redGc4, 
+%%                           redHc1,redHc2,redHc3,redHc4} {
+%%   \pgfmathtruncatemacro{\n}{int(\i) - 1};
+%%   \path[draw=black] (a\n.south) -- (\j.north) ; 
+%% %\path[draw=black] (a1.south) -- (redAc2.north) ; 
+%% %\path[draw=black] (a2.south) -- (redAc3.north) ; 
+%% %\path[draw=black] (a3.south) -- (redAc4.north) ; 
+%% } 
+
+%% %next row of sM
+
+%% \smRowTiny{-4}{{6,22,38,54,70,86,102,118}}{7}{b}
+
+%% %connections 
+
+%% \path[draw=black] (redAc5) -- (b0.north); 
+%% \path[draw=black] (redBc5) -- (b1.north); 
+%% \path[draw=black] (redCc5) -- (b2.north); 
+%% \path[draw=black] (redDc5) -- (b3.north); 
+%% \path[draw=black] (redEc5) -- (b4.north); 
+%% \path[draw=black] (redFc5) -- (b5.north); 
+%% \path[draw=black] (redGc5) -- (b6.north); 
+%% \path[draw=black] (redHc5) -- (b7.north); 
+
+
+
+%% %% \path[->,draw=black] (a0.south) -- (b0.north) ; 
+%% %% \path[->,draw=black] (a1.south) -- (b0.north) ; 
+
+%% %% \path[->,draw=black] (a2.south) -- (b1.north) ; 
+%% %% \path[->,draw=black] (a3.south) -- (b1.north) ; 
+
+%% %% \path[->,draw=black] (a4.south) -- (b2.north) ; 
+%% %% \path[->,draw=black] (a5.south) -- (b2.north) ; 
+
+%% %% \path[->,draw=black] (a6.south) -- (b3.north) ; 
+%% %% \path[->,draw=black] (a7.south) -- (b3.north) ; 
+
+
+%% %% \path[->,draw=black] (b0.south) -- (c0.north) ; 
+%% %% \path[->,draw=black] (b1.south) -- (c0.north) ; 
+
+%% %% \path[->,draw=black] (b2.south) -- (c1.north) ; 
+%% %% \path[->,draw=black] (b3.south) -- (c1.north) ; 
+
+%% %% \path[->,draw=black] (c0.south) -- (d0.north) ; 
+%% %% \path[->,draw=black] (c1.south) -- (d0.north) ; 
+
+
+%% \end{tikzpicture} 
+
+
+%% \caption{Adding sequential reductions like this, reintroduces memory coalescing issues. 
+%%  Consecutive threads nolonger access consecutive memory locations.} 
+
+%% \label{fig:red1}
+%% \end{figure} 
+
+
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  REINTRODUCE COALESCING
+%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{figure} 
+
+\begin{minipage}{0.45\linewidth}
+\begin{tikzpicture}[scale = 0.40]
+
+%\smRowTiny{0}{{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}}{31}{a}
+\smRowTiny{0}{0}{{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}}{15}{a}
+
+\seqRed{0}{-2}{redA}
+\seqRed{2}{-2}{redB}
+\seqRed{4}{-2}{redC}
+\seqRed{6}{-2}{redD}
+%\seqRed{8}{-2}{redE}
+%\seqRed{10}{-2}{redF}
+%\seqRed{12}{-2}{redG}
+%\seqRed{14}{-2}{redH}
+
+% connections 
+\foreach[count=\i] \j in {redAc1,redAc2,redAc3,redAc4, 
+                          redBc1,redBc2,redBc3,redBc4, 
+                          redCc1,redCc2,redCc3,redCc4, 
+                          redDc1,redDc2,redDc3,redDc4} {
+                         
+  \pgfmathtruncatemacro{\n}{int(\i) - 1};
+  \path[draw=black] (a\n.south) -- (\j.north) ; 
+} 
+
+%next row of sM
+
+%\smRowTiny{-4}{{6,22,38,54,70,86,102,118}}{7}{b}
+\smRowTiny{0}{-4}{{6,22,38,54}}{3}{b}
+%\smRowTiny{3}{-4}{{6,22,38,54}}{3}{b}
+
+
+%connections 
+
+\path[draw=black] (redAc5) -- (b0.north); 
+\path[draw=black] (redBc5) -- (b1.north); 
+\path[draw=black] (redCc5) -- (b2.north); 
+\path[draw=black] (redDc5) -- (b3.north); 
+%\path[draw=black] (redEc5) -- (b4.north); 
+%\path[draw=black] (redFc5) -- (b5.north); 
+%\path[draw=black] (redGc5) -- (b6.north); 
+%\path[draw=black] (redHc5) -- (b7.north); 
+
+
+
+%% \path[->,draw=black] (a0.south) -- (b0.north) ; 
+%% \path[->,draw=black] (a1.south) -- (b0.north) ; 
+
+%% \path[->,draw=black] (a2.south) -- (b1.north) ; 
+%% \path[->,draw=black] (a3.south) -- (b1.north) ; 
+
+%% \path[->,draw=black] (a4.south) -- (b2.north) ; 
+%% \path[->,draw=black] (a5.south) -- (b2.north) ; 
+
+%% \path[->,draw=black] (a6.south) -- (b3.north) ; 
+%% \path[->,draw=black] (a7.south) -- (b3.north) ; 
+
+
+%% \path[->,draw=black] (b0.south) -- (c0.north) ; 
+%% \path[->,draw=black] (b1.south) -- (c0.north) ; 
+
+%% \path[->,draw=black] (b2.south) -- (c1.north) ; 
+%% \path[->,draw=black] (b3.south) -- (c1.north) ; 
+
+%% \path[->,draw=black] (c0.south) -- (d0.north) ; 
+%% \path[->,draw=black] (c1.south) -- (d0.north) ; 
+
+
+\end{tikzpicture} 
+
+%\label{fig:red1}
+
+%\end{figure} 
+\end{minipage}\hfill%\hspace{2mm}%
+\begin{minipage}{0.45\linewidth}
+%\begin{figure} 
+%
+\begin{tikzpicture}[scale = 0.40]
+
+%\smRowTiny{0}{{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31}}{31}{a}
+\smRowTiny{0}{0}{{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}}{15}{a}
+
+\seqRed{0}{-2}{redA}
+\seqRed{2}{-2}{redB}
+\seqRed{4}{-2}{redC}
+\seqRed{6}{-2}{redD}
+%\seqRed{8}{-2}{redE}
+%\seqRed{10}{-2}{redF}
+%\seqRed{12}{-2}{redG}
+%\seqRed{14}{-2}{redH}
+
+% connections 
+\foreach[count=\i] \j in {redAc1,redBc1,redCc1,redDc1, 
+                          redAc2,redBc2,redCc2,redDc2, 
+                          redAc3,redBc3,redCc3,redDc3, 
+                          redAc4,redBc4,redCc4,redDc4} {
+                         
+  \pgfmathtruncatemacro{\n}{int(\i) - 1};
+  \path[draw=black] (a\n.south) -- (\j.north) ; 
+} 
+
+%next row of sM
+
+%\smRowTiny{-4}{{6,22,38,54,70,86,102,118}}{7}{b}
+%\smRowTiny{0}{-4}{{6,22,38,54}}{3}{b}
+\smRowTiny{0}{-4}{{24,28,32,46}}{3}{b}
+%\smRowTiny{3}{-4}{{6,22,38,54}}{3}{b}
+
+%connections 
+
+\path[draw=black] (redAc5) -- (b0.north); 
+\path[draw=black] (redBc5) -- (b1.north); 
+\path[draw=black] (redCc5) -- (b2.north); 
+\path[draw=black] (redDc5) -- (b3.north); 
+%\path[draw=black] (redEc5) -- (b4.north); 
+%\path[draw=black] (redFc5) -- (b5.north); 
+%\path[draw=black] (redGc5) -- (b6.north); 
+%\path[draw=black] (redHc5) -- (b7.north); 
+
+
+
+%% \path[->,draw=black] (a0.south) -- (b0.north) ; 
+%% \path[->,draw=black] (a1.south) -- (b0.north) ; 
+
+%% \path[->,draw=black] (a2.south) -- (b1.north) ; 
+%% \path[->,draw=black] (a3.south) -- (b1.north) ; 
+
+%% \path[->,draw=black] (a4.south) -- (b2.north) ; 
+%% \path[->,draw=black] (a5.south) -- (b2.north) ; 
+
+%% \path[->,draw=black] (a6.south) -- (b3.north) ; 
+%% \path[->,draw=black] (a7.south) -- (b3.north) ; 
+
+
+%% \path[->,draw=black] (b0.south) -- (c0.north) ; 
+%% \path[->,draw=black] (b1.south) -- (c0.north) ; 
+
+%% \path[->,draw=black] (b2.south) -- (c1.north) ; 
+%% \path[->,draw=black] (b3.south) -- (c1.north) ; 
+
+%% \path[->,draw=black] (c0.south) -- (d0.north) ; 
+%% \path[->,draw=black] (c1.south) -- (d0.north) ; 
+
+
+\end{tikzpicture} 
+\end{minipage}
+
+%% \caption{\emph{Left:} \textbf{BAD} Adding sequential reductions like this, reintroduces memory coalescing issues. Consecutive threads nolonger access consecutive memory locations.\newline
+%% \emph{Right:} \textbf{GOOD} Using sequential reduction but maintaining coalescing} 
+
+\label{fig:redSeq}
+\end{figure} 

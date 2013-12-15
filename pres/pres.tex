@@ -56,7 +56,7 @@
   Department of Computer Science and Engineering \\ 
   Chalmers University of Technology 
 } 
-
+\date{}
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
@@ -81,124 +81,6 @@
 %   * Scalable (more data -> more potential for parallelism) 
 %   
 % -------------------------------------------------------------------------
-\begin{frame}{Data-Parallelism: Increment}
-\begin{center} 
-\begin{tikzpicture}[
-      start chain=1 going right,start chain=2 going below,node distance=-0.15mm
-    ]
-
-
-  \foreach \x in {1,2,...,10} {
-    \node (\x) [draw, on chain=1] {\x};
-  }
-  \node [on chain=1] {\huge \ldots};
-  
-  
-
-  \onslide<2>{
-    \node [draw, below=3em of 1] (r1) {2};
-    % \draw [->] (1) -- (r1);
-    \addone{1}{r1}
-    }
-
-  \onslide<3>{
-    \node [draw, below=3em of 1] (r1) {2};
-    \node [draw, below=3em of 2] (r2) {3};
-    %\draw [->] (2) -- (r2);
-    \addone{2}{r2}
-    }
-
-
-  \onslide<4>{
-    \node [draw, below=3em of 1] (r1) {2};
-    \node [draw, below=3em of 2] (r2) {3};
-    \node [draw, below=3em of 3] (r3) {4};
-    %\draw [->] (3) -- (r3);
-    \addone{3}{r3}
-    }
-
-  \onslide<5>{
-    \node [draw, below=3em of 1] (r1) {2};
-    \node [draw, below=3em of 2] (r2) {3};
-    \node [draw, below=3em of 3] (r3) {4};
-    \node [draw, below=3em of 4] (r4) {5};
-    %\draw [->] (4) -- (r4);
-    \addone{4}{r4}
-    \node [right=-0.15mm of r4] {\huge \ldots};
-    }
-  
-\end{tikzpicture} 
-\end{center}
-\end{frame}
-
-% -------------------------------------------------------------------------
-%
-% -------------------------------------------------------------------------
-\begin{frame}{Data-Parallelism: Increment in Parallel}
-\begin{center} 
-\begin{tikzpicture}[
-      start chain=1 going right,start chain=2 going below,node distance=-0.15mm
-    ]
-
-
-  \foreach \x in {1,2,...,10} {
-    \node (\x) [draw, on chain=1] {\x};
-  }
-  \node [on chain=1] {\huge \ldots};
-  
-  
-
-  \onslide<2>{
-    \node [draw, below=3em of 1] (r1) {2};
-    \node [draw, below=3em of 2] (r2) {3};
-    \node [draw, below=3em of 3] (r3) {4};
-    \node [draw, below=3em of 4] (r4) {5};
-
-    \addone{1}{r1}
-    \addone{2}{r2}
-    \addone{3}{r3}
-    \addone{4}{r4}
-    }
-
-  \onslide<3>{
-    \node [draw, below=3em of 1] (r1) {2};
-    \node [draw, below=3em of 2] (r2) {3};
-    \node [draw, below=3em of 3] (r3) {4};
-    \node [draw, below=3em of 4] (r4) {5};
-    \node [draw, below=3em of 5] (r5) {6};
-    \node [draw, below=3em of 6] (r6) {7};
-    \node [draw, below=3em of 7] (r7) {8};
-    \node [draw, below=3em of 8] (r8) {9};
-
-    \addone{5}{r5}
-    \addone{6}{r6}
-    \addone{7}{r7}
-    \addone{8}{r8}
-    }
-
-  \onslide<3>{
-    \node [draw, below=3em of 1] (r1) {2};
-    \node [draw, below=3em of 2] (r2) {3};
-    \node [draw, below=3em of 3] (r3) {4};
-    \node [draw, below=3em of 4] (r4) {5};
-    \node [draw, below=3em of 5] (r5) {6};
-    \node [draw, below=3em of 6] (r6) {7};
-    \node [draw, below=3em of 7] (r7) {8};
-    \node [draw, below=3em of 8] (r8) {9};
-
-    \addone{5}{r5}
-    \addone{6}{r6}
-    \addone{7}{r7}
-    \addone{8}{r8}
-
-    \node [right=-0.15mm of r8] {\huge \ldots};
-    }
-
-\end{tikzpicture} 
-
-\end{center}
-\end{frame}
-
 % -------------------------------------------------------------------------
 % Computing a sum
 % -------------------------------------------------------------------------
@@ -318,34 +200,34 @@
     \adder{jmm1}{jmm2}{lmm1} 
   }
 
-  \onslide<5>{
-    \node (imm1) [draw,below=1.5em of 3] {3};
-    \node (imm2) [draw,right= of imm1] {7};
-    \node (imm3) [draw,right= of imm2] {11};
-    \node (imm4) [draw,right= of imm3] {15};
+  %% \onslide<5>{
+  %%   \node (imm1) [draw,below=1.5em of 3] {3};
+  %%   \node (imm2) [draw,right= of imm1] {7};
+  %%   \node (imm3) [draw,right= of imm2] {11};
+  %%   \node (imm4) [draw,right= of imm3] {15};
 
-    \adder{1}{2}{imm1}
-    \adder{3}{4}{imm2}
-    \adder{5}{6}{imm3}
-    \adder{7}{8}{imm4}
+  %%   \adder{1}{2}{imm1}
+  %%   \adder{3}{4}{imm2}
+  %%   \adder{5}{6}{imm3}
+  %%   \adder{7}{8}{imm4}
 
-    \node (jmm1) [draw,below=1.5em of imm2] {10};
-    \node (jmm2) [draw,right= of jmm1] {26};
+  %%   \node (jmm1) [draw,below=1.5em of imm2] {10};
+  %%   \node (jmm2) [draw,right= of jmm1] {26};
 
-    \adder{imm1}{imm2}{jmm1}
-    \adder{imm3}{imm4}{jmm2}
+  %%   \adder{imm1}{imm2}{jmm1}
+  %%   \adder{imm3}{imm4}{jmm2}
 
-    \node (lmm1) [draw,below right=1.5em and -0.8em of jmm1] {36};
+  %%   \node (lmm1) [draw,below right=1.5em and -0.8em of jmm1] {36};
     
-    \adder{jmm1}{jmm2}{lmm1}
+  %%   \adder{jmm1}{jmm2}{lmm1}
 
-    \draw [decorate,
-           decoration={brace,mirror,amplitude=10pt},xshift=-4pt,yshift=0pt]
-          (3.5,-3.2) -- (3.5,-0.4) node [black,midway,xshift=0.8cm]  
-          {\footnotesize $Depth$};
-  }
+  %%   \draw [decorate,
+  %%          decoration={brace,mirror,amplitude=10pt},xshift=-4pt,yshift=0pt]
+  %%         (3.5,-3.2) -- (3.5,-0.4) node [black,midway,xshift=0.8cm]  
+  %%         {\footnotesize $Depth$};
+  %% }
 
- \onslide<6>{
+ \onslide<5>{
     \node (imm1) [draw,below=1.5em of 3] {3};
     \node (imm2) [draw,right= of imm1] {7};
     \node (imm3) [draw,right= of imm2] {11};
@@ -374,7 +256,7 @@
   }
 \end{tikzpicture} 
 
-\onslide<6>{
+\onslide<5>{
    \begin{tikzpicture}[overlay,remember picture] 
       
     \node [fill=red!50,single arrow] at (-3.7,3.5) {\tiny Potential for parallelism};
@@ -437,6 +319,13 @@
 \section{GPUs and CUDA}
 
 \begin{frame}{GPUs} 
+  \begin{center}
+  {\Large Graphics Processing Units}
+  \end{center}
+\end{frame} 
+
+
+\begin{frame}{GPUs} 
 
 \includegraphics[width=\linewidth]{GPU1.pdf}
 
@@ -455,137 +344,32 @@
 %
 % -------------------------------------------------------------------------
 
-
-\begin{frame}{GPU Programming}
-\begin{center} 
-
-\begin{tikzpicture}[
-      start chain=1 going right,start chain=2 going below,node distance=1em,
-      every join/.style={->,thick},
-    ]
-
-  \node [draw,very thick, rounded corners, on chain=1,join] {Inputs}; 
-  \node [draw,very thick, rounded corners, on chain=1,minimum height=5.5em,minimum width = 6.5em,join] {\huge ?}; 
-  \node [draw,very thick, rounded corners, on chain=1,join] {Outputs}; 
+\begin{frame}{GPU Programming: CUDA Terminology} 
   
-
-\end{tikzpicture} 
-\end{center}
-
-\end{frame}
-
-% -------------------------------------------------------------------------
-%
-% -------------------------------------------------------------------------
-
-\begin{frame}{GPU Programming}
-\begin{center} 
-
-\begin{tikzpicture}[remember picture,
-      start chain=going right,
-      outer/.style={on chain, node distance=1em},
-      every join/.style={->,thick},
-      inner/.style={circle,draw=blue!50,fill=blue!20,thick,inner sep=1pt},
-    ]
-
-  \node [outer,draw,very thick, rounded corners,join] {Inputs}; 
-  \node [outer,draw=gray!50,very thick, rounded corners,minimum height=5.5em,minimum width = 6.5em,join] (apa) {
-    \begin{tikzpicture} 
-      \node [draw=black!100,inner,minimum size=1pt] (k1) {k1};
-      \node [draw=black!100,inner,minimum size=1pt, below= 1em of k1] (k2) {k2};
-      \node [draw=black!100,inner,minimum size=1pt, right= 1em of k1] (k3) {k3}; 
-    \end{tikzpicture}
-
-  }; 
-  \node [outer,draw,very thick, rounded corners,join] {Outputs}; 
-  
-
-  \draw (k1) -- (k3)
-        (k2) -- (k3)
-        (apa.west) -- (k1.west)
-        (apa.west) -- (k2.west) 
-        (k3.east) -- (apa.east); 
-  
-
-\end{tikzpicture} 
-
-\onslide<2-5>{
-  \begin{tikzpicture}[overlay, remember picture]
-    
-   \node [draw, circle,very thick, minimum size=2em] (magni) at (-0.58,2.05) {};
-    
-   \node [draw, very thick] (test) at (-1,0) {
-     \begin{tikzpicture}
-       \node [draw, fill=red!50] (b0) {Block 0};
-       \node [draw, fill=red!50, below=0pt of b0] (b1) {Block 1};
-       \node [below=0pt of b1] (bdots) {\huge \ldots};
-       \node [draw, fill=red!50, below=0pt of bdots] (bN) {Block N};
-       
-
-     \end{tikzpicture} 
-
-   };
-
-   \draw [very thick] (magni) -- (test);
-  \end{tikzpicture}
-}
-
-\onslide<3>{ 
-  \begin{tikzpicture}[overlay, remember picture]
-    \node [fill=gray!50] at (2,0) {
-      \begin{minipage}{3.5cm}
-      Block:
-      \begin{small}
-      \begin{itemize}
-        \item Many threads
-        \item Shared memory
-        \item Synchronize
-        \item Same program 
-        \item Different data
+  \begin{itemize} 
+    \item Thread:
+      \begin{itemize} 
+        \item Sequential work
+        \item Executed on a core
       \end{itemize}
-      \end{small}
-      \end{minipage}
-    };
-  \end{tikzpicture}
-}
-
-\onslide<4>{ 
-  \begin{tikzpicture}[overlay, remember picture]
-    \node [fill=gray!50] at (2,0) {
-      \begin{minipage}{3.5cm}
-      Warp:
-      \begin{small}
-      \begin{itemize}
+    \item Warp:
+      \begin{itemize} 
         \item 32 threads
         \item Scheduled unit
         \item Lockstep
       \end{itemize}
-      \end{small}
-      \end{minipage}
-    };
-  \end{tikzpicture}
-}
-
-\onslide<5>{ 
-  \begin{tikzpicture}[overlay, remember picture]
-    \node [fill=gray!50] at (2,0) {
-      \begin{minipage}{3.5cm}
-      Grid:
-      \begin{small}
-      \begin{itemize}
-        \item Collection of all blocks
-      \end{itemize}
-      \end{small}
-      \end{minipage}
-    };
-  \end{tikzpicture}
-}
-
-
-
-\end{center}
+    \item Block: 
+      \begin{itemize} 
+        \item Up 1024 threads 
+        \item Executes on the MPs
+        \item Shared memory 
+        \item Thread synchronisation
+      \end{itemize} 
+    \item Grid: Collection of all blocks
+  \end{itemize} 
 
 \end{frame}
+
 
 % -------------------------------------------------------------------------
 %
@@ -612,40 +396,6 @@ __global__ void inc(int32_t *a, int32_t *r) {
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
-\begin{frame}[fragile]{GPU Programming: CUDA Example}
-
-\begin{block}{}
-\begin{tiny}
-\begin{verbatim} 
-main(void) {
-  
-  int32_t h_a[32], h_r[32]; 
-  int32_t *d_a, *d_r;
-  
-  for (int i = 0; i < 32; ++i) 
-    h_a[i] = i;
-
-  cudaMalloc((void**)&d_a,32*sizeof(int32_t));
-  cudaMalloc((void**)&d_r,32*sizeof(int32_t));
-
-  cudaMemcpy(d_a,h_a,32*sizeof(int32_t),
-                     cudaMemcpyHostToDevice);
-  
-  inc<<<1,32,0>>>(d_a,d_r); 
-
-  cudaMemcpy(h_r,d_r,32*sizeof(int32_t),
-                     cudaMemcpyDeviceToHost);
-
-  for (int i = 0; i < 32; ++i) 
-    printf("%d ",h_r[i]);
-}
-\end{verbatim}
-\end{tiny}
-\end{block} 
-\end{frame} 
-% -------------------------------------------------------------------------
-%
-% -------------------------------------------------------------------------
 
 \begin{frame}{GPU Programming} 
 
@@ -655,8 +405,8 @@ main(void) {
     \item Minimise data transfer between host and device
     \item Coalesce global memory accesses
     \item Minimise use of global memory 
-    \item Avoid different execution paths within a block
-    \item Be careful with {\tt \_\_syncthreads} and conditionals
+   % \item Avoid different execution paths within a block
+   % \item Be careful with {\tt \_\_syncthreads} and conditionals
   \end{itemize} 
   
 \end{frame} 
@@ -670,7 +420,7 @@ main(void) {
 
 \begin{frame}{Embedded Languages} 
  \begin{center}
-   {\Large Compiled Embedded Languages}
+   {\Large Embedded Languages}
  \end{center}
 %%
 %%  Embedding ArBB, similar slides to Obsidian, more pictures. 
@@ -733,140 +483,6 @@ e8 ac fd ff ff
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
-\begin{frame}{Embedded Languages} 
-
-  \begin{tikzpicture} 
-    
-    %\onslide<1-5>{
-    \node [draw, fill=blue!30, very thick, rounded corners] 
-      (source) {Source text}; 
-    %}
-    \onslide<2-5>{ 
-      \node [draw, fill=green!30, 
-             very thick, 
-             minimum size = 3em,
-             single arrow, 
-             right=1em of source] (a1) {};
-
-      \node [draw, fill=blue!30, 
-             very thick, rounded corners, 
-             right=1em of a1] (analysis) {Analysis};
-    }
-    \onslide<4-5>{
-      
-      \node [draw, fill=green!30, 
-             very thick, 
-             minimum size = 3em,
-             single arrow, 
-             right=1em of analysis] (a1) {};
-      
-      \node [draw, fill=blue!30, 
-             very thick, rounded corners, 
-             right=1em of a1] (opt) {Optimisations};
-      
-    }
-    \onslide<5>{
-       \node [draw, fill=green!30, 
-             very thick, 
-             minimum size = 3em,
-             single arrow, rotate=270, 
-             below=1.5em of opt] (a1) {};
-      
-      \node [draw, fill=blue!30, 
-             very thick, rounded corners, 
-             below=3.5em of opt] (codegen) {Code generation}; 
-    }
-
-  \end{tikzpicture}
-
-  \onslide<3>{ 
-    \begin{tikzpicture}[overlay, remember picture] 
-      \node [draw] at (5,0) (details1) {
-         \begin{tikzpicture} 
-           \node (text1) {``2 * a + 1''}; 
-           \node [draw, thick, 
-                  single arrow, 
-                  minimum size=2em, right=1em of text1] 
-           (localarr) {};
-           \node [draw, circle,thick,inner sep=1pt] (pnode) at (4,0.7) {$+$};
-           \node [draw, circle,thick,inner sep=2pt, below left=1em and 1em of pnode](mnode)  {$*$}; 
-           \draw (pnode) -- (mnode);
-
-           \node [below left=1em and 1em of mnode] (two) {$2$};
-           \node [below right=1em and 1em of mnode] (anode) {$a$}; 
-           \node [below right=1em and 1em of pnode] (onenode) {$1$};
-
-           \draw (mnode) -- (two) 
-                 (mnode) -- (anode) 
-                 (pnode) -- (onenode); 
-           
-         \end{tikzpicture} 
-        };
-    \end{tikzpicture}
-  }
-
-%       + 
-%   *       1 
-% 2   a 
-
-\end{frame} 
-
-% -------------------------------------------------------------------------
-%
-% -------------------------------------------------------------------------
-\begin{frame}{Embedded Languages} 
-
-  \begin{tikzpicture} 
-    
-    \node [draw, very thick, cross out] 
-      (source) {Source text}; 
-    
-    \node [draw, fill=green!30, 
-           very thick, 
-           minimum size = 3em,
-           single arrow, 
-           right=1em of source] (a1) {};
-
-    \node [draw, cross out, 
-           very thick,
-           right=1em of a1] (analysis) {Analysis};
-
-    
-    \node [draw, fill=green!30, 
-           very thick, 
-           minimum size = 3em,
-           single arrow, 
-           right=1em of analysis] (a1) {};
-      
-    \node [draw, fill=blue!30, 
-           very thick, rounded corners,
-           right=1em of a1] (opt) {Optimisations};
-      
-    \node [draw, fill=green!30, 
-           very thick, 
-           minimum size = 3em,
-           single arrow, rotate=270, 
-           below=1.5em of opt] (a1) {};
-      
-    \node [draw, fill=blue!30, 
-           very thick, rounded corners, 
-           below=3.5em of opt] (codegen) {Code generation}; 
-    
-  \end{tikzpicture}
-
-  \begin{tikzpicture}[overlay, remember picture]     
-    \node [draw, fill=blue!30, 
-           very thick, rounded corners] at (8.55,4.75) (lib) {Library};
-    \node [draw, fill=green!30, 
-           very thick, 
-           minimum size = 3em,
-           single arrow, rotate=270, 
-           below right=0.8em and -1em of lib] (a1) {};
-    
-  \end{tikzpicture} 
-
-\end{frame} 
-
 
 % -------------------------------------------------------------------------
 %
@@ -930,7 +546,7 @@ ex1 = 9*1+2
 \begin{block}{}
 \begin{verbatim} 
 ex2 :: Expr -> Expr
-ex2 x = a + a 
+ex2 x = a+a 
   where
     a = x*x
 \end{verbatim}  
@@ -979,6 +595,7 @@ ex3 = P.sum (map fromInteger [0..15])
 \begin{frame}{Obsidian} 
   Obsidian: 
   \begin{itemize} 
+    \item Embedded in Haskell
     \item Encourage experimentation
     \item Higher level than CUDA 
       \begin{itemize} 
@@ -989,6 +606,23 @@ ex3 = P.sum (map fromInteger [0..15])
       \end{itemize} 
   \end{itemize}  
 \end{frame}
+
+\begin{frame}[fragile]{Obsidian: Arrays}
+  
+  Pull and Push arrays: 
+  \begin{itemize}
+  \item Represents ways to compute arrays, \\
+        not data in memory
+  \item Operations on them fuse by default \newline
+    \verb!map f . map g!
+  \item Programmer can choose not to fuse
+    \begin{itemize} 
+    \item by inserting a {\tt force} operation
+    \end{itemize}
+  \item Parallel
+  \end{itemize} 
+     
+\end{frame} 
 
 
 \begin{frame}{Obsidian} 
@@ -1081,15 +715,15 @@ ex3 = P.sum (map fromInteger [0..15])
 
 \end{tikzpicture}
 
-\onslide<2>{ 
-  \begin{tikzpicture}[overlay, remember picture]
+%% \onslide<2>{ 
+%%   \begin{tikzpicture}[overlay, remember picture]
     
-    \node [draw, fill=red!50,minimum width = 6em, thick, rounded corners] at (-4,3) {Warp};
+%%     \node [draw, fill=red!50,minimum width = 6em, thick, rounded corners] at (-4,3) {Warp};
     
-  \end{tikzpicture}
+%%   \end{tikzpicture}
 
 
-} 
+%% } 
 \end{center}
 \end{frame}
 
@@ -1111,7 +745,7 @@ inc = fmap (+1)
 \begin{block}{} 
 \begin{verbatim} 
 incK :: Num a => DPull (SPull a) -> DPush Grid a
-incK arr = pConcatMap (push . inc) arr
+incK = pConcatMap (push . inc)
 \end{verbatim} 
 \end{block} 
 
@@ -1167,26 +801,6 @@ extern "C" __global__ void inc(int32_t* input0, uint32_t n0,
 \end{block} 
 
 
-\end{frame} 
-
-\begin{frame}[fragile]{Obsidian: Execute Generated Code}
-  
-  \begin{block}{}
-    \Fontvi
-\begin{verbatim}
-perform =
-  withCUDA $
-  do
-    kern <- capture 256 (incK . splitUp 256) 
-
-    useVector (V.fromList [0..255 :: Int32]) $ \i ->
-      useVector (V.fromList (P.replicate 256 (0 :: Int32))) $ \ o ->
-      do
-        o <== (1,kern) <> i 
-        r <- peekCUDAVector o
-        lift $ putStrLn $ show r     
-\end{verbatim} 
-  \end{block}
 \end{frame} 
 
 % ---------------------------------------------------------------------------
@@ -1283,8 +897,7 @@ red4 f arr =
 \begin{verbatim}
 red5 f arr =
   do
-    arr' <- force $  pConcatMap (seqReduce f)
-                                (coalesce 8 arr)
+    arr' <- force $  pConcatMap (seqReduce f) (coalesce 8 arr)
     red3 f arr' 
 \end{verbatim} 
     
@@ -1318,7 +931,7 @@ red5 f arr =
   \item Fractals
   \item Scan 
   \item Matrix Multiplication (Chris)
-  \item NBody (Niklas) 
+  \item N-Body (Niklas) 
   \item ... 
 \end{itemize} 
 
@@ -1405,19 +1018,128 @@ red5 f arr =
 %
 % -------------------------------------------------------------------------
 
-\begin{frame}{} 
-  Programming example 
+\begin{frame}[fragile]{EmbArBB Code} 
+
+\begin{block}{}
+\Fontvi
+\begin{verbatim}
+matVec :: Exp (DVector Dim2 Float) 
+        -> Exp (DVector Dim1 Float) 
+        -> Exp (DVector Dim1 Float) 
+matVec m v = addReduce rows 
+           $ m * (repeatRow (getNRows m) v)
+\end{verbatim} 
+\end{block} 
+
 \end{frame} 
 
-\begin{frame}{} 
+\begin{frame}[fragile]{EmbArBB Code} 
 
-  Performance
+\begin{block}{}
+\Fontvi
+\begin{verbatim}
+main =  
+  withArBB $ 
+  do 
+     f <- capture matVec  
+     let m1 = V.fromList [2,0,0,0,
+                          0,2,0,0,
+                          0,0,2,0,
+                          0,0,0,2]
+         v1 = V.fromList [1,2,3,4] 
+     
+     m <- copyIn $ mkDVector m1 (Z:.4:.4) 
+     v <- copyIn $ mkDVector v1 (Z:.4) 
+
+     r1 <- new (Z:.4) 0 
+
+     execute f (m :- v)  r1
+              
+     r <- copyOut r1
+              
+     liftIO$ putStrLn$ show r
+\end{verbatim} 
+\end{block} 
+
 \end{frame} 
+
+
+
+\begin{frame}{EmbArBB: Performance} 
+
+ \begin{minipage}{.48\linewidth}
+ \includegraphics[width=\linewidth]{window.jpg}
+ \end{minipage} %
+ \begin{minipage}{.48\linewidth}
+ \includegraphics[width=\linewidth]{histogram.jpg}
+ \end{minipage}
+
+\end{frame} 
+
+\begin{frame}{EmbArBB: Performance} 
+
+ \begin{minipage}{.48\linewidth}
+ \includegraphics[width=\linewidth]{window.jpg}
+ \end{minipage} %
+ \begin{minipage}{.48\linewidth}
+ \includegraphics[width=\linewidth]{sobout.jpg}
+ \end{minipage}
+
+\end{frame} 
+
+\begin{frame}{EmbArBB: Performance} 
+
+ \begin{minipage}{.48\linewidth}
+ \includegraphics[width=\linewidth]{blurchart.jpg}
+ \end{minipage} %
+ \begin{minipage}{.48\linewidth}
+ \includegraphics[width=\linewidth]{mmchart1.jpg}
+ \end{minipage}
+
+\end{frame} 
+
 
 \section{Related Work} 
 
 \begin{frame}{Related Work} 
+\begin{center}
+\begin{tikzpicture}[align=center, scale=2.5]
+% \draw[help lines] (0,0) grid (3,3);
 
+
+%\draw[->] (-0.5,0) -- (-0.5,3) node[anchor=east] {Abstraction level};
+
+\draw (0,3) node[anchor=south west] {CPUs};
+\draw (1,3) node[anchor=south west] {GPUs};
+%\draw (2,3) node[anchor=south west] {Accelerator};
+\draw (2,3) node[anchor=south west] {CPUs, GPUs\\ Accelerators};
+
+\node[anchor=west] (acc) at (1,2.7) {Accelerate\\Nikola\\Thrust};
+\node[anchor=west,blue!100] (cub) at (1,1.7) {CUB};
+\node[anchor=west] (repa) at (0,2.5) {DPH\\Nesl\\Repa\\Meta-repa\\Feldspar};
+\node[anchor=west] (mixed) at (0,1.7) {Cilk+\\ TBB};
+\node[anchor=west] (accelerator) at (2,1.7) {Accelerator};
+
+\node[anchor=west] (cuda) at (1,0.3) {CUDA};
+\node[anchor=west] (opencl) at (2,0.3) {OpenCL};
+
+\node[anchor=west] (OpenMP) at (0,0.3) {OpenMP\\PThreads};
+
+\foreach \x in {0,...,2} { 
+  \foreach \y in {0,...,2} { 
+    \draw (\x,\y) rectangle (\x+1,\y+1);
+  }
+}
+
+\draw[red!75,rounded corners,ultra thick] (1,0.4) rectangle (2,2.4);
+\node[red!75,rotate=45,thick] (obs) at (1.5,1.5) {Obsidian};
+
+\draw[orange!90,rounded corners,ultra thick] (2,1.4) rectangle (3,2.6);
+\node[orange!90,thick] (arbb) at (2.5,2) {EmbArBB\\ArBB};
+
+
+\end{tikzpicture}
+\end{center}
 \end{frame} 
 
 
@@ -1557,13 +1279,479 @@ red5 f arr =
 %
 % -------------------------------------------------------------------------
 \section{Future Work}
-\begin{frame}{Future Work} 
+\begin{frame}{Future Work}
+Obsidian:
+  \begin{itemize} 
+    \item Warp level capabilities
+    \item Optimisations? 
+    \item Smarter compiler? 
+    \item Kernel Coordination (full applications) 
+  \end{itemize} 
+EmbArBB: 
+  \begin{itemize} 
+    \item ArBB doesn't exist anymore 
+      \begin{itemize} 
+        \item Retarget EmbArBB to another code generator
+        \item Hope someone revives ArBB
+      \end{itemize} 
+      
+  \end{itemize} 
+  
+\end{frame} 
+
+
+\begin{frame}{Extra} 
+
+Extra slides
+
+\end{frame}
+
+\begin{frame}[fragile]{Obsidian: Execute Generated Code}
+  
+  \begin{block}{}
+    \Fontvi
+\begin{verbatim}
+perform =
+  withCUDA $
+  do
+    kern <- capture 256 (incK . splitUp 256) 
+
+    useVector (V.fromList [0..255 :: Int32]) $ \i ->
+      useVector (V.fromList (P.replicate 256 (0 :: Int32))) $ \ o ->
+      do
+        o <== (1,kern) <> i 
+        r <- peekCUDAVector o
+        lift $ putStrLn $ show r     
+\end{verbatim} 
+  \end{block}
+\end{frame} 
+
+
+\begin{frame}{Data-Parallelism: Increment}
+\begin{center} 
+\begin{tikzpicture}[
+      start chain=1 going right,start chain=2 going below,node distance=-0.15mm
+    ]
+
+
+  \foreach \x in {1,2,...,10} {
+    \node (\x) [draw, on chain=1] {\x};
+  }
+  \node [on chain=1] {\huge \ldots};
+  
+  
+
+  \onslide<2>{
+    \node [draw, below=3em of 1] (r1) {2};
+    % \draw [->] (1) -- (r1);
+    \addone{1}{r1}
+    }
+
+  \onslide<3>{
+    \node [draw, below=3em of 1] (r1) {2};
+    \node [draw, below=3em of 2] (r2) {3};
+    %\draw [->] (2) -- (r2);
+    \addone{2}{r2}
+    }
+
+
+  \onslide<4>{
+    \node [draw, below=3em of 1] (r1) {2};
+    \node [draw, below=3em of 2] (r2) {3};
+    \node [draw, below=3em of 3] (r3) {4};
+    %\draw [->] (3) -- (r3);
+    \addone{3}{r3}
+    }
+
+  \onslide<5>{
+    \node [draw, below=3em of 1] (r1) {2};
+    \node [draw, below=3em of 2] (r2) {3};
+    \node [draw, below=3em of 3] (r3) {4};
+    \node [draw, below=3em of 4] (r4) {5};
+    %\draw [->] (4) -- (r4);
+    \addone{4}{r4}
+    \node [right=-0.15mm of r4] {\huge \ldots};
+    }
+  
+\end{tikzpicture} 
+\end{center}
+\end{frame}
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}{Data-Parallelism: Increment in Parallel}
+\begin{center} 
+\begin{tikzpicture}[
+      start chain=1 going right,start chain=2 going below,node distance=-0.15mm
+    ]
+
+
+  \foreach \x in {1,2,...,10} {
+    \node (\x) [draw, on chain=1] {\x};
+  }
+  \node [on chain=1] {\huge \ldots};
+  
+  
+
+  \onslide<2>{
+    \node [draw, below=3em of 1] (r1) {2};
+    \node [draw, below=3em of 2] (r2) {3};
+    \node [draw, below=3em of 3] (r3) {4};
+    \node [draw, below=3em of 4] (r4) {5};
+
+    \addone{1}{r1}
+    \addone{2}{r2}
+    \addone{3}{r3}
+    \addone{4}{r4}
+    }
+
+  \onslide<3>{
+    \node [draw, below=3em of 1] (r1) {2};
+    \node [draw, below=3em of 2] (r2) {3};
+    \node [draw, below=3em of 3] (r3) {4};
+    \node [draw, below=3em of 4] (r4) {5};
+    \node [draw, below=3em of 5] (r5) {6};
+    \node [draw, below=3em of 6] (r6) {7};
+    \node [draw, below=3em of 7] (r7) {8};
+    \node [draw, below=3em of 8] (r8) {9};
+
+    \addone{5}{r5}
+    \addone{6}{r6}
+    \addone{7}{r7}
+    \addone{8}{r8}
+    }
+
+  \onslide<3>{
+    \node [draw, below=3em of 1] (r1) {2};
+    \node [draw, below=3em of 2] (r2) {3};
+    \node [draw, below=3em of 3] (r3) {4};
+    \node [draw, below=3em of 4] (r4) {5};
+    \node [draw, below=3em of 5] (r5) {6};
+    \node [draw, below=3em of 6] (r6) {7};
+    \node [draw, below=3em of 7] (r7) {8};
+    \node [draw, below=3em of 8] (r8) {9};
+
+    \addone{5}{r5}
+    \addone{6}{r6}
+    \addone{7}{r7}
+    \addone{8}{r8}
+
+    \node [right=-0.15mm of r8] {\huge \ldots};
+    }
+
+\end{tikzpicture} 
+
+\end{center}
+\end{frame}
+
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}[fragile]{GPU Programming: CUDA Example}
+
+\begin{block}{}
+\begin{tiny}
+\begin{verbatim} 
+main(void) {
+  
+  int32_t h_a[32], h_r[32]; 
+  int32_t *d_a, *d_r;
+  
+  for (int i = 0; i < 32; ++i) 
+    h_a[i] = i;
+
+  cudaMalloc((void**)&d_a,32*sizeof(int32_t));
+  cudaMalloc((void**)&d_r,32*sizeof(int32_t));
+
+  cudaMemcpy(d_a,h_a,32*sizeof(int32_t),
+                     cudaMemcpyHostToDevice);
+  
+  inc<<<1,32,0>>>(d_a,d_r); 
+
+  cudaMemcpy(h_r,d_r,32*sizeof(int32_t),
+                     cudaMemcpyDeviceToHost);
+
+  for (int i = 0; i < 32; ++i) 
+    printf("%d ",h_r[i]);
+}
+\end{verbatim}
+\end{tiny}
+\end{block} 
+\end{frame} 
+
+
+\begin{frame}{Embedded Languages} 
+
+  \begin{tikzpicture} 
+    
+    %\onslide<1-5>{
+    \node [draw, fill=blue!30, very thick, rounded corners] 
+      (source) {Source text}; 
+    %}
+    \onslide<2-5>{ 
+      \node [draw, fill=green!30, 
+             very thick, 
+             minimum size = 3em,
+             single arrow, 
+             right=1em of source] (a1) {};
+
+      \node [draw, fill=blue!30, 
+             very thick, rounded corners, 
+             right=1em of a1] (analysis) {Analysis};
+    }
+    \onslide<4-5>{
+      
+      \node [draw, fill=green!30, 
+             very thick, 
+             minimum size = 3em,
+             single arrow, 
+             right=1em of analysis] (a1) {};
+      
+      \node [draw, fill=blue!30, 
+             very thick, rounded corners, 
+             right=1em of a1] (opt) {Optimisations};
+      
+    }
+    \onslide<5>{
+       \node [draw, fill=green!30, 
+             very thick, 
+             minimum size = 3em,
+             single arrow, rotate=270, 
+             below=1.5em of opt] (a1) {};
+      
+      \node [draw, fill=blue!30, 
+             very thick, rounded corners, 
+             below=3.5em of opt] (codegen) {Code generation}; 
+    }
+
+  \end{tikzpicture}
+
+  \onslide<3>{ 
+    \begin{tikzpicture}[overlay, remember picture] 
+      \node [draw] at (5,0) (details1) {
+         \begin{tikzpicture} 
+           \node (text1) {``2 * a + 1''}; 
+           \node [draw, thick, 
+                  single arrow, 
+                  minimum size=2em, right=1em of text1] 
+           (localarr) {};
+           \node [draw, circle,thick,inner sep=1pt] (pnode) at (4,0.7) {$+$};
+           \node [draw, circle,thick,inner sep=2pt, below left=1em and 1em of pnode](mnode)  {$*$}; 
+           \draw (pnode) -- (mnode);
+
+           \node [below left=1em and 1em of mnode] (two) {$2$};
+           \node [below right=1em and 1em of mnode] (anode) {$a$}; 
+           \node [below right=1em and 1em of pnode] (onenode) {$1$};
+
+           \draw (mnode) -- (two) 
+                 (mnode) -- (anode) 
+                 (pnode) -- (onenode); 
+           
+         \end{tikzpicture} 
+        };
+    \end{tikzpicture}
+  }
+
+%       + 
+%   *       1 
+% 2   a 
 
 \end{frame} 
 
-\begin{frame}{}
-  End
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}{Embedded Languages} 
+
+  \begin{tikzpicture} 
+    
+    \node [draw, very thick, cross out] 
+      (source) {Source text}; 
+    
+    \node [draw, fill=green!30, 
+           very thick, 
+           minimum size = 3em,
+           single arrow, 
+           right=1em of source] (a1) {};
+
+    \node [draw, cross out, 
+           very thick,
+           right=1em of a1] (analysis) {Analysis};
+
+    
+    \node [draw, fill=green!30, 
+           very thick, 
+           minimum size = 3em,
+           single arrow, 
+           right=1em of analysis] (a1) {};
+      
+    \node [draw, fill=blue!30, 
+           very thick, rounded corners,
+           right=1em of a1] (opt) {Optimisations};
+      
+    \node [draw, fill=green!30, 
+           very thick, 
+           minimum size = 3em,
+           single arrow, rotate=270, 
+           below=1.5em of opt] (a1) {};
+      
+    \node [draw, fill=blue!30, 
+           very thick, rounded corners, 
+           below=3.5em of opt] (codegen) {Code generation}; 
+    
+  \end{tikzpicture}
+
+  \begin{tikzpicture}[overlay, remember picture]     
+    \node [draw, fill=blue!30, 
+           very thick, rounded corners] at (8.55,4.75) (lib) {Library};
+    \node [draw, fill=green!30, 
+           very thick, 
+           minimum size = 3em,
+           single arrow, rotate=270, 
+           below right=0.8em and -1em of lib] (a1) {};
+    
+  \end{tikzpicture} 
+
 \end{frame} 
+
+%% \begin{frame}{GPU Programming: NVIDIA CUDA}
+%% \begin{center} 
+
+%% \begin{tikzpicture}[
+%%       start chain=1 going right,start chain=2 going below,node distance=1em,
+%%       every join/.style={->,thick},
+%%     ]
+
+%%   \node [draw,very thick, rounded corners, on chain=1,join] {Inputs}; 
+%%   \node [draw,very thick, rounded corners, on chain=1,minimum height=5.5em,minimum width = 6.5em,join] {\huge ?}; 
+%%   \node [draw,very thick, rounded corners, on chain=1,join] {Outputs}; 
+  
+
+%% \end{tikzpicture} 
+%% \end{center}
+
+%% \end{frame}
+
+%% % -------------------------------------------------------------------------
+%% %
+%% % -------------------------------------------------------------------------
+
+%% \begin{frame}{GPU Programming: NVIDIA CUDA}
+%% \begin{center} 
+
+%% \begin{tikzpicture}[remember picture,
+%%       start chain=going right,
+%%       outer/.style={on chain, node distance=1em},
+%%       every join/.style={->,thick},
+%%       inner/.style={circle,draw=blue!50,fill=blue!20,thick,inner sep=1pt},
+%%     ]
+
+%%   \node [outer,draw,very thick, rounded corners,join] {Inputs}; 
+%%   \node [outer,draw=gray!50,very thick, rounded corners,minimum height=5.5em,minimum width = 6.5em,join] (apa) {
+%%     \begin{tikzpicture} 
+%%       \node [draw=black!100,inner,minimum size=1pt] (k1) {k1};
+%%       \node [draw=black!100,inner,minimum size=1pt, below= 1em of k1] (k2) {k2};
+%%       \node [draw=black!100,inner,minimum size=1pt, right= 1em of k1] (k3) {k3}; 
+%%     \end{tikzpicture}
+
+%%   }; 
+%%   \node [outer,draw,very thick, rounded corners,join] {Outputs}; 
+
+%%   \draw (k1) -- (k3)
+%%         (k2) -- (k3)
+%%         (apa.west) -- (k1.west)
+%%         (apa.west) -- (k2.west) 
+%%         (k3.east) -- (apa.east); 
+  
+
+  
+
+%% \end{tikzpicture} 
+
+%% \onslide<2-5>{
+%%   \begin{tikzpicture}[overlay, remember picture]
+    
+%%    \node [draw, circle,very thick, minimum size=2em] (magni) at (-0.58,2.05) {};
+    
+%%    \node [draw, very thick] (test) at (-1,0) {
+%%      \begin{tikzpicture}
+%%        \node [draw, fill=red!50] (b0) {Block 0};
+%%        \node [draw, fill=red!50, below=0pt of b0] (b1) {Block 1};
+%%        \node [below=0pt of b1] (bdots) {\huge \ldots};
+%%        \node [draw, fill=red!50, below=0pt of bdots] (bN) {Block N};
+       
+
+%%      \end{tikzpicture} 
+
+%%    };
+
+%%    \draw [very thick] (magni) -- (test);
+%%   \end{tikzpicture}
+%% }
+
+%% \onslide<3>{ 
+%%   \begin{tikzpicture}[overlay, remember picture]
+%%     \node [fill=gray!50] at (2,0) {
+%%       \begin{minipage}{3.5cm}
+%%       Block:
+%%       \begin{small}
+%%       \begin{itemize}
+%%         \item Many threads
+%%         \item Shared memory
+%%         \item Synchronize
+%%         \item Same program 
+%%         \item Different data
+%%       \end{itemize}
+%%       \end{small}
+%%       \end{minipage}
+%%     };
+%%   \end{tikzpicture}
+%% }
+
+%% \onslide<4>{ 
+%%   \begin{tikzpicture}[overlay, remember picture]
+%%     \node [fill=gray!50] at (2,0) {
+%%       \begin{minipage}{3.5cm}
+%%       Warp:
+%%       \begin{small}
+%%       \begin{itemize}
+%%         \item 32 threads
+%%         \item Scheduled unit
+%%         \item Lockstep
+%%       \end{itemize}
+%%       \end{small}
+%%       \end{minipage}
+%%     };
+%%   \end{tikzpicture}
+%% }
+
+%% \onslide<5>{ 
+%%   \begin{tikzpicture}[overlay, remember picture]
+%%     \node [fill=gray!50] at (2,0) {
+%%       \begin{minipage}{3.5cm}
+%%       Grid:
+%%       \begin{small}
+%%       \begin{itemize}
+%%         \item Collection of all blocks
+%%       \end{itemize}
+%%       \end{small}
+%%       \end{minipage}
+%%     };
+%%   \end{tikzpicture}
+%% }
+
+
+
+%% \end{center}
+
+%% \end{frame}
+
+
+%\begin{frame}{}
+%  End
+%\end{frame} 
 
 
 \end{document} 
