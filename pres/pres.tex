@@ -1033,20 +1033,156 @@ extern "C" __global__ void inc(int32_t* input0, uint32_t n0,
 
 \end{frame} 
 
-\begin{frame}{} 
+\begin{frame}[fragile]{Obsidian: Execute Generated Code}
   
-  Run the example above
-  
+  \begin{block}{}
+    \Fontvi
+\begin{verbatim}
+perform =
+  withCUDA $
+  do
+    kern <- capture 256 (incK . splitUp 256) 
+
+    useVector (V.fromList [0..255 :: Int32]) $ \i ->
+      useVector (V.fromList (P.replicate 256 (0 :: Int32))) $ \ o ->
+      do
+        o <== (1,kern) <> i 
+        r <- peekCUDAVector o
+        lift $ putStrLn $ show r     
+\end{verbatim} 
+  \end{block}
 \end{frame} 
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
-\begin{frame}{} 
+\begin{frame}{Related Work: Accelerate} 
+\begin{center} 
 
-  Obsidian and Accelerate differences \\
-  Dot product example in both. 
+\begin{tikzpicture}[remember picture,
+      start chain=going right,
+      outer/.style={on chain, node distance=1em},
+      every join/.style={->,thick},
+      inner/.style={circle,draw=blue!50,fill=blue!20,thick,inner sep=1pt},
+    ]
 
+  \node [outer,draw,very thick, rounded corners,join] {Inputs}; 
+  \node [outer,draw=gray!50,very thick, rounded corners,minimum height=5.5em,minimum width = 6.5em,join] (apa) {
+    \begin{tikzpicture} 
+      \node [draw=black!100,inner,minimum size=1pt] (k1) {k1};
+      \node [draw=black!100,inner,minimum size=1pt, below= 1em of k1] (k2) {k2};
+      \node [draw=black!100,inner,minimum size=1pt, right= 1em of k1] (k3) {k3}; 
+    \end{tikzpicture}
+
+  }; 
+  \node [outer,draw,very thick, rounded corners,join] {Outputs}; 
+  
+
+  \draw (k1) -- (k3)
+        (k2) -- (k3)
+        (apa.west) -- (k1.west)
+        (apa.west) -- (k2.west) 
+        (k3.east) -- (apa.east); 
+  
+
+\end{tikzpicture} 
+
+\onslide<2>{ 
+  \begin{tikzpicture}[overlay, remember picture]
+    \node [draw,fill=gray!50,thick, rounded corners] at (-3,-1) {
+      \begin{minipage}{5cm} 
+        Accelerate: 
+         \begin{itemize}  
+         \item ks are chosen from a set of primitives
+           \begin{itemize}
+             \item Map
+             \item Fold
+             \item Permute
+             \item .. 
+           \end {itemize} 
+         \item Coordination / Composition
+         \end{itemize}
+      \end{minipage} 
+      
+    };
+  \end{tikzpicture} 
+} 
+\end{center}
 \end{frame} 
+
+% ---------------------------------------------------------------------------
+%
+% ---------------------------------------------------------------------------
+
+\begin{frame}{Related Work: Accelerate}
+\begin{center} 
+
+\begin{tikzpicture}[remember picture,
+      start chain=going right,
+      outer/.style={on chain, node distance=1em},
+      every join/.style={->,thick},
+      inner/.style={circle,draw=blue!50,fill=blue!20,thick,inner sep=1pt},
+    ]
+
+  \node [outer,draw,very thick, rounded corners,join] {Inputs}; 
+  \node [outer,draw=gray!50,very thick, rounded corners,minimum height=5.5em,minimum width = 6.5em,join] (apa) {
+    \begin{tikzpicture} 
+      \node [draw=black!100,inner,minimum size=1pt] (k1) {k1};
+      \node [draw=black!100,inner,minimum size=1pt, below= 1em of k1] (k2) {k2};
+      \node [draw=black!100,inner,minimum size=1pt, right= 1em of k1] (k3) {k3}; 
+    \end{tikzpicture}
+
+  }; 
+  \node [outer,draw,very thick, rounded corners,join] {Outputs}; 
+  
+
+  \draw (k1) -- (k3)
+        (k2) -- (k3)
+        (apa.west) -- (k1.west)
+        (apa.west) -- (k2.west) 
+        (k3.east) -- (apa.east); 
+  
+
+\end{tikzpicture} 
+
+  \begin{tikzpicture}[overlay, remember picture]
+    
+   \node [draw, circle,very thick, minimum size=2em] (magni) at (-0.58,2.05) {};
+    
+   \node [draw, very thick] (test) at (-1,0) {
+     \begin{tikzpicture}
+       \node [draw, fill=red!50] (b0) {Block 0};
+       \node [draw, fill=red!50, below=0pt of b0] (b1) {Block 1};
+       \node [below=0pt of b1] (bdots) {\huge \ldots};
+       \node [draw, fill=red!50, below=0pt of bdots] (bN) {Block N};
+       
+
+     \end{tikzpicture} 
+
+   };
+
+   \draw [very thick] (magni) -- (test);
+  \end{tikzpicture}
+
+  \begin{tikzpicture}[overlay, remember picture]
+    \node [draw,fill=gray!50,thick, rounded corners] at (3,-1) {
+      \begin{minipage}{5cm} 
+        Obsidian: 
+         \begin{itemize}  
+         \item Program what the ks do
+         \end{itemize}
+      \end{minipage} 
+      
+    };
+  \end{tikzpicture} 
+
+
+
+\end{center}
+\end{frame} 
+
+% ---------------------------------------------------------------------------
+%
+% ---------------------------------------------------------------------------
 
 \begin{frame}{}
   Reduction example \\
