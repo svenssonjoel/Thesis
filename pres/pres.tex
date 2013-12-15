@@ -1292,8 +1292,39 @@ red5 f arr =
 
 \end{frame} 
 
+\begin{frame}{Obsidian: Reduction Performance} 
 
-    
+8192 Blocks, each reducing 2048 elements. 
+
+\begin{center}
+\begin{tabular}{| l | c | c | c | c | r | }
+\hline 
+  Kernel & Threads & ms \\ \hline 
+  red1 & 1024 & 2.085 \\ \hline
+  red2 & 1024 & 1.748 \\ \hline
+  red3 & 1024 & 1.741 \\ \hline
+  red4 & 256 &  2.113  \\ \hline
+  red5 & 256 &  0.455  \\ \hline
+  red6 & 128 &  0.441  \\ \hline
+  red7 & 64 &  0.441  \\ \hline
+\end{tabular}
+\end{center}
+\end{frame} 
+
+\begin{frame}{Obsidian} 
+
+\begin{itemize} 
+  \item Sorting (Counting sort, Occurrence sort, Sorting networks) 
+  \item Fractals
+  \item Scan 
+  \item Matrix Multiplication (Chris)
+  \item NBody (Niklas) 
+  \item ... 
+\end{itemize} 
+
+
+\end{frame} 
+
 
 
 
