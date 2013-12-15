@@ -9,7 +9,7 @@
 \setbeamertemplate{navigation symbols}{} 
 
 \usepackage{tikz} 
-\usetikzlibrary{shapes.arrows,chains,positioning,decorations.pathreplacing}
+\usetikzlibrary{shapes.arrows,chains,positioning,decorations.pathreplacing,shapes.misc}
 
 % -------------------------------------------------------------------------
 % Commands
@@ -68,6 +68,13 @@
 
 \section{background} 
 
+\begin{frame}{Data-Parallelism} 
+  \begin{center}
+  {\Large Data-Parallelism}
+  \end{center}
+\end{frame} 
+
+
 % -------------------------------------------------------------------------
 % What is data parallelism ?
 %   * Fine grained
@@ -117,15 +124,6 @@
     \node [draw, below=3em of 4] (r4) {5};
     %\draw [->] (4) -- (r4);
     \addone{4}{r4}
-    }
-  
-  \onslide<6>{
-    \node [draw, below=3em of 1] (r1) {2};
-    \node [draw, below=3em of 2] (r2) {3};
-    \node [draw, below=3em of 3] (r3) {4};
-    \node [draw, below=3em of 4] (r4) {5};
-    %\draw [->] (4) -- (r4);
-    \addone{4}{r4}
     \node [right=-0.15mm of r4] {\huge \ldots};
     }
   
@@ -136,7 +134,7 @@
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
-\begin{frame}{Data-Parallelism: Increment in parallel}
+\begin{frame}{Data-Parallelism: Increment in Parallel}
 \begin{center} 
 \begin{tikzpicture}[
       start chain=1 going right,start chain=2 going below,node distance=-0.15mm
@@ -256,7 +254,7 @@
 % Computing a sum in parallel 
 % -------------------------------------------------------------------------
 
-\begin{frame}{Data-Parallelism: Sum in parallel}
+\begin{frame}{Data-Parallelism: Sum in Parallel}
 \begin{center} 
 \begin{tikzpicture}[
       start chain=1 going right,start chain=2 going below,node distance=-0.15mm
@@ -426,7 +424,7 @@
   \begin{itemize} 
     \item Scalable
       \begin{itemize} 
-        \item Potential for parallelism increase with data size 
+        \item Potential for parallelism increases with data size 
       \end{itemize}
     \item Fine grained parallelism 
   \end{itemize} 
@@ -511,7 +509,7 @@
 
 \end{tikzpicture} 
 
-\onslide<2>{
+\onslide<2-3>{
   \begin{tikzpicture}[overlay, remember picture]
     
    \node [draw, circle,very thick, minimum size=2em] (magni) at (-0.58,2.05) {};
@@ -532,6 +530,27 @@
   \end{tikzpicture}
 }
 
+\onslide<3>{ 
+  \begin{tikzpicture}[overlay, remember picture]
+    \node [fill=gray!50] at (2,0) {
+      \begin{minipage}{3.5cm}
+      Block:
+      \begin{small}
+      \begin{itemize}
+        \item Many threads
+        \item Shared memory
+        \item Synchronize
+        \item Same program 
+        \item Different data
+      \end{itemize}
+      \end{small}
+      \end{minipage}
+    };
+  \end{tikzpicture}
+}
+
+
+
 \end{center}
 
 \end{frame}
@@ -539,7 +558,7 @@
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
-\begin{frame}[fragile]{GPU Programming: CUDA example}
+\begin{frame}[fragile]{GPU Programming: CUDA Example}
 
 \begin{block}{}
 \begin{verbatim} 
@@ -561,12 +580,258 @@ __global__ void inc(int32_t *a, int32_t *r) {
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
-\begin{frame}[fragile]{GPU Programming: CUDA example}
+\begin{frame}[fragile]{GPU Programming: CUDA Example}
 
 \begin{block}{}
-Apa Bepa  
-\end{block} 
+\begin{tiny}
+\begin{verbatim} 
+main(void) {
+  
+  int32_t h_a[32], h_r[32]; 
+  int32_t *d_a, *d_r;
+  
+  for (int i = 0; i < 32; ++i) 
+    h_a[i] = i;
 
+  cudaMalloc((void**)&d_a,32*sizeof(int32_t));
+  cudaMalloc((void**)&d_r,32*sizeof(int32_t));
+
+  cudaMemcpy(d_a,h_a,32*sizeof(int32_t),
+                     cudaMemcpyHostToDevice);
+  
+  inc<<<1,32,0>>>(d_a,d_r); 
+
+  cudaMemcpy(h_r,d_r,32*sizeof(int32_t),
+                     cudaMemcpyDeviceToHost);
+
+  for (int i = 0; i < 32; ++i) 
+    printf("%d ",h_r[i]);
+}
+\end{verbatim}
+\end{tiny}
+\end{block} 
+\end{frame} 
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+
+\begin{frame}{GPU Programming} 
+
+  Things to consider:
+
+  \begin{itemize} 
+    \item Minimise data transfer between host and device
+    \item Coalesce global memory accesses
+    \item Minimise use of global memory 
+    \item Avoid different execution paths within a block
+    \item Be careful with {\tt \_\_syncthreads} and conditionals
+  \end{itemize} 
+  
+\end{frame} 
+
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\section{Embedded Languages: Background}
+
+
+\begin{frame}{Embedded Languages} 
+ \begin{center}
+   {\Large Compiled Embedded Languages}
+ \end{center}
+%%
+%%  Embedding ArBB, similar slides to Obsidian, more pictures. 
+
+\end{frame} 
+
+
+\begin{frame}[fragile]{Embedded Languages: Background} 
+  
+  \begin{tikzpicture} 
+
+    \node [fill=gray!30] (cuda) {
+      \begin{minipage}{6cm}
+        \begin{tiny} 
+\begin{verbatim}
+for (range = 0; range < WIDTH; ++range){
+
+    feedback = LEFT + range * deltaXPerPixel;
+    pop = 0.3;
+
+    for (int i = 0; i < INVISIBLE; ++i) {
+      pop = g(pop,feedback);
+    }
+    for (int i = 0; i < VISIBLE; ++i) {
+      setPoint(img,feedback,pop,color);
+      pop = g(pop,feedback);
+    }
+}
+\end{verbatim}    
+\end{tiny}    
+\end{minipage}
+};
+    \node [draw,single arrow,right=1em of cuda, minimum size=3em] (arr) {};
+    
+    \node [fill=gray!30,right=1em of arr] (mc) { 
+      \begin{minipage}{3cm}
+\begin{tiny}
+\begin{verbatim}
+...
+89 45 d4             
+f3 0f 10 45 d4
+48 89 cf
+e8 ac fd ff ff
+8b 55 fc      
+8b 45 ec      
+89 55 d4      
+...
+\end{verbatim}
+\end{tiny}
+      \end{minipage}
+    };
+      
+      
+    
+  \end{tikzpicture}
+
+  
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}{Embedded Languages} 
+
+  \begin{tikzpicture} 
+    
+    %\onslide<1-5>{
+    \node [draw, fill=blue!30, very thick, rounded corners] 
+      (source) {Source text}; 
+    %}
+    \onslide<2-5>{ 
+      \node [draw, fill=green!30, 
+             very thick, 
+             minimum size = 3em,
+             single arrow, 
+             right=1em of source] (a1) {};
+
+      \node [draw, fill=blue!30, 
+             very thick, rounded corners, 
+             right=1em of a1] (analysis) {Analysis};
+    }
+    \onslide<4-5>{
+      
+      \node [draw, fill=green!30, 
+             very thick, 
+             minimum size = 3em,
+             single arrow, 
+             right=1em of analysis] (a1) {};
+      
+      \node [draw, fill=blue!30, 
+             very thick, rounded corners, 
+             right=1em of a1] (opt) {Optimisations};
+      
+    }
+    \onslide<5>{
+       \node [draw, fill=green!30, 
+             very thick, 
+             minimum size = 3em,
+             single arrow, rotate=270, 
+             below=1.5em of opt] (a1) {};
+      
+      \node [draw, fill=blue!30, 
+             very thick, rounded corners, 
+             below=3.5em of opt] (codegen) {Code generation}; 
+    }
+
+  \end{tikzpicture}
+
+  \onslide<3>{ 
+    \begin{tikzpicture}[overlay, remember picture] 
+      \node [draw] at (5,0) (details1) {
+         \begin{tikzpicture} 
+           \node (text1) {``2 * a + 1''}; 
+           \node [draw, thick, 
+                  single arrow, 
+                  minimum size=2em, right=1em of text1] 
+           (localarr) {};
+           \node [draw, circle,thick,inner sep=1pt] (pnode) at (4,0.7) {$+$};
+           \node [draw, circle,thick,inner sep=2pt, below left=1em and 1em of pnode](mnode)  {$*$}; 
+           \draw (pnode) -- (mnode);
+
+           \node [below left=1em and 1em of mnode] (two) {$2$};
+           \node [below right=1em and 1em of mnode] (anode) {$a$}; 
+           \node [below right=1em and 1em of pnode] (onenode) {$1$};
+
+           \draw (mnode) -- (two) 
+                 (mnode) -- (anode) 
+                 (pnode) -- (onenode); 
+           
+         \end{tikzpicture} 
+        };
+    \end{tikzpicture}
+  }
+
+%       + 
+%   *       1 
+% 2   a 
+
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}{Embedded Languages} 
+
+  \begin{tikzpicture} 
+    
+    \node [draw, very thick, cross out] 
+      (source) {Source text}; 
+    
+    \node [draw, fill=green!30, 
+           very thick, 
+           minimum size = 3em,
+           single arrow, 
+           right=1em of source] (a1) {};
+
+    \node [draw, cross out, 
+           very thick,
+           right=1em of a1] (analysis) {Analysis};
+
+    
+    \node [draw, fill=green!30, 
+           very thick, 
+           minimum size = 3em,
+           single arrow, 
+           right=1em of analysis] (a1) {};
+      
+    \node [draw, fill=blue!30, 
+           very thick, rounded corners,
+           right=1em of a1] (opt) {Optimisations};
+      
+    \node [draw, fill=green!30, 
+           very thick, 
+           minimum size = 3em,
+           single arrow, rotate=270, 
+           below=1.5em of opt] (a1) {};
+      
+    \node [draw, fill=blue!30, 
+           very thick, rounded corners, 
+           below=3.5em of opt] (codegen) {Code generation}; 
+    
+  \end{tikzpicture}
+
+  \begin{tikzpicture}[overlay, remember picture]     
+    \node [draw, fill=blue!30, 
+           very thick, rounded corners] at (8.55,4.75) (lib) {Library};
+    \node [draw, fill=green!30, 
+           very thick, 
+           minimum size = 3em,
+           single arrow, rotate=270, 
+           below right=0.8em and -1em of lib] (a1) {};
+    
+  \end{tikzpicture} 
 
 \end{frame} 
 
@@ -574,33 +839,222 @@ Apa Bepa
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
-\section{Embedded Languages}
+\begin{frame}[fragile]{Embedded Languages: {\small Embedded Four-Function Calculator}}
 
-\begin{frame}{Embedded Languages} 
-  
-  TODO: 
-  \begin{itemize} 
-    \item Background, Lava, Compiling embedded languages 
-    \item Picture: embedded language vs standalone (same as lecture) 
-    \item How Bj\"orn and Benny does embedded languages 
-  \end{itemize}
-  
+\begin{block}{}
+\begin{verbatim} 
+import Prelude hiding (div) 
+import qualified Prelude as P
+
+data Op = Add | Sub | Mul | Div 
+
+data Expr = Bin Expr Op Expr | Lit Int 
+
+eval (Bin e1 op e2) =
+  let (e1', e2') = (eval e1, eval e2) in
+    case op of Add -> e1' + e2'
+               Sub -> e1' - e2'
+               Mul -> e1' * e2'
+               Div -> e1' `P.div` e2'
+
+eval (Lit i) = i
+\end{verbatim}  
+\end{block} 
+
 \end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}[fragile]{Embedded Languages: {\small Embedded Four-Function Calculator}} 
+
+\begin{block}{}
+\begin{verbatim} 
+instance Num Expr where
+  (+) a b = Bin a Add b 
+  (-) a b = Bin a Sub b
+  (*) a b = Bin a Mul b 
+  fromInteger = Lit . fromInteger
+
+div a b = Bin a Div b 
+\end{verbatim}  
+\end{block} 
+
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}[fragile]{Embedded Languages: {\small Embedded Four-Function Calculator}} 
+
+\begin{block}{}
+\begin{verbatim} 
+ex1 :: Expr
+ex1 = 9*1+2
+\end{verbatim}  
+\end{block} 
+
+\pause
+\begin{block}{}
+\begin{verbatim} 
+ex2 :: Expr -> Expr
+ex2 x = a + a 
+  where
+    a = x*x
+\end{verbatim}  
+\end{block} 
+
+\pause
+\begin{block}{}
+\begin{verbatim} 
+ex3 :: Expr
+ex3 = P.sum (map fromInteger [0..15])
+\end{verbatim}  
+\end{block} 
+
+\end{frame} 
+
 
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
 \section{Obsidian}
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+
+
+
 \begin{frame}{Obsidian} 
   
-  \begin{itemize} 
-    \item Our level of GPU programming 
-    \item Programming example  (reduction) 
-    \item Performance 
-    \item Compare to related approaches 
-  \end{itemize}
+  \begin{center}
+  {\Large Embedded Language for GPU Kernel Implementation}
+  \end{center}
+  %% \begin{itemize} 
+  %%   \item Our level of GPU programming 
+  %%   \item Programming example  (reduction) 
+  %%   \item Performance 
+  %%   \item Compare to related approaches 
+  %% \end{itemize}
       
 \end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+
+\begin{frame}{Obsidian} 
+  Obsidian: 
+  \begin{itemize} 
+    \item Encourage experimentation
+    \item Higher level than CUDA 
+      \begin{itemize} 
+        \item Not as much indexing magic
+        \item Programs describe ``whole'' computation
+        \item Code reuse 
+        \item Still have control over low level details
+      \end{itemize} 
+  \end{itemize}  
+\end{frame}
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Obsidian: Simple Example}
+
+\begin{block}{} 
+\begin{verbatim} 
+inc :: Num a => SPull a -> SPull a
+inc = fmap (+1)
+\end{verbatim} 
+\end{block} 
+
+\pause 
+\begin{block}{} 
+\begin{verbatim} 
+incK :: Num a => DPull (SPull a) -> DPush Grid a
+incK arr = pConcatMap (push . inc) arr
+\end{verbatim} 
+\end{block} 
+
+
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\newcommand\Fontvi{\fontsize{8}{7.2}\selectfont}
+
+\begin{frame}[fragile]{Obsidian: Generated Code}
+\begin{block}{256 threads and 256 elements per block} 
+\Fontvi
+\begin{verbatim} 
+extern "C" __global__ void inc(int32_t* input0, uint32_t n0,
+                               int32_t* output1)
+{
+    uint32_t tid = threadIdx.x;
+     
+    if (blockIdx.x < n0 / 256U) {
+        output1[blockIdx.x * 256U + tid] = 
+          input0[blockIdx.x * 256U + tid] + 1;
+    }
+}
+\end{verbatim} 
+
+\end{block}
+\end{frame}
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}[fragile]{Obsidian: Generated Code}
+\begin{block}{128 threads and 256 elements per block}
+\Fontvi
+\begin{verbatim} 
+extern "C" __global__ void inc(int32_t* input0, uint32_t n0,
+                               int32_t* output1)
+{
+    uint32_t tid = threadIdx.x;
+    
+    if (blockIdx.x < n0 / 256U) {
+        for (int i = 0; i < 2; ++i) {
+            tid = i * 128 + threadIdx.x;
+            output1[blockIdx.x * 256U + tid] = 
+              input0[blockIdx.x * 256U + tid] + 1;
+        }
+        tid = threadIdx.x;
+    }
+}
+\end{verbatim} 
+\end{block} 
+
+
+\end{frame} 
+
+\begin{frame}{} 
+  
+  Run the example above
+  
+\end{frame} 
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}{} 
+
+  Obsidian and Accelerate differences \\
+  Dot product example in both. 
+
+\end{frame} 
+
+\begin{frame}{}
+  Reduction example \\
+  Performance
+\end{frame} 
+    
+
+
 
 % -------------------------------------------------------------------------
 %
@@ -608,8 +1062,84 @@ Apa Bepa
 \section{EmbArBB} 
 
 \begin{frame}{EmbArBB} 
-  Embedding ArBB, similar slides to Obsidian, more pictures. 
+ \begin{center}
+   {\Large Embedding Array Building Blocks in Haskell}
+ \end{center}
+%%
+%%  Embedding ArBB, similar slides to Obsidian, more pictures. 
 
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+
+\begin{frame}{EmbArBB: ArBB} 
+
+  Intel Array Building Blocks
+  \begin{itemize}
+    \item Heterogeneous multi/many core systems
+    \item High-level programming model 
+    \item JIT compile for current architecture   
+  \end{itemize}
+\end{frame} 
+
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}{EmbArBB: ArBB} 
+  
+  \begin{center} 
+  \begin{tikzpicture} 
+    
+    \node [draw,thick, fill=red!70, minimum width = 14em, 
+           minimum height = 3em] 
+       (vm)  {ArBB Virtual Machine}; 
+
+    \onslide<2-5>{
+
+    \node [draw,thick, fill=red!60, minimum width = 14em, 
+           minimum height = 3em, above= 0pt of vm] 
+       (capi) {ArBB-VM C API}; 
+    }
+
+    \onslide<3>{
+
+    \node [draw,thick, fill=red!50, minimum width = 14em, 
+           minimum height = 3em, above= 0pt of capi] 
+       (cpp) {Language Embedded in C++}; 
+    }
+    
+    \onslide<4-5> { 
+      \node [draw,thick, fill=blue!50, minimum width = 14em, 
+        minimum height = 1em, above= 0pt of capi] 
+        (bindings) {Haskell Bindings}; 
+    }
+    \onslide<5> { 
+      \node [draw,thick, fill=blue!50, minimum width = 14em, 
+        minimum height = 2em, above= 0pt of bindings] 
+        (embarbb) {Language Embedded in Haskell}; 
+    }
+
+    
+    
+  \end{tikzpicture}
+  \end{center} 
+
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+
+\begin{frame}{} 
+  Programming example 
+\end{frame} 
+
+\begin{frame}{} 
+
+  Performance
 \end{frame} 
 
 
@@ -620,6 +1150,10 @@ Apa Bepa
 \section{Future Work}
 \begin{frame}{Future work} 
 
+\end{frame} 
+
+\begin{frame}{}
+  End
 \end{frame} 
 
 
