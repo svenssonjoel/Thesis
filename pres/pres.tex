@@ -509,7 +509,7 @@
 
 \end{tikzpicture} 
 
-\onslide<2-3>{
+\onslide<2-5>{
   \begin{tikzpicture}[overlay, remember picture]
     
    \node [draw, circle,very thick, minimum size=2em] (magni) at (-0.58,2.05) {};
@@ -542,6 +542,38 @@
         \item Synchronize
         \item Same program 
         \item Different data
+      \end{itemize}
+      \end{small}
+      \end{minipage}
+    };
+  \end{tikzpicture}
+}
+
+\onslide<4>{ 
+  \begin{tikzpicture}[overlay, remember picture]
+    \node [fill=gray!50] at (2,0) {
+      \begin{minipage}{3.5cm}
+      Warp:
+      \begin{small}
+      \begin{itemize}
+        \item 32 threads
+        \item Scheduled unit
+        \item Lockstep
+      \end{itemize}
+      \end{small}
+      \end{minipage}
+    };
+  \end{tikzpicture}
+}
+
+\onslide<5>{ 
+  \begin{tikzpicture}[overlay, remember picture]
+    \node [fill=gray!50] at (2,0) {
+      \begin{minipage}{3.5cm}
+      Grid:
+      \begin{small}
+      \begin{itemize}
+        \item Collection of all blocks
       \end{itemize}
       \end{small}
       \end{minipage}
@@ -958,6 +990,110 @@ ex3 = P.sum (map fromInteger [0..15])
   \end{itemize}  
 \end{frame}
 
+
+\begin{frame}{Obsidian} 
+
+\begin{center}
+\def\s{.50}
+
+\tikzstyle{mybox} = [draw=black, fill=blue!20, very thick,
+    rectangle, rounded corners, inner sep=10pt, inner ysep=20pt]
+
+\tikzstyle{wbox} = [draw=black, very thick,
+    rectangle, rounded corners, inner sep=10pt, inner ysep=20pt]
+
+\tikzstyle{smallbox} = [draw=black, fill=green!20, very thick,
+    rectangle, rounded corners, inner sep=10pt, inner ysep=7pt]
+
+\tikzstyle{fancytitle} =[fill=red, text=white]
+
+\begin{tikzpicture}[scale=(\s)]
+
+%\draw [help lines] (0,0) grid (16,10);
+
+\node [mybox] (Grid){%
+    \begin{minipage}{0.15\linewidth}
+        Grid
+    \end{minipage}
+};
+\node [mybox,below=0cm of Grid.south] (Block){%
+    \begin{minipage}{0.15\linewidth}
+        Block
+    \end{minipage}
+};
+\node [mybox,below=0cm of Block.south] (Thread){%
+    \begin{minipage}{0.15\linewidth}
+        Thread
+    \end{minipage}
+};
+
+\node [smallbox,right=0cm of Grid.north east, anchor=north west] (gd) {%
+    \begin{minipage}{0.25\linewidth}
+        {\small Global memory}
+    \end{minipage}
+};
+
+\node [smallbox,right=0cm of Block.north east, anchor=north west] (bd) {%
+    \begin{minipage}{0.25\linewidth}
+        {\small Shared memory}
+    \end{minipage}
+};
+
+\node [smallbox,right=0cm of Block.south east, anchor=south west] (sync) {%
+    \begin{minipage}{0.25\linewidth}
+        {\small Syncthreads}
+    \end{minipage}
+};
+
+\node [smallbox,right=0cm of Thread.north east, anchor=north west] (td) {%
+    \begin{minipage}{0.25\linewidth}
+        {\small Reg to reg}
+    \end{minipage}
+};
+
+\node [smallbox, right=0cm of Thread.south east, anchor=south west] (seq) {%
+    \begin{minipage}{0.25\linewidth}
+        {\small Sequential}
+    \end{minipage}
+};
+
+\node [below=2mm of Thread] (l1) {\small Level};
+\node [right=11mm of l1.north east, anchor=north west] (l2) {\small Key concepts};
+\node [right=16mm of l2.north east, anchor=north west] (l3) {\small Obsidian};
+
+\node [wbox,inner ysep=13pt,right=0cm of gd.north east, anchor=north west] (obs1) {% 
+  \begin{minipage}{0.35\linewidth}
+        {\small pConcat, generate, \\DPush, DPull}
+    \end{minipage}
+};
+
+\node [wbox,inner ysep=13pt,below=0cm of obs1.south] (obs2) {% 
+  \begin{minipage}{0.35\linewidth}
+        {\small pConcat, generate, force, SPush, SPull}
+    \end{minipage}
+};
+
+\node [wbox,inner ysep=5.5pt, below=0cm of obs2.south] (obs3) {% 
+  \begin{minipage}{0.35\linewidth}
+        {\small seqFor, seqUntil \\ seqReduce\\ seqScan, SPush, SPull}
+    \end{minipage}
+};
+
+\end{tikzpicture}
+
+\onslide<2>{ 
+  \begin{tikzpicture}[overlay, remember picture]
+    
+    \node [draw, fill=red!50,minimum width = 6em, thick, rounded corners] at (-4,3) {Warp};
+    
+  \end{tikzpicture}
+
+
+} 
+\end{center}
+\end{frame}
+
+
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
@@ -1052,6 +1188,208 @@ perform =
 \end{verbatim} 
   \end{block}
 \end{frame} 
+
+% ---------------------------------------------------------------------------
+%
+% ---------------------------------------------------------------------------
+
+\begin{frame}{Obsidian: Reduction Experimentation}
+
+  \input{reductionfigs.tex}
+
+
+\end{frame} 
+
+
+\begin{frame}[fragile]{Obsidian: Reduction Experimentation}
+
+  \begin{block}{} 
+    
+\Fontvi
+\begin{verbatim}
+red1 f arr
+  | len arr == 1 = return $ push arr
+  | otherwise    = 
+    do
+      let (a1,a2) = evenOdds arr
+      arr' <- force $ zipWith f a1 a2
+      red1 f arr'
+\end{verbatim} 
+    
+  \end{block}
+
+\end{frame} 
+
+\begin{frame}[fragile]{Obsidian: Reduction Experimentation}
+
+  \begin{block}{} 
+    
+\Fontvi
+\begin{verbatim}
+red2 f arr
+  | len arr == 1 = return $ push arr
+  | otherwise    = 
+    do
+      let (a1,a2) = halve arr
+      arr' <- force $ zipWith f a1 a2
+      red2 f arr'   
+\end{verbatim} 
+    
+  \end{block}
+
+\end{frame} 
+
+\begin{frame}[fragile]{Obsidian: Reduction Experimentation}
+
+  \begin{block}{} 
+    
+\Fontvi
+\begin{verbatim}
+red3 f arr
+  | len arr == 2 = return $ push $ singleton $ f (arr ! 0) (arr ! 1) 
+  | otherwise    = 
+    do
+      let (a1,a2) = halve arr
+      arr' <- force $ zipWith f a1 a2
+      red3 f arr'   
+\end{verbatim} 
+    
+  \end{block}
+
+\end{frame} 
+
+\begin{frame}[fragile]{Obsidian: Reduction Experimentation}
+
+  \begin{block}{} 
+    
+\Fontvi
+\begin{verbatim}
+red4 f arr =
+  do
+    arr' <- force $ pConcatMap (seqReduce f) (splitUp 8 arr)
+    red3 f arr' 
+\end{verbatim} 
+    
+  \end{block}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]{Obsidian: Reduction Experimentation}
+
+  \begin{block}{} 
+    
+\Fontvi
+\begin{verbatim}
+red5 f arr =
+  do
+    arr' <- force $  pConcatMap (seqReduce f)
+                                (coalesce 8 arr)
+    red3 f arr' 
+\end{verbatim} 
+    
+  \end{block}
+
+\end{frame} 
+
+
+    
+
+
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\section{EmbArBB} 
+
+\begin{frame}{EmbArBB} 
+ \begin{center}
+   {\Large Embedding Array Building Blocks in Haskell}
+ \end{center}
+%%
+%%  Embedding ArBB, similar slides to Obsidian, more pictures. 
+
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+
+\begin{frame}{EmbArBB: ArBB} 
+
+  Intel Array Building Blocks
+  \begin{itemize}
+    \item Heterogeneous multi/many core systems
+    \item High-level programming model 
+    \item JIT compile for current architecture   
+  \end{itemize}
+\end{frame} 
+
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+\begin{frame}{EmbArBB: ArBB} 
+  
+  \begin{center} 
+  \begin{tikzpicture} 
+    
+    \node [draw,thick, fill=red!70, minimum width = 14em, 
+           minimum height = 3em] 
+       (vm)  {ArBB Virtual Machine}; 
+
+    \onslide<2-5>{
+
+    \node [draw,thick, fill=red!60, minimum width = 14em, 
+           minimum height = 3em, above= 0pt of vm] 
+       (capi) {ArBB-VM C API}; 
+    }
+
+    \onslide<3>{
+
+    \node [draw,thick, fill=red!50, minimum width = 14em, 
+           minimum height = 3em, above= 0pt of capi] 
+       (cpp) {Language Embedded in C++}; 
+    }
+    
+    \onslide<4-5> { 
+      \node [draw,thick, fill=blue!50, minimum width = 14em, 
+        minimum height = 1em, above= 0pt of capi] 
+        (bindings) {Haskell Bindings}; 
+    }
+    \onslide<5> { 
+      \node [draw,thick, fill=blue!50, minimum width = 14em, 
+        minimum height = 2em, above= 0pt of bindings] 
+        (embarbb) {Language Embedded in Haskell}; 
+    }
+
+    
+    
+  \end{tikzpicture}
+  \end{center} 
+
+\end{frame} 
+
+% -------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------
+
+\begin{frame}{} 
+  Programming example 
+\end{frame} 
+
+\begin{frame}{} 
+
+  Performance
+\end{frame} 
+
+\section{Related Work} 
+
+\begin{frame}{Related Work} 
+
+\end{frame} 
+
+
 % -------------------------------------------------------------------------
 %
 % -------------------------------------------------------------------------
@@ -1180,103 +1518,7 @@ perform =
 \end{center}
 \end{frame} 
 
-% ---------------------------------------------------------------------------
-%
-% ---------------------------------------------------------------------------
 
-\begin{frame}{}
-  Reduction example \\
-  Performance
-\end{frame} 
-    
-
-
-
-% -------------------------------------------------------------------------
-%
-% -------------------------------------------------------------------------
-\section{EmbArBB} 
-
-\begin{frame}{EmbArBB} 
- \begin{center}
-   {\Large Embedding Array Building Blocks in Haskell}
- \end{center}
-%%
-%%  Embedding ArBB, similar slides to Obsidian, more pictures. 
-
-\end{frame} 
-
-% -------------------------------------------------------------------------
-%
-% -------------------------------------------------------------------------
-
-\begin{frame}{EmbArBB: ArBB} 
-
-  Intel Array Building Blocks
-  \begin{itemize}
-    \item Heterogeneous multi/many core systems
-    \item High-level programming model 
-    \item JIT compile for current architecture   
-  \end{itemize}
-\end{frame} 
-
-
-% -------------------------------------------------------------------------
-%
-% -------------------------------------------------------------------------
-\begin{frame}{EmbArBB: ArBB} 
-  
-  \begin{center} 
-  \begin{tikzpicture} 
-    
-    \node [draw,thick, fill=red!70, minimum width = 14em, 
-           minimum height = 3em] 
-       (vm)  {ArBB Virtual Machine}; 
-
-    \onslide<2-5>{
-
-    \node [draw,thick, fill=red!60, minimum width = 14em, 
-           minimum height = 3em, above= 0pt of vm] 
-       (capi) {ArBB-VM C API}; 
-    }
-
-    \onslide<3>{
-
-    \node [draw,thick, fill=red!50, minimum width = 14em, 
-           minimum height = 3em, above= 0pt of capi] 
-       (cpp) {Language Embedded in C++}; 
-    }
-    
-    \onslide<4-5> { 
-      \node [draw,thick, fill=blue!50, minimum width = 14em, 
-        minimum height = 1em, above= 0pt of capi] 
-        (bindings) {Haskell Bindings}; 
-    }
-    \onslide<5> { 
-      \node [draw,thick, fill=blue!50, minimum width = 14em, 
-        minimum height = 2em, above= 0pt of bindings] 
-        (embarbb) {Language Embedded in Haskell}; 
-    }
-
-    
-    
-  \end{tikzpicture}
-  \end{center} 
-
-\end{frame} 
-
-% -------------------------------------------------------------------------
-%
-% -------------------------------------------------------------------------
-
-\begin{frame}{} 
-  Programming example 
-\end{frame} 
-
-\begin{frame}{} 
-
-  Performance
-\end{frame} 
 
 
 
@@ -1284,7 +1526,7 @@ perform =
 %
 % -------------------------------------------------------------------------
 \section{Future Work}
-\begin{frame}{Future work} 
+\begin{frame}{Future Work} 
 
 \end{frame} 
 
